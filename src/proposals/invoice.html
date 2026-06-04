@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRT Inc. Invoice Generator</title>
+  <script src="/src/js/auth.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; padding:1.5rem; }
+    .workspace { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:1200px; margin:0 auto; }
+    @media(max-width:768px) { .workspace { grid-template-columns:1fr; } }
+    h1 { color:var(--accent); font-size:1rem; margin-bottom:1.5rem; }
+    .panel { background:var(--card); border:1px solid var(--border); padding:1.5rem; }
+    .panel h2 { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:1rem; }
+    label { display:block; color:var(--muted); font-size:.75rem; margin-bottom:.2rem; margin-top:.7rem; }
+    input, select, textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--fg); padding:.5rem .7rem; font-family:var(--font); font-size:.85rem; outline:none; }
+    input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+    textarea { resize:vertical; }
+    .actions { display:flex; gap:.5rem; margin-top:1rem; }
+    .btn { border:none; padding:.4rem 1rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
+    .btn-print { background:var(--accent); color:var(--bg); }
+    .btn-clear { background:none; border:1px solid var(--border); color:var(--muted); }
+
+    /* Preview — renders as it will print */
+    #preview { background:#fff; color:#111; padding:2rem; font-family:'Courier New',monospace; font-size:12px; line-height:1.6; min-height:400px; }
+    #preview .pre-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; border-bottom:1px solid #ccc; padding-bottom:.8rem; }
+    #preview .pre-brand { color:#000; font-size:14px; font-weight:bold; margin-bottom:.2rem; }
+    #preview .pre-tagline { color:#666; font-size:10px; }
+    #preview .pre-invoice-meta { text-align:right; }
+    #preview .pre-invoice-num { color:#000; font-size:14px; font-weight:bold; }
+    #preview .pre-meta-line { color:#666; font-size:10px; }
+    #preview .pre-parties { display:flex; justify-content:space-between; margin-bottom:1.5rem; }
+    #preview .pre-party { font-size:11px; }
+    #preview .pre-label { color:#666; font-size:10px; text-transform:uppercase; margin-bottom:.2rem; }
+    #preview .pre-project { margin-bottom:1rem; font-size:11px; }
+    #preview table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:11px; }
+    #preview th { text-align:left; border-bottom:1px solid #ccc; padding:.3rem .5rem; color:#666; font-weight:normal; }
+    #preview td { padding:.3rem .5rem; border-bottom:1px solid #eee; }
+    #preview td:last-child { text-align:right; }
+    #preview .pre-total { text-align:right; font-weight:bold; font-size:13px; margin-top:.5rem; padding-top:.5rem; border-top:2px solid #111; }
+    #preview .pre-payment { margin-top:1.5rem; font-size:11px; white-space:pre-line; }
+    #preview .pre-notes { margin-top:1rem; font-size:11px; }
+    #preview .pre-footer { margin-top:2rem; padding-top:1rem; border-top:1px solid #ccc; color:#666; font-size:9px; }
+
+    @media print {
+      body > * { display:none !important; }
+      #print-area { display:block !important; }
+      #preview { padding:0; box-shadow:none; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>BRT Inc. // Invoice Generator</h1>
+
+<div class="workspace">
+  <div class="panel">
+    <h2>Invoice Details</h2>
+    <label>Invoice number</label>
+    <input type="text" id="inv-number" oninput="update()" />
+    <label>Invoice date</label>
+    <input type="date" id="inv-date" oninput="update()" />
+    <label>Due date</label>
+    <input type="date" id="inv-due" oninput="update()" />
+    <label>Bill to — Name / Company</label>
+    <input type="text" id="inv-client" placeholder="Studio P Barbershop" oninput="update()" />
+    <label>Bill to — Email</label>
+    <input type="email" id="inv-email" placeholder="client@example.com" oninput="update()" />
+    <label>Project / description</label>
+    <input type="text" id="inv-project" placeholder="Booking &amp; Staff Management System" oninput="update()" />
+    <label>Line items</label>
+    <div id="items-container"></div>
+    <button onclick="addItem()" style="margin-top:.5rem;background:none;border:1px solid var(--border);color:var(--muted);padding:.3rem .7rem;font-family:var(--font);cursor:pointer;font-size:.8rem">+ Add line item</button>
+    <label>Payment method</label>
+    <select id="inv-payment" onchange="update()">
+      <option value="wise">Wise (default)</option>
+      <option value="paypal">PayPal</option>
+      <option value="stripe">Stripe</option>
+    </select>
+    <label>Notes</label>
+    <input type="text" id="inv-notes" placeholder="Any additional notes..." oninput="update()" />
+    <div class="actions">
+      <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+      <button class="btn btn-clear" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+
+  <div class="panel" id="print-area">
+    <h2>Preview</h2>
+    <div id="preview"></div>
+  </div>
+</div>
+
+<script>
+  const INVOICE_KEY = 'brt_invoice_counter';
+
+  function nextInvoiceNum() {
+    const n = parseInt(localStorage.getItem(INVOICE_KEY) || '1000');
+    localStorage.setItem(INVOICE_KEY, n + 1);
+    return 'BRT-' + String(n);
+  }
+
+  let items = [{ desc: 'Development', qty: 1, rate: 0 }];
+
+  function addItem() {
+    items.push({ desc: '', qty: 1, rate: 0 });
+    renderItems(); update();
+  }
+
+  function removeItem(i) { items.splice(i, 1); renderItems(); update(); }
+
+  function renderItems() {
+    const c = document.getElementById('items-container');
+    c.innerHTML = items.map((item, i) => `
+      <div style="display:grid;grid-template-columns:1fr 60px 80px 24px;gap:.3rem;margin-bottom:.3rem;align-items:center">
+        <input type="text" value="${esc(item.desc)}" placeholder="Description"
+          data-item="${i}" data-field="desc"
+          style="font-size:.8rem;padding:.3rem .5rem" />
+        <input type="number" value="${item.qty}" min="1"
+          data-item="${i}" data-field="qty"
+          style="font-size:.8rem;padding:.3rem .5rem" />
+        <input type="number" value="${item.rate}" min="0"
+          data-item="${i}" data-field="rate"
+          style="font-size:.8rem;padding:.3rem .5rem" />
+        <button data-remove="${i}"
+          style="background:none;border:none;color:#ff4444;cursor:pointer;font-size:1rem">×</button>
+      </div>`).join('') +
+      '<div style="color:var(--muted);font-size:.7rem;display:grid;grid-template-columns:1fr 60px 80px 24px;gap:.3rem"><span>Description</span><span>Qty</span><span>Rate ($)</span></div>';
+
+    // Attach listeners via delegation
+    c.addEventListener('input', handleItemInput);
+    c.addEventListener('click', handleItemRemove);
+  }
+
+  function handleItemInput(e) {
+    const el = e.target;
+    const i = parseInt(el.dataset.item);
+    const field = el.dataset.field;
+    if (isNaN(i) || !field) return;
+    items[i][field] = field === 'desc' ? el.value : +el.value;
+    updatePreviewOnly();
+  }
+
+  function handleItemRemove(e) {
+    const btn = e.target.closest('button[data-remove]');
+    if (!btn) return;
+    removeItem(parseInt(btn.dataset.remove));
+  }
+
+  function esc(s) { return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function paymentDetails(method) {
+    if (method === 'paypal') {
+      return 'Payment via PayPal\nSend to: hello@brtinc.dev · Mark as \'Goods and Services\'';
+    }
+    if (method === 'stripe') {
+      return 'Payment via Stripe\nA payment link will be sent separately.';
+    }
+    // default: wise
+    return 'Payment via Wise (USD)\nAccount name: Charles Bartaria · BRT Inc.\nPlease request Wise USD details at hello@brtinc.dev';
+  }
+
+  function updatePreviewOnly() {
+    const invNum = document.getElementById('inv-number').value || 'BRT-XXXX';
+    const invDate = document.getElementById('inv-date').value || new Date().toISOString().slice(0, 10);
+    const invDue = document.getElementById('inv-due').value || '';
+    const client = document.getElementById('inv-client').value || '[Client Name]';
+    const email = document.getElementById('inv-email').value || '';
+    const project = document.getElementById('inv-project').value || '';
+    const method = document.getElementById('inv-payment').value;
+    const notes = document.getElementById('inv-notes').value;
+    const total = items.reduce((s, i) => s + (i.qty * i.rate), 0);
+    const payment = paymentDetails(method);
+
+    document.getElementById('preview').innerHTML = `
+      <div class="pre-header">
+        <div>
+          <div class="pre-brand">BRT Inc.</div>
+          <div class="pre-tagline">Software Engineering &amp; Data Systems</div>
+          <div class="pre-tagline">hello@brtinc.dev · brtinc.dev</div>
+          <div class="pre-tagline">Manzini, Kingdom of Eswatini</div>
+        </div>
+        <div class="pre-invoice-meta">
+          <div class="pre-invoice-num">INVOICE ${esc(invNum)}</div>
+          <div class="pre-meta-line">Date: ${esc(invDate)}</div>
+          ${invDue ? `<div class="pre-meta-line">Due: ${esc(invDue)}</div>` : ''}
+        </div>
+      </div>
+      <div class="pre-parties">
+        <div class="pre-party">
+          <div class="pre-label">From</div>
+          <div>Charles Bartaria / BRT Inc.</div>
+          <div style="color:#666">hello@brtinc.dev</div>
+        </div>
+        <div class="pre-party" style="text-align:right">
+          <div class="pre-label">Bill To</div>
+          <div>${esc(client)}</div>
+          ${email ? `<div style="color:#666">${esc(email)}</div>` : ''}
+        </div>
+      </div>
+      ${project ? `<div class="pre-project"><span style="color:#666;text-transform:uppercase;font-size:10px">Project: </span>${esc(project)}</div>` : ''}
+      <table>
+        <thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
+        <tbody>
+          ${items.map(i => `<tr><td>${esc(i.desc)}</td><td>${i.qty}</td><td>$${(+i.rate).toLocaleString()}</td><td>$${(i.qty * i.rate).toLocaleString()}</td></tr>`).join('')}
+        </tbody>
+      </table>
+      <div class="pre-total">Total Due: $${total.toLocaleString()} USD</div>
+      <div class="pre-payment">${esc(payment)}</div>
+      ${notes ? `<div class="pre-notes"><span style="color:#666;text-transform:uppercase;font-size:10px">Notes: </span>${esc(notes)}</div>` : ''}
+      <div class="pre-footer">
+        Late payments: 2% per month after 7 days overdue. All amounts in USD. This invoice is issued by BRT Inc., Manzini, Kingdom of Eswatini.
+        Governing law: Kingdom of Eswatini. Queries: hello@brtinc.dev
+        <br>Charles Bartaria · BRT Inc. · hello@brtinc.dev · brtinc.dev
+      </div>`;
+  }
+
+  function update() { updatePreviewOnly(); }
+
+  function clearForm() {
+    const today = new Date().toISOString().slice(0, 10);
+    const due = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    document.getElementById('inv-date').value = today;
+    document.getElementById('inv-due').value = due;
+    ['inv-client', 'inv-email', 'inv-project', 'inv-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('inv-payment').value = 'wise';
+    items = [{ desc: 'Development', qty: 1, rate: 0 }];
+    renderItems(); update();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    requireAuth();
+    const today = new Date().toISOString().slice(0, 10);
+    const due = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    document.getElementById('inv-number').value = nextInvoiceNum();
+    document.getElementById('inv-date').value = today;
+    document.getElementById('inv-due').value = due;
+    renderItems();
+    update();
+  });
+</script>
+</body>
+</html>

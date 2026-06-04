@@ -1,7 +1,7 @@
 // Internal tools password gate — Web Crypto API, no server required.
 // Session ends when the tab closes (sessionStorage, not localStorage).
 const AUTH_KEY = 'brt_session';
-const PASSWORD_HASH = 'PASTE_YOUR_HASH_HERE';
+const PASSWORD_HASH = '267640a960a8df50ff0c0935deb82615fd273f2a9d3f5c6c0f8f84da36fd06b7';
 
 async function sha256hex(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));

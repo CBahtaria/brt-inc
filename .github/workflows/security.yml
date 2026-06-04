@@ -1,0 +1,65 @@
+# Runs on every push and PR: secret scanning + auth gate check + secret pattern scan.
+name: Security
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  check-auth-gate:
+    name: Verify internal tools include auth gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check auth.js is referenced in internal tools
+        run: |
+          INTERNAL_PAGES=(
+            "tools.html"
+            "src/crm/crm.html"
+            "src/proposals/proposal-generator.html"
+            "src/proposals/invoice.html"
+            "src/status/status-dashboard.html"
+          )
+          FAILED=0
+          for page in "${INTERNAL_PAGES[@]}"; do
+            if ! grep -q 'auth.js' "$page"; then
+              echo "FAIL: $page does not include auth.js" >&2
+              FAILED=1
+            else
+              echo "OK: $page includes auth.js"
+            fi
+          done
+          exit $FAILED
+
+  check-no-secrets-in-source:
+    name: Verify no hardcoded secrets pattern
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Scan for common secret patterns
+        run: |
+          FAILED=0
+          if grep -rniE 'sk_live_[A-Za-z0-9]{20,}' --include="*.html" --include="*.js" .; then
+            echo "FAIL: Potential Stripe live secret key found" >&2
+            FAILED=1
+          fi
+          if grep -rniE 'pk_live_[A-Za-z0-9]{20,}' --include="*.html" --include="*.js" .; then
+            echo "FAIL: Potential Stripe live publishable key found" >&2
+            FAILED=1
+          fi
+          exit $FAILED

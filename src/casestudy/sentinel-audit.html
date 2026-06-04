@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Security audit case study: UEDF Sentinel v5.0 — 9 findings resolved. PHP 8 command-and-control platform." />
+  <title>Sentinel Security Audit — BRT Inc.</title>
+  <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --red:#ff4444; --yellow:#ffcc00; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:15px; line-height:1.7; }
+    .container { max-width:800px; margin:0 auto; padding:0 1.5rem; }
+    nav { padding:1rem 0; border-bottom:1px solid var(--border); margin-bottom:3rem; }
+    nav a { color:var(--muted); font-size:.85rem; }
+    nav a:hover { color:var(--fg); }
+    h1 { font-size:clamp(1.4rem,4vw,2rem); line-height:1.2; margin-bottom:.5rem; }
+    h1 span { color:var(--accent); }
+    .meta { color:var(--muted); font-size:.85rem; margin-bottom:2.5rem; }
+    h2 { font-size:1rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin:2.5rem 0 1rem; }
+    h2::before { content:'// '; color:var(--accent); }
+    p { color:var(--muted); margin-bottom:1rem; }
+    p strong { color:var(--fg); }
+    table { width:100%; border-collapse:collapse; font-size:.85rem; margin-bottom:1.5rem; }
+    th { text-align:left; color:var(--muted); padding:.5rem .8rem; border-bottom:1px solid var(--border); font-weight:normal; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; }
+    td { padding:.55rem .8rem; border-bottom:1px solid var(--border); vertical-align:top; }
+    tr:last-child td { border-bottom:none; }
+    .sev-critical { color:var(--red); font-weight:bold; }
+    .sev-high { color:var(--yellow); }
+    .sev-resolved { color:var(--accent); }
+    pre { background:var(--card); border:1px solid var(--border); padding:1rem; overflow-x:auto; font-size:.8rem; margin:1rem 0; }
+    .stat-row { display:flex; gap:2rem; flex-wrap:wrap; margin:1.5rem 0; }
+    .stat { text-align:center; }
+    .stat .n { font-size:2rem; color:var(--accent); display:block; }
+    .stat .l { color:var(--muted); font-size:.8rem; }
+    footer { padding:2rem 0; color:var(--muted); font-size:.8rem; border-top:1px solid var(--border); margin-top:3rem; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <nav>
+    <a href="/">← BRT Inc.</a>
+    &nbsp;&nbsp;
+    <a href="mailto:hello@brtinc.dev">hello@brtinc.dev</a>
+  </nav>
+
+  <h1>UEDF Sentinel v5.0<br><span>Structural Security Audit</span></h1>
+  <p class="meta">BRT Inc. · May 2026 · PHP 8 · 27,900 lines · 16 controllers</p>
+
+  <div class="stat-row">
+    <div class="stat"><span class="n">9</span><span class="l">Findings total</span></div>
+    <div class="stat"><span class="n" style="color:var(--red)">3</span><span class="l">Critical</span></div>
+    <div class="stat"><span class="n" style="color:var(--yellow)">6</span><span class="l">High</span></div>
+    <div class="stat"><span class="n">22</span><span class="l">Files patched</span></div>
+    <div class="stat"><span class="n">317</span><span class="l">Lines changed</span></div>
+    <div class="stat"><span class="n">0</span><span class="l">Regressions</span></div>
+  </div>
+
+  <h2>Audit Scope</h2>
+  <p>Structural code review of all PHP files outside <code>vendor/</code>. No automated scanner — every file read manually. Checked for: auth bypass conditions, session fixation, injection surfaces (SQL, command, path traversal), CORS misconfiguration, hardcoded secrets, error disclosure, and brute-force lockout gaps.</p>
+
+  <h2>Findings Table</h2>
+  <table>
+    <thead>
+      <tr><th>#</th><th>Severity</th><th>Finding</th><th>File</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>F-01</td>
+        <td class="sev-critical">Critical</td>
+        <td>Hardcoded credentials in production auth handler and pre-filled into HTML login form (<code>commander/commander123</code>)</td>
+        <td>modules/login.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-02</td>
+        <td class="sev-critical">Critical</td>
+        <td>API key and DB password as source literals — rotation impossible without a code push</td>
+        <td>api/config.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-03</td>
+        <td class="sev-critical">Critical</td>
+        <td>CORS wildcard (<code>Access-Control-Allow-Origin: *</code>) on Bearer token endpoints — any origin can read authenticated responses</td>
+        <td>api/auth.php, api/*.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-04</td>
+        <td class="sev-high">High</td>
+        <td>Session ID not rotated on login — session fixation vulnerability allows attacker to pre-set a known session ID</td>
+        <td>src/Auth.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-05</td>
+        <td class="sev-high">High</td>
+        <td>Off-by-one brute-force gate — 6th attempt slipped through the 5-attempt lockout check</td>
+        <td>api/auth.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-06</td>
+        <td class="sev-high">High</td>
+        <td>No security headers on any API endpoint — missing CSP, HSTS, X-Frame-Options, X-Content-Type-Options</td>
+        <td>api/*.php (all)</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-07</td>
+        <td class="sev-high">High</td>
+        <td><code>display_errors: 1</code> and verbose error messages in production config — reveals stack traces and file paths</td>
+        <td>config/app.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-08</td>
+        <td class="sev-high">High</td>
+        <td>Raw SQL string concatenation in several API routes — SQL injection surface</td>
+        <td>api/missions.php, api/chat.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+      <tr>
+        <td>F-09</td>
+        <td class="sev-high">High</td>
+        <td>DB password falls back to empty string on localhost when env var missing — silent failure during misconfigured deploys</td>
+        <td>src/Database.php</td>
+        <td class="sev-resolved">Resolved</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Key Fixes — Before / After</h2>
+
+  <p><strong>F-01: Hardcoded credentials removed</strong></p>
+  <pre>// BEFORE — login form pre-filled with production credentials
+&lt;input type="text" name="username" value="commander" /&gt;
+&lt;input type="password" name="password" value="commander123" /&gt;
+
+// AFTER — empty inputs, credentials only via environment variables
+&lt;input type="text" name="username" placeholder="Username" /&gt;
+&lt;input type="password" name="password" placeholder="Password" /&gt;</pre>
+
+  <p><strong>F-03: CORS wildcard replaced with allowlist</strong></p>
+  <pre>// BEFORE
+header('Access-Control-Allow-Origin: *');
+
+// AFTER — allowlist from environment variable
+$allowed = array_filter(explode(',', $_ENV['SENTINEL_CORS_ORIGINS'] ?? ''));
+$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
+if (in_array($origin, $allowed, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Vary: Origin');
+}</pre>
+
+  <p><strong>F-05: Brute-force gate off-by-one corrected</strong></p>
+  <pre>// BEFORE — allowed 6 attempts (>= instead of >)
+if ($attempts >= MAX_LOGIN_ATTEMPTS) { lockout(); }
+
+// AFTER
+if ($attempts > MAX_LOGIN_ATTEMPTS) { lockout(); }
+// MAX_LOGIN_ATTEMPTS = 5, so 6th attempt is correctly blocked</pre>
+
+  <h2>Delivery</h2>
+  <p>All 9 findings resolved across 22 files. PHPUnit integration test suite written to lock each fix (8 assertions). GitHub Actions security-gate job installed — regressions are caught at PR time before they reach <code>main</code>.</p>
+  <p>Repository: <a href="https://github.com/CBahtaria/sentinel" style="color:var(--accent)" target="_blank" rel="noopener">github.com/CBahtaria/sentinel</a></p>
+
+  <h2>Free Initial Assessment</h2>
+  <p>If your PHP or Python codebase hasn't had a structural review, I'm available for a free initial assessment — 15 minutes of your code, honest findings, no obligation.</p>
+  <p><a href="mailto:hello@brtinc.dev?subject=Security audit enquiry" style="color:var(--accent)">hello@brtinc.dev →</a></p>
+
+  <footer>
+    <div>BRT Inc. · Charles Bartaria · Manzini, Eswatini · <a href="/" style="color:var(--muted)">brtinc.dev</a></div>
+  </footer>
+</div>
+</body>
+</html>

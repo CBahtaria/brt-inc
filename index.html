@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="BRT Inc. — Custom software engineering for SADC organisations. PHP · Python · React · DevOps · Security Audits." />
+  <title>BRT Inc. — Software Engineering & Data Systems</title>
+  <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a; --fg: #e8e6e1; --accent: #00ff88;
+      --muted: #6b6b6b; --border: #1e1e1e; --card: #111;
+      --font: 'Courier New', 'Courier', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.7; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Layout */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+    section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,.95);
+          backdrop-filter: blur(4px); border-bottom: 1px solid var(--border); }
+    nav .container { display: flex; align-items: center; justify-content: space-between;
+                     padding-top: .8rem; padding-bottom: .8rem; }
+    .nav-brand { color: var(--accent); font-size: 1rem; letter-spacing: .05em; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: var(--muted); font-size: .85rem; }
+    .nav-links a:hover { color: var(--fg); text-decoration: none; }
+
+    /* Hero */
+    #hero { padding: 5rem 0 4rem; border-bottom: 1px solid var(--border); }
+    .hero-pre { color: var(--muted); font-size: .85rem; margin-bottom: .5rem; }
+    h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); line-height: 1.2; margin-bottom: 1rem; }
+    h1 span { color: var(--accent); }
+    .hero-sub { color: var(--muted); max-width: 560px; margin-bottom: 2rem; }
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn { display: inline-block; padding: .55rem 1.2rem; border: 1px solid;
+           font-family: var(--font); font-size: .9rem; cursor: pointer; transition: .15s; }
+    .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+    .btn-primary:hover { background: transparent; color: var(--accent); text-decoration: none; }
+    .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
+    .btn-ghost:hover { border-color: var(--fg); text-decoration: none; }
+
+    /* Section headings */
+    h2 { font-size: 1.1rem; color: var(--muted); text-transform: uppercase;
+         letter-spacing: .12em; margin-bottom: 2rem; }
+    h2::before { content: '// '; color: var(--accent); }
+
+    /* Services grid */
+    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px;
+                     border: 1px solid var(--border); }
+    .service-card { background: var(--card); padding: 1.5rem; border: none; }
+    .service-card h3 { color: var(--accent); font-size: .9rem; margin-bottom: .5rem; }
+    .service-card p { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+
+    /* Portfolio */
+    .project { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
+    .project:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .project-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .5rem; flex-wrap: wrap; }
+    .project h3 { font-size: 1rem; }
+    .project-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .tag { font-size: .75rem; color: var(--muted); border: 1px solid var(--border); padding: .1rem .4rem; }
+    .project p { color: var(--muted); font-size: .9rem; margin-bottom: .6rem; }
+    .project a { font-size: .85rem; }
+
+    /* Pricing table */
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th { text-align: left; color: var(--muted); padding: .5rem .8rem; border-bottom: 1px solid var(--border);
+         font-weight: normal; text-transform: uppercase; font-size: .75rem; letter-spacing: .08em; }
+    td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    td:nth-child(2) { color: var(--accent); }
+    td:nth-child(3) { color: var(--muted); }
+
+    /* Payment CTAs */
+    .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+    .payment-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; text-align: center; }
+    .payment-card .price { font-size: 1.8rem; color: var(--accent); display: block; margin-bottom: .3rem; }
+    .payment-card p { color: var(--muted); font-size: .8rem; margin-bottom: 1rem; }
+
+    /* Contact */
+    .contact-block { background: var(--card); border: 1px solid var(--border); padding: 2rem; }
+    .contact-block p { color: var(--muted); margin-bottom: 1rem; }
+    .contact-row { display: flex; gap: .5rem; align-items: center; margin-bottom: .4rem; }
+    .contact-label { color: var(--muted); font-size: .8rem; width: 80px; flex-shrink: 0; }
+
+    /* Footer */
+    footer { padding: 2rem 0; color: var(--muted); font-size: .8rem; }
+    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hero-cta { flex-direction: column; }
+      .payment-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <span class="nav-brand">BRT Inc.</span>
+    <div class="nav-links">
+      <a href="#services">Services</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<section id="hero">
+  <div class="container">
+    <p class="hero-pre">Manzini, Kingdom of Eswatini · hello@brtinc.dev</p>
+    <h1>Custom software<br>engineered to <span>ship.</span></h1>
+    <p class="hero-sub">Web applications, security audits, data science, and DevOps infrastructure — for SADC organisations. Every project ships with a test suite, CI/CD pipeline, and deployment documentation.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn btn-primary">Start a project</a>
+      <a href="#portfolio" class="btn btn-ghost">View work</a>
+      <a href="https://upwork.com/freelancers/charlesbartaria" class="btn btn-ghost" target="_blank" rel="noopener">Hire on Upwork</a>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="container">
+    <h2>Services</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <h3>Web Applications</h3>
+        <p>PHP 8 · React · FastAPI backends with MySQL or PostgreSQL. REST APIs, RBAC, JWT auth, WebSockets. From simple business tools to complex multi-role platforms.</p>
+      </div>
+      <div class="service-card">
+        <h3>Security Audits</h3>
+        <p>Structural code audits for PHP, Python, and Node.js. OWASP Top 10, auth flows, secrets hygiene, injection surfaces, session management. Written report + reproducible fixes.</p>
+      </div>
+      <div class="service-card">
+        <h3>Data Science & Forecasting</h3>
+        <p>ARIMA · SARIMA · Prophet time-series models. Monte Carlo simulations. Plotly Dash dashboards. FastAPI data APIs. Calibrated on real datasets with RMSE/MAE/MAPE evaluation.</p>
+      </div>
+      <div class="service-card">
+        <h3>DevOps</h3>
+        <p>Docker Compose · Nginx reverse proxy · GitHub Actions CI/CD · Prometheus/Grafana monitoring. Production-ready infrastructure from day one.</p>
+      </div>
+      <div class="service-card">
+        <h3>Business Software (SADC)</h3>
+        <p>POS, booking systems, staff portals, inventory management. Built for businesses in Eswatini, South Africa, Botswana, and the wider SADC region. Local context, international quality.</p>
+      </div>
+      <div class="service-card">
+        <h3>Retainer & Maintenance</h3>
+        <p>Monthly support for live systems. Bug fixes, small feature additions, dependency updates, priority response when something breaks.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="portfolio">
+  <div class="container">
+    <h2>Portfolio</h2>
+
+    <div class="project">
+      <div class="project-header">
+        <h3>UEDF Sentinel v5.0</h3>
+        <div class="project-tags">
+          <span class="tag">PHP 8</span><span class="tag">MySQL</span>
+          <span class="tag">WebSocket</span><span class="tag">Security</span>
+        </div>
+      </div>
+      <p>Command-and-control platform for drone fleet management. 27,900 lines across 16 MVC controllers. RBAC with 4 roles, TOTP 2FA, blockchain-chained audit log, WebSocket telemetry shim, NATS JetStream integration.</p>
+      <p>Completed a full structural security audit — 9 findings (3 Critical, 6 High), all resolved. 22 files patched, 317 lines changed, 0 regressions. CI security-gate installed.</p>
+      <a href="/src/casestudy/sentinel-audit.html">Read the audit case study →</a>
+      &nbsp;&nbsp;
+      <a href="https://github.com/CBahtaria/sentinel" target="_blank" rel="noopener">GitHub →</a>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <h3>Eswatini Macroeconomic Dashboard</h3>
+        <div class="project-tags">
+          <span class="tag">Python</span><span class="tag">FastAPI</span>
+          <span class="tag">Prophet</span><span class="tag">Docker</span>
+        </div>
+      </div>
+      <p>Production forecasting system for national economic indicators. FastAPI backend (11 endpoint groups), SQLAlchemy ORM, JWT auth with 3-tier RBAC. Auto-order ARIMA/SARIMA/Prophet forecasting, Monte Carlo fiscal sustainability simulation. Docker Compose (7 services), Nginx TLS, Prometheus/Grafana.</p>
+      <p style="color:var(--accent);font-size:.85rem">54 pytest tests · 100% pass rate</p>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <h3>Studio P Barbershop App</h3>
+        <div class="project-tags">
+          <span class="tag">React</span><span class="tag">Supabase</span><span class="tag">PostgreSQL</span>
+        </div>
+      </div>
+      <p>Live production booking platform for a barbershop in Manzini, Eswatini. OS-aware UI, two-round parallel booking validation, per-member customisation (8 colour schemes, photo upload), Supabase with RLS enforced at the Postgres layer.</p>
+      <p style="color:var(--accent);font-size:.85rem">In production · live users</p>
+    </div>
+
+    <div class="project">
+      <div class="project-header">
+        <h3>Agentic UAV Stack</h3>
+        <div class="project-tags">
+          <span class="tag">Python</span><span class="tag">PX4</span>
+          <span class="tag">NATS</span><span class="tag">DAL-A</span>
+        </div>
+      </div>
+      <p>Autonomous UAV platform with three-tier safety architecture: safety governor (DAL-A), mission executor, and AI-assisted planning layer. Private repository.</p>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="container">
+    <h2>Pricing</h2>
+    <table>
+      <thead>
+        <tr><th>Service</th><th>From</th><th>Timeline</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Web Application</td><td>$300</td><td>2–4 weeks</td></tr>
+        <tr><td>Security Audit (report only)</td><td>$200</td><td>3–5 days</td></tr>
+        <tr><td>Security Audit (report + fixes)</td><td>$350</td><td>1–2 weeks</td></tr>
+        <tr><td>Data Science / Forecasting</td><td>$80/hr · 10hr min</td><td>Varies</td></tr>
+        <tr><td>DevOps / Infrastructure</td><td>$250</td><td>1–2 weeks</td></tr>
+        <tr><td>API Design & Integration</td><td>$200</td><td>1–2 weeks</td></tr>
+        <tr><td>Business Software (SADC)</td><td>$200</td><td>2–3 weeks</td></tr>
+        <tr><td>Hourly rate</td><td>$45/hr</td><td>—</td></tr>
+        <tr><td>Retainer / maintenance</td><td>$50/mo</td><td>Ongoing</td></tr>
+      </tbody>
+    </table>
+
+    <div class="payment-grid" style="margin-top:2rem">
+      <div class="payment-card">
+        <span class="price">$100</span>
+        <p>Starter deposit — small audits, bug fixes, single-feature builds</p>
+        <a href="STRIPE_STARTER_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
+      </div>
+      <div class="payment-card">
+        <span class="price">$300</span>
+        <p>Professional deposit — full-stack applications, audit + fixes, dashboards</p>
+        <a href="STRIPE_PROFESSIONAL_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
+      </div>
+      <div class="payment-card">
+        <span class="price">Custom</span>
+        <p>Custom quote — set your own amount after scoping call</p>
+        <a href="STRIPE_CUSTOM_URL" class="btn btn-ghost" target="_blank" rel="noopener">Pay custom →</a>
+      </div>
+    </div>
+    <p style="color:var(--muted);font-size:.8rem;margin-top:1rem">Deposit payment constitutes acceptance of BRT Inc. Terms &amp; Conditions. Balance due on delivery. 30-day bug-fix warranty included on all fixed-scope projects.</p>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <h2>Contact</h2>
+    <div class="contact-block">
+      <p>I respond within 24 hours. Available for both fixed-scope projects and ongoing hourly engagements.</p>
+      <div class="contact-row">
+        <span class="contact-label">Email</span>
+        <a href="mailto:hello@brtinc.dev">hello@brtinc.dev</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Upwork</span>
+        <a href="https://upwork.com/freelancers/charlesbartaria" target="_blank" rel="noopener">upwork.com/freelancers/charlesbartaria</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">GitHub</span>
+        <a href="https://github.com/CBahtaria" target="_blank" rel="noopener">github.com/CBahtaria</a>
+      </div>
+      <div class="contact-row">
+        <span class="contact-label">Location</span>
+        <span style="color:var(--muted)">Manzini, Kingdom of Eswatini</span>
+      </div>
+      <div style="margin-top:1.5rem">
+        <a href="mailto:hello@brtinc.dev?subject=Project enquiry" class="btn btn-primary">Send enquiry →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <span>© 2026 BRT Inc. · Charles Bartaria · Manzini, Eswatini</span>
+    <span>BSc Computer Science, UNESWA · Final year 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -150,7 +150,7 @@
       return sortAsc ? av > bv ? 1 : -1 : av < bv ? 1 : -1;
     });
     document.getElementById('table-body').innerHTML = sorted.map(c => `
-      <tr onclick="openModal('${esc(c.id)}')" style="cursor:pointer">
+      <tr data-id="${esc(c.id)}" style="cursor:pointer">
         <td>${esc(c.name)}</td><td>${esc(c.stage)}</td><td>${esc(c.service || '—')}</td>
         <td>${c.value ? '$' + Number(c.value).toLocaleString() : '—'}</td>
         <td>${c.date ? c.date.slice(0,10) : '—'}</td>
@@ -220,7 +220,14 @@
     save(clients); render(); closeModal();
   }
 
-  document.addEventListener('DOMContentLoaded', () => { requireAuth(); render(); });
+  document.addEventListener('DOMContentLoaded', () => {
+    requireAuth();
+    render();
+    document.getElementById('client-table').addEventListener('click', e => {
+      const row = e.target.closest('tr[data-id]');
+      if (row) openModal(row.dataset.id);
+    });
+  });
 </script>
 </body>
 </html>

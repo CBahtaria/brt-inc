@@ -153,13 +153,13 @@
 
   function paymentDetails(method) {
     if (method === 'paypal') {
-      return 'Payment via PayPal\nSend to: hello@brtinc.dev · Mark as \'Goods and Services\'';
+      return 'Payment via PayPal\nSend to: charleskris9@gmail.com · Mark as \'Goods and Services\'';
     }
     if (method === 'stripe') {
       return 'Payment via Stripe\nA payment link will be sent separately.';
     }
     // default: wise
-    return 'Payment via Wise (USD)\nAccount name: Charles Bartaria · BRT Inc.\nPlease request Wise USD details at hello@brtinc.dev';
+    return 'Payment via Wise (USD)\nAccount name: Charles Bartaria · BRT Inc.\nPlease request Wise USD details at charleskris9@gmail.com';
   }
 
   function updatePreviewOnly() {
@@ -179,7 +179,7 @@
         <div>
           <div class="pre-brand">BRT Inc.</div>
           <div class="pre-tagline">Software Engineering &amp; Data Systems</div>
-          <div class="pre-tagline">hello@brtinc.dev · brtinc.dev</div>
+          <div class="pre-tagline">charleskris9@gmail.com · brtinc.dev</div>
           <div class="pre-tagline">Manzini, Kingdom of Eswatini</div>
         </div>
         <div class="pre-invoice-meta">
@@ -192,7 +192,7 @@
         <div class="pre-party">
           <div class="pre-label">From</div>
           <div>Charles Bartaria / BRT Inc.</div>
-          <div style="color:#666">hello@brtinc.dev</div>
+          <div style="color:#666">charleskris9@gmail.com</div>
         </div>
         <div class="pre-party" style="text-align:right">
           <div class="pre-label">Bill To</div>
@@ -212,8 +212,8 @@
       ${notes ? `<div class="pre-notes"><span style="color:#666;text-transform:uppercase;font-size:10px">Notes: </span>${esc(notes)}</div>` : ''}
       <div class="pre-footer">
         Late payments: 2% per month after 7 days overdue. All amounts in USD. This invoice is issued by BRT Inc., Manzini, Kingdom of Eswatini.
-        Governing law: Kingdom of Eswatini. Queries: hello@brtinc.dev
-        <br>Charles Bartaria · BRT Inc. · hello@brtinc.dev · brtinc.dev
+        Governing law: Kingdom of Eswatini. Queries: charleskris9@gmail.com
+        <br>Charles Bartaria · BRT Inc. · charleskris9@gmail.com · brtinc.dev
       </div>`;
   }
 

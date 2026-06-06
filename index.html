@@ -11,93 +11,187 @@
       --bg: #0a0a0a; --fg: #e8e6e1; --accent: #00ff88;
       --muted: #6b6b6b; --border: #1e1e1e; --card: #111;
       --font: 'Courier New', 'Courier', monospace;
+      --glow: 0 0 24px rgba(0,255,136,.18);
+      --glow-sm: 0 0 12px rgba(0,255,136,.12);
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.7; }
+    body {
+      background: var(--bg); color: var(--fg);
+      font-family: var(--font); font-size: 15px; line-height: 1.7;
+      overflow-x: hidden;
+    }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
+
+    /* Dot-grid background */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    /* Radial vignette over grid */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, transparent 40%, #0a0a0a 100%);
+      pointer-events: none;
+    }
+
+    /* All page content sits above grid layers */
+    nav, main, footer { position: relative; z-index: 1; }
 
     /* Layout */
     .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
     section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
     section:last-of-type { border-bottom: none; }
 
-    /* Nav */
-    nav { position: sticky; top: 0; z-index: 100; background: rgba(10,10,10,.95);
-          backdrop-filter: blur(4px); border-bottom: 1px solid var(--border); }
-    nav .container { display: flex; align-items: center; justify-content: space-between;
-                     padding-top: .8rem; padding-bottom: .8rem; }
-    .nav-brand { color: var(--accent); font-size: 1rem; letter-spacing: .05em; }
+    /* Scroll-reveal */
+    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,10,.96); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    nav .container { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
+    .nav-brand { color: var(--accent); font-size: 1rem; letter-spacing: .06em; display: flex; align-items: center; gap: .4rem; }
+    .nav-prompt { color: rgba(0,255,136,.4); }
     .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { color: var(--muted); font-size: .85rem; }
+    .nav-links a { color: var(--muted); font-size: .85rem; transition: color .15s; }
     .nav-links a:hover { color: var(--fg); text-decoration: none; }
 
-    /* Hero */
-    #hero { padding: 5rem 0 4rem; border-bottom: 1px solid var(--border); }
-    .hero-pre { color: var(--muted); font-size: .85rem; margin-bottom: .5rem; }
-    h1 { font-size: clamp(1.6rem, 5vw, 2.4rem); line-height: 1.2; margin-bottom: 1rem; }
-    h1 span { color: var(--accent); }
-    .hero-sub { color: var(--muted); max-width: 560px; margin-bottom: 2rem; }
-    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; }
-    .btn { display: inline-block; padding: .55rem 1.2rem; border: 1px solid;
-           font-family: var(--font); font-size: .9rem; cursor: pointer; transition: .15s; }
-    .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-    .btn-primary:hover { background: transparent; color: var(--accent); text-decoration: none; }
-    .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
-    .btn-ghost:hover { border-color: var(--fg); text-decoration: none; }
+    /* ── Hero ── */
+    #hero { padding: 5rem 0 4rem; }
 
-    /* Section headings */
-    h2 { font-size: 1.1rem; color: var(--muted); text-transform: uppercase;
-         letter-spacing: .12em; margin-bottom: 2rem; }
+    .terminal-bar {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--card); border: 1px solid var(--border);
+      padding: .4rem .8rem; border-radius: 2px; margin-bottom: 1.5rem;
+      font-size: .8rem;
+    }
+    .t-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .t-red { background: #ff5f56; } .t-yellow { background: #ffbd2e; } .t-green { background: #27c93f; }
+    .t-label { color: var(--muted); margin-left: .3rem; }
+    #typed-cmd { color: var(--fg); }
+    .t-cursor { display: inline-block; width: 7px; height: .9em; background: var(--accent); vertical-align: text-bottom; margin-left: 1px; animation: blink 1.1s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    .hero-loc { color: var(--muted); font-size: .82rem; margin-bottom: .5rem; }
+    h1 { font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.18; margin-bottom: 1rem; }
+    h1 em { font-style: normal; color: var(--accent); text-shadow: var(--glow); }
+    .hero-sub { color: var(--muted); max-width: 560px; margin-bottom: 2rem; line-height: 1.75; }
+
+    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .btn {
+      display: inline-block; padding: .55rem 1.25rem;
+      border: 1px solid; font-family: var(--font); font-size: .9rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-primary {
+      background: var(--accent); color: var(--bg); border-color: var(--accent);
+      box-shadow: var(--glow-sm);
+    }
+    .btn-primary:hover { background: transparent; color: var(--accent); text-decoration: none; box-shadow: var(--glow); }
+    .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
+    .btn-ghost:hover { border-color: rgba(232,230,225,.4); text-decoration: none; }
+
+    /* Stats strip */
+    .stats-strip {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 1px; border: 1px solid var(--border); background: var(--border);
+    }
+    .stat-cell { background: var(--card); padding: 1.1rem 1rem; text-align: center; }
+    .stat-n { display: block; font-size: 1.75rem; color: var(--accent); line-height: 1; margin-bottom: .25rem; }
+    .stat-l { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
+
+    /* ── Section headings ── */
+    h2 { font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .13em; margin-bottom: 2rem; }
     h2::before { content: '// '; color: var(--accent); }
 
-    /* Services grid */
-    .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1px;
-                     border: 1px solid var(--border); }
-    .service-card { background: var(--card); padding: 1.5rem; border: none; }
-    .service-card h3 { color: var(--accent); font-size: .9rem; margin-bottom: .5rem; }
-    .service-card p { color: var(--muted); font-size: .85rem; line-height: 1.6; }
+    /* ── Services ── */
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+      gap: 1px; border: 1px solid var(--border); background: var(--border);
+    }
+    .svc {
+      background: var(--card); padding: 1.5rem; position: relative;
+      transition: background .2s, box-shadow .2s;
+    }
+    .svc:hover { background: #131313; box-shadow: inset 0 0 0 1px rgba(0,255,136,.18); }
+    .svc-num { position: absolute; top: 1rem; right: 1rem; font-size: .62rem; color: rgba(107,107,107,.45); letter-spacing: .05em; }
+    .svc-badge {
+      display: inline-block; font-size: .65rem; color: var(--accent);
+      border: 1px solid rgba(0,255,136,.25); padding: .1rem .45rem;
+      letter-spacing: .08em; margin-bottom: .75rem;
+    }
+    .svc h3 { color: var(--fg); font-size: .9rem; margin-bottom: .45rem; }
+    .svc p { color: var(--muted); font-size: .84rem; line-height: 1.65; }
 
-    /* Portfolio */
+    /* Tech stack */
+    .tech-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
+    .tech { font-size: .7rem; color: var(--muted); border: 1px solid var(--border); padding: .12rem .5rem; transition: all .15s; cursor: default; }
+    .tech:hover { color: var(--accent); border-color: rgba(0,255,136,.35); }
+
+    /* ── Portfolio ── */
     .project { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
     .project:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .project-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .5rem; flex-wrap: wrap; }
+    .proj-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .5rem; flex-wrap: wrap; }
     .project h3 { font-size: 1rem; }
-    .project-tags { display: flex; gap: .4rem; flex-wrap: wrap; }
-    .tag { font-size: .75rem; color: var(--muted); border: 1px solid var(--border); padding: .1rem .4rem; }
-    .project p { color: var(--muted); font-size: .9rem; margin-bottom: .6rem; }
+    .tags { display: flex; gap: .4rem; flex-wrap: wrap; }
+    .tag { font-size: .72rem; color: var(--muted); border: 1px solid var(--border); padding: .1rem .4rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 .8rem; }
+    .metric {
+      font-size: .75rem; color: var(--accent);
+      border: 1px solid rgba(0,255,136,.2); padding: .15rem .55rem;
+    }
+    .metric.live { border-color: rgba(0,255,136,.4); }
+    .project p { color: var(--muted); font-size: .9rem; margin-bottom: .5rem; }
     .project a { font-size: .85rem; }
 
-    /* Pricing table */
+    /* ── Pricing ── */
     table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    th { text-align: left; color: var(--muted); padding: .5rem .8rem; border-bottom: 1px solid var(--border);
-         font-weight: normal; text-transform: uppercase; font-size: .75rem; letter-spacing: .08em; }
-    td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); }
+    th { text-align: left; color: var(--muted); padding: .5rem .8rem; border-bottom: 1px solid var(--border); font-weight: normal; text-transform: uppercase; font-size: .72rem; letter-spacing: .09em; }
+    td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); transition: background .1s; }
     tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: var(--card); }
     td:nth-child(2) { color: var(--accent); }
     td:nth-child(3) { color: var(--muted); }
 
-    /* Payment CTAs */
-    .payment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-    .payment-card { background: var(--card); border: 1px solid var(--border); padding: 1.5rem; text-align: center; }
-    .payment-card .price { font-size: 1.8rem; color: var(--accent); display: block; margin-bottom: .3rem; }
-    .payment-card p { color: var(--muted); font-size: .8rem; margin-bottom: 1rem; }
+    .pay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .pay-card {
+      background: var(--card); border: 1px solid var(--border); padding: 1.5rem; text-align: center;
+      transition: border-color .2s, box-shadow .2s; position: relative;
+    }
+    .pay-card:hover { border-color: rgba(0,255,136,.3); box-shadow: 0 0 24px rgba(0,255,136,.07); }
+    .pay-card.featured { border-color: rgba(0,255,136,.35); }
+    .pay-badge {
+      display: inline-block; font-size: .62rem; color: var(--accent);
+      border: 1px solid rgba(0,255,136,.3); padding: .1rem .4rem;
+      text-transform: uppercase; letter-spacing: .09em; margin-bottom: .6rem;
+    }
+    .pay-price { font-size: 1.85rem; color: var(--accent); display: block; margin-bottom: .3rem; }
+    .pay-card p { color: var(--muted); font-size: .8rem; margin-bottom: 1rem; line-height: 1.5; }
 
-    /* Contact */
+    /* ── Contact ── */
     .contact-block { background: var(--card); border: 1px solid var(--border); padding: 2rem; }
-    .contact-block p { color: var(--muted); margin-bottom: 1rem; }
-    .contact-row { display: flex; gap: .5rem; align-items: center; margin-bottom: .4rem; }
-    .contact-label { color: var(--muted); font-size: .8rem; width: 80px; flex-shrink: 0; }
+    .contact-block > p { color: var(--muted); margin-bottom: 1.2rem; }
+    .contact-row { display: flex; gap: .6rem; align-items: center; margin-bottom: .45rem; }
+    .c-label { color: var(--muted); font-size: .78rem; width: 76px; flex-shrink: 0; }
 
-    /* Footer */
-    footer { padding: 2rem 0; color: var(--muted); font-size: .8rem; }
-    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    /* ── Footer ── */
+    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .78rem; }
+    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; }
 
-    @media (max-width: 600px) {
+    @media (max-width: 640px) {
       .nav-links { display: none; }
       .hero-cta { flex-direction: column; }
-      .payment-grid { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+      .pay-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -105,7 +199,7 @@
 
 <nav>
   <div class="container">
-    <span class="nav-brand">BRT Inc.</span>
+    <div class="nav-brand"><span class="nav-prompt">›</span> BRT Inc.</div>
     <div class="nav-links">
       <a href="#services">Services</a>
       <a href="#portfolio">Portfolio</a>
@@ -115,106 +209,187 @@
   </div>
 </nav>
 
+<main>
+
+<!-- ── HERO ── -->
 <section id="hero">
   <div class="container">
-    <p class="hero-pre">Manzini, Kingdom of Eswatini · hello@brtinc.dev</p>
-    <h1>Custom software<br>engineered to <span>ship.</span></h1>
+
+    <div class="terminal-bar">
+      <span class="t-dot t-red"></span>
+      <span class="t-dot t-yellow"></span>
+      <span class="t-dot t-green"></span>
+      <span class="t-label">brt-inc —</span>
+      <span id="typed-cmd"></span><span class="t-cursor"></span>
+    </div>
+
+    <p class="hero-loc">Manzini, Kingdom of Eswatini · charleskris9@gmail.com</p>
+    <h1>Custom software<br>engineered to <em>ship.</em></h1>
     <p class="hero-sub">Web applications, security audits, data science, and DevOps infrastructure — for SADC organisations. Every project ships with a test suite, CI/CD pipeline, and deployment documentation.</p>
+
     <div class="hero-cta">
       <a href="#contact" class="btn btn-primary">Start a project</a>
       <a href="#portfolio" class="btn btn-ghost">View work</a>
       <a href="https://upwork.com/freelancers/charlesbartaria" class="btn btn-ghost" target="_blank" rel="noopener">Hire on Upwork</a>
     </div>
+
+    <div class="stats-strip">
+      <div class="stat-cell">
+        <span class="stat-n" data-target="9">0</span>
+        <span class="stat-l">Security findings resolved</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-n" data-target="54">0</span>
+        <span class="stat-l">Tests · 100% pass rate</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-n" data-target="4">0</span>
+        <span class="stat-l">Production projects</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-n" data-target="0">0</span>
+        <span class="stat-l">Regressions shipped</span>
+      </div>
+    </div>
+
   </div>
 </section>
 
+<!-- ── SERVICES ── -->
 <section id="services">
   <div class="container">
     <h2>Services</h2>
     <div class="services-grid">
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">01</span>
+        <span class="svc-badge">WEB</span>
         <h3>Web Applications</h3>
         <p>PHP 8 · React · FastAPI backends with MySQL or PostgreSQL. REST APIs, RBAC, JWT auth, WebSockets. From simple business tools to complex multi-role platforms.</p>
       </div>
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">02</span>
+        <span class="svc-badge">SEC</span>
         <h3>Security Audits</h3>
         <p>Structural code audits for PHP, Python, and Node.js. OWASP Top 10, auth flows, secrets hygiene, injection surfaces, session management. Written report + reproducible fixes.</p>
       </div>
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">03</span>
+        <span class="svc-badge">DAT</span>
         <h3>Data Science & Forecasting</h3>
         <p>ARIMA · SARIMA · Prophet time-series models. Monte Carlo simulations. Plotly Dash dashboards. FastAPI data APIs. Calibrated on real datasets with RMSE/MAE/MAPE evaluation.</p>
       </div>
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">04</span>
+        <span class="svc-badge">OPS</span>
         <h3>DevOps</h3>
         <p>Docker Compose · Nginx reverse proxy · GitHub Actions CI/CD · Prometheus/Grafana monitoring. Production-ready infrastructure from day one.</p>
       </div>
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">05</span>
+        <span class="svc-badge">BIZ</span>
         <h3>Business Software (SADC)</h3>
         <p>POS, booking systems, staff portals, inventory management. Built for businesses in Eswatini, South Africa, Botswana, and the wider SADC region. Local context, international quality.</p>
       </div>
-      <div class="service-card">
+
+      <div class="svc reveal">
+        <span class="svc-num">06</span>
+        <span class="svc-badge">SVC</span>
         <h3>Retainer & Maintenance</h3>
         <p>Monthly support for live systems. Bug fixes, small feature additions, dependency updates, priority response when something breaks.</p>
       </div>
+
+    </div>
+
+    <div class="tech-row">
+      <span class="tech">PHP 8</span><span class="tech">Python 3</span><span class="tech">React</span>
+      <span class="tech">FastAPI</span><span class="tech">MySQL</span><span class="tech">PostgreSQL</span>
+      <span class="tech">Supabase</span><span class="tech">Docker</span><span class="tech">Nginx</span>
+      <span class="tech">GitHub Actions</span><span class="tech">Prometheus</span><span class="tech">Grafana</span>
+      <span class="tech">Prophet</span><span class="tech">NATS</span><span class="tech">Vercel</span>
+      <span class="tech">JWT</span><span class="tech">WebSocket</span><span class="tech">OWASP</span>
     </div>
   </div>
 </section>
 
+<!-- ── PORTFOLIO ── -->
 <section id="portfolio">
   <div class="container">
     <h2>Portfolio</h2>
 
-    <div class="project">
-      <div class="project-header">
+    <div class="project reveal">
+      <div class="proj-header">
         <h3>UEDF Sentinel v5.0</h3>
-        <div class="project-tags">
+        <div class="tags">
           <span class="tag">PHP 8</span><span class="tag">MySQL</span>
           <span class="tag">WebSocket</span><span class="tag">Security</span>
         </div>
       </div>
-      <p>Command-and-control platform for drone fleet management. 27,900 lines across 16 MVC controllers. RBAC with 4 roles, TOTP 2FA, blockchain-chained audit log, WebSocket telemetry shim, NATS JetStream integration.</p>
-      <p>Completed a full structural security audit — 9 findings (3 Critical, 6 High), all resolved. 22 files patched, 317 lines changed, 0 regressions. CI security-gate installed.</p>
+      <div class="metrics">
+        <span class="metric">27,900 lines</span>
+        <span class="metric">9/9 findings resolved</span>
+        <span class="metric">22 files patched</span>
+        <span class="metric">317 lines changed</span>
+        <span class="metric">0 regressions</span>
+      </div>
+      <p>Command-and-control platform for drone fleet management. 16 MVC controllers, RBAC with 4 roles, TOTP 2FA, blockchain-chained audit log, WebSocket telemetry shim, NATS JetStream integration.</p>
+      <p>Full structural security audit — 3 Critical + 6 High findings, all resolved. CI security-gate installed at PR level.</p>
       <a href="/src/casestudy/sentinel-audit.html">Read the audit case study →</a>
       &nbsp;&nbsp;
       <a href="https://github.com/CBahtaria/sentinel" target="_blank" rel="noopener">GitHub →</a>
     </div>
 
-    <div class="project">
-      <div class="project-header">
+    <div class="project reveal">
+      <div class="proj-header">
         <h3>Eswatini Macroeconomic Dashboard</h3>
-        <div class="project-tags">
+        <div class="tags">
           <span class="tag">Python</span><span class="tag">FastAPI</span>
           <span class="tag">Prophet</span><span class="tag">Docker</span>
         </div>
       </div>
-      <p>Production forecasting system for national economic indicators. FastAPI backend (11 endpoint groups), SQLAlchemy ORM, JWT auth with 3-tier RBAC. Auto-order ARIMA/SARIMA/Prophet forecasting, Monte Carlo fiscal sustainability simulation. Docker Compose (7 services), Nginx TLS, Prometheus/Grafana.</p>
-      <p style="color:var(--accent);font-size:.85rem">54 pytest tests · 100% pass rate</p>
+      <div class="metrics">
+        <span class="metric">54 tests · 100% pass</span>
+        <span class="metric">11 endpoint groups</span>
+        <span class="metric">7 Docker services</span>
+        <span class="metric">3-tier RBAC</span>
+      </div>
+      <p>Production forecasting system for national economic indicators. FastAPI backend, SQLAlchemy ORM, JWT auth. Auto-order ARIMA/SARIMA/Prophet forecasting, Monte Carlo fiscal sustainability simulation. Docker Compose, Nginx TLS, Prometheus/Grafana.</p>
     </div>
 
-    <div class="project">
-      <div class="project-header">
+    <div class="project reveal">
+      <div class="proj-header">
         <h3>Studio P Barbershop App</h3>
-        <div class="project-tags">
+        <div class="tags">
           <span class="tag">React</span><span class="tag">Supabase</span><span class="tag">PostgreSQL</span>
         </div>
       </div>
-      <p>Live production booking platform for a barbershop in Manzini, Eswatini. OS-aware UI, two-round parallel booking validation, per-member customisation (8 colour schemes, photo upload), Supabase with RLS enforced at the Postgres layer.</p>
-      <p style="color:var(--accent);font-size:.85rem">In production · live users</p>
+      <div class="metrics">
+        <span class="metric live">In production · live users</span>
+        <span class="metric">8 colour schemes</span>
+        <span class="metric">RLS at Postgres layer</span>
+      </div>
+      <p>Live booking platform for a barbershop in Manzini, Eswatini. OS-aware UI, two-round parallel booking validation, per-member customisation with photo upload, Supabase with row-level security enforced at the Postgres layer.</p>
     </div>
 
-    <div class="project">
-      <div class="project-header">
+    <div class="project reveal">
+      <div class="proj-header">
         <h3>Agentic UAV Stack</h3>
-        <div class="project-tags">
+        <div class="tags">
           <span class="tag">Python</span><span class="tag">PX4</span>
           <span class="tag">NATS</span><span class="tag">DAL-A</span>
         </div>
       </div>
       <p>Autonomous UAV platform with three-tier safety architecture: safety governor (DAL-A), mission executor, and AI-assisted planning layer. Private repository.</p>
     </div>
+
   </div>
 </section>
 
+<!-- ── PRICING ── -->
 <section id="pricing">
   <div class="container">
     <h2>Pricing</h2>
@@ -235,54 +410,58 @@
       </tbody>
     </table>
 
-    <div class="payment-grid" style="margin-top:2rem">
-      <div class="payment-card">
-        <span class="price">$100</span>
+    <div class="pay-grid">
+      <div class="pay-card">
+        <span class="pay-price">$100</span>
         <p>Starter deposit — small audits, bug fixes, single-feature builds</p>
         <a href="STRIPE_STARTER_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
       </div>
-      <div class="payment-card">
-        <span class="price">$300</span>
+      <div class="pay-card featured">
+        <span class="pay-badge">Most popular</span>
+        <span class="pay-price">$300</span>
         <p>Professional deposit — full-stack applications, audit + fixes, dashboards</p>
         <a href="STRIPE_PROFESSIONAL_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
       </div>
-      <div class="payment-card">
-        <span class="price">Custom</span>
+      <div class="pay-card">
+        <span class="pay-price">Custom</span>
         <p>Custom quote — set your own amount after scoping call</p>
         <a href="STRIPE_CUSTOM_URL" class="btn btn-ghost" target="_blank" rel="noopener">Pay custom →</a>
       </div>
     </div>
-    <p style="color:var(--muted);font-size:.8rem;margin-top:1rem">Deposit payment constitutes acceptance of BRT Inc. Terms &amp; Conditions. Balance due on delivery. 30-day bug-fix warranty included on all fixed-scope projects.</p>
+    <p style="color:var(--muted);font-size:.78rem;margin-top:1rem">Deposit payment constitutes acceptance of BRT Inc. Terms &amp; Conditions. Balance due on delivery. 30-day bug-fix warranty on all fixed-scope projects.</p>
   </div>
 </section>
 
+<!-- ── CONTACT ── -->
 <section id="contact">
   <div class="container">
     <h2>Contact</h2>
     <div class="contact-block">
       <p>I respond within 24 hours. Available for both fixed-scope projects and ongoing hourly engagements.</p>
       <div class="contact-row">
-        <span class="contact-label">Email</span>
-        <a href="mailto:hello@brtinc.dev">hello@brtinc.dev</a>
+        <span class="c-label">Email</span>
+        <a href="mailto:charleskris9@gmail.com">charleskris9@gmail.com</a>
       </div>
       <div class="contact-row">
-        <span class="contact-label">Upwork</span>
+        <span class="c-label">Upwork</span>
         <a href="https://upwork.com/freelancers/charlesbartaria" target="_blank" rel="noopener">upwork.com/freelancers/charlesbartaria</a>
       </div>
       <div class="contact-row">
-        <span class="contact-label">GitHub</span>
+        <span class="c-label">GitHub</span>
         <a href="https://github.com/CBahtaria" target="_blank" rel="noopener">github.com/CBahtaria</a>
       </div>
       <div class="contact-row">
-        <span class="contact-label">Location</span>
+        <span class="c-label">Location</span>
         <span style="color:var(--muted)">Manzini, Kingdom of Eswatini</span>
       </div>
       <div style="margin-top:1.5rem">
-        <a href="mailto:hello@brtinc.dev?subject=Project enquiry" class="btn btn-primary">Send enquiry →</a>
+        <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-primary">Send enquiry →</a>
       </div>
     </div>
   </div>
 </section>
+
+</main>
 
 <footer>
   <div class="container">
@@ -290,6 +469,70 @@
     <span>BSc Computer Science, UNESWA · Final year 2026</span>
   </div>
 </footer>
+
+<script>
+  /* ── Typing animation ── */
+  (function() {
+    const phrases = [
+      'git push origin main',
+      'docker compose up --build',
+      'pytest --tb=short -q',
+      'vercel --prod',
+      'gitleaks detect --source .',
+    ];
+    let pi = 0, ci = 0, del = false;
+    const el = document.getElementById('typed-cmd');
+    function tick() {
+      const p = phrases[pi];
+      if (!del) {
+        ci++;
+        el.textContent = '$ ' + p.slice(0, ci);
+        if (ci === p.length) { del = true; setTimeout(tick, 1800); return; }
+      } else {
+        ci--;
+        el.textContent = '$ ' + p.slice(0, ci);
+        if (ci === 0) {
+          del = false;
+          pi = (pi + 1) % phrases.length;
+          setTimeout(tick, 380);
+          return;
+        }
+      }
+      setTimeout(tick, del ? 38 : 75);
+    }
+    tick();
+  })();
+
+  /* ── Scroll reveal ── */
+  (function() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  })();
+
+  /* ── Stat count-up ── */
+  (function() {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const target = parseInt(el.dataset.target, 10);
+        if (target === 0) { el.textContent = '0'; obs.unobserve(el); return; }
+        const dur = 900, start = performance.now();
+        function frame(now) {
+          const t = Math.min((now - start) / dur, 1);
+          const ease = 1 - Math.pow(1 - t, 3); // ease-out-cubic
+          el.textContent = Math.round(ease * target);
+          if (t < 1) requestAnimationFrame(frame); else el.textContent = target;
+        }
+        requestAnimationFrame(frame);
+        obs.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
+  })();
+</script>
 
 </body>
 </html>

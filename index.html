@@ -7,189 +7,298 @@
   <title>BRT Inc. — Software Engineering & Data Systems</title>
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
   <style>
+    /* ─── Design tokens ─── */
     :root {
-      --bg: #0a0a0a; --fg: #e8e6e1; --accent: #00ff88;
-      --muted: #6b6b6b; --border: #1e1e1e; --card: #111;
-      --font: 'Courier New', 'Courier', monospace;
-      --glow: 0 0 24px rgba(0,255,136,.18);
-      --glow-sm: 0 0 12px rgba(0,255,136,.12);
+      --bg:     #05070f;
+      --bg2:    #080b14;
+      --fg:     #dde2ee;
+      --cyan:   #00d4ff;
+      --green:  #00ff88;
+      --purple: #6e56cf;
+      --muted:  #3d4a6b;
+      --muted2: #6b7a9e;
+      --border: #131929;
+      --card:   #090d1a;
+      --font-sans: 'Inter','Segoe UI',system-ui,sans-serif;
+      --font-mono: 'Courier New','Courier',monospace;
+      --glow-cyan:  0 0 40px rgba(0,212,255,.22);
+      --glow-green: 0 0 32px rgba(0,255,136,.2);
     }
+
+    /* ─── Reset ─── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body {
       background: var(--bg); color: var(--fg);
-      font-family: var(--font); font-size: 15px; line-height: 1.7;
+      font-family: var(--font-sans); font-size: 15px; line-height: 1.72;
       overflow-x: hidden;
     }
-    a { color: var(--accent); text-decoration: none; }
+    a { color: var(--cyan); text-decoration: none; }
     a:hover { text-decoration: underline; }
+    .mono { font-family: var(--font-mono); }
 
-    /* Dot-grid background */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
-      background-size: 28px 28px;
-      pointer-events: none;
-    }
-    /* Radial vignette over grid */
-    body::after {
-      content: '';
-      position: fixed; inset: 0; z-index: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 0%, transparent 40%, #0a0a0a 100%);
-      pointer-events: none;
-    }
+    /* ─── Layout ─── */
+    .container { max-width: 1040px; margin: 0 auto; padding: 0 2rem; }
 
-    /* All page content sits above grid layers */
-    nav, main, footer { position: relative; z-index: 1; }
-
-    /* Layout */
-    .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
-    section { padding: 4rem 0; border-bottom: 1px solid var(--border); }
-    section:last-of-type { border-bottom: none; }
-
-    /* Scroll-reveal */
-    .reveal { opacity: 0; transform: translateY(18px); transition: opacity .55s ease, transform .55s ease; }
+    /* ─── Reveal ─── */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
     .reveal.in { opacity: 1; transform: none; }
 
-    /* ── Nav ── */
+    /* ─── NAV ─── */
     nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(10,10,10,.96); backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 200;
+      background: rgba(5,7,15,.95); backdrop-filter: blur(16px);
       border-bottom: 1px solid var(--border);
     }
-    nav .container { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1.5rem; }
-    .nav-brand { color: var(--accent); font-size: 1rem; letter-spacing: .06em; display: flex; align-items: center; gap: .4rem; }
-    .nav-prompt { color: rgba(0,255,136,.4); }
-    .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { color: var(--muted); font-size: .85rem; transition: color .15s; }
-    .nav-links a:hover { color: var(--fg); text-decoration: none; }
-
-    /* ── Hero ── */
-    #hero { padding: 5rem 0 4rem; }
-
-    .terminal-bar {
-      display: inline-flex; align-items: center; gap: .5rem;
-      background: var(--card); border: 1px solid var(--border);
-      padding: .4rem .8rem; border-radius: 2px; margin-bottom: 1.5rem;
-      font-size: .8rem;
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .85rem 2rem; max-width: 1040px; margin: 0 auto;
     }
-    .t-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .t-red { background: #ff5f56; } .t-yellow { background: #ffbd2e; } .t-green { background: #27c93f; }
-    .t-label { color: var(--muted); margin-left: .3rem; }
-    #typed-cmd { color: var(--fg); }
-    .t-cursor { display: inline-block; width: 7px; height: .9em; background: var(--accent); vertical-align: text-bottom; margin-left: 1px; animation: blink 1.1s step-end infinite; }
+    .nav-brand { display: flex; align-items: center; gap: .6rem; }
+    .nav-diamond { width: 8px; height: 8px; background: var(--cyan); transform: rotate(45deg); flex-shrink: 0; }
+    .nav-name { font-family: var(--font-mono); font-size: .9rem; letter-spacing: .1em; color: var(--fg); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a { font-size: .82rem; color: var(--muted2); transition: color .15s; letter-spacing: .04em; }
+    .nav-links a:hover { color: var(--fg); text-decoration: none; }
+    .nav-hire {
+      font-family: var(--font-mono); font-size: .78rem; padding: .35rem 1rem;
+      border: 1px solid rgba(0,212,255,.4); color: var(--cyan);
+      transition: all .18s; letter-spacing: .05em; background: rgba(0,212,255,.04);
+    }
+    .nav-hire:hover { background: rgba(0,212,255,.1); text-decoration: none; box-shadow: var(--glow-cyan); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative; min-height: 92vh;
+      display: flex; align-items: center;
+      border-bottom: 1px solid var(--border); overflow: hidden;
+    }
+    #hero-canvas {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+    }
+    /* Scan line */
+    #hero::after {
+      content: '';
+      position: absolute; left: 0; right: 0; height: 2px; z-index: 2; pointer-events: none;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,.15), transparent);
+      animation: scan 8s linear infinite;
+      top: 0;
+    }
+    @keyframes scan { 0%{top:0} 100%{top:100%} }
+
+    .hero-content { position: relative; z-index: 3; width: 100%; padding: 6rem 0 5rem; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 4rem; align-items: center; }
+
+    /* Status badge */
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .55rem;
+      font-family: var(--font-mono); font-size: .72rem; color: var(--muted2);
+      border: 1px solid var(--border); background: rgba(9,13,26,.8);
+      padding: .28rem .75rem; margin-bottom: 1.5rem; letter-spacing: .06em;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); flex-shrink: 0;
+      animation: pdot 2.4s ease-in-out infinite;
+    }
+    @keyframes pdot { 0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.6)} 50%{box-shadow:0 0 0 7px rgba(0,255,136,0)} }
+
+    /* Main headline */
+    h1 {
+      font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+      font-weight: 700; line-height: 1.08; letter-spacing: -.025em;
+      margin-bottom: 1.25rem;
+    }
+    .grad {
+      background: linear-gradient(135deg, var(--fg) 0%, var(--cyan) 60%, var(--green) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub {
+      font-size: .95rem; color: var(--muted2); max-width: 480px;
+      margin-bottom: 2.2rem; line-height: 1.82;
+    }
+
+    /* CTAs */
+    .cta-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .45rem;
+      padding: .65rem 1.45rem; font-size: .88rem; font-family: var(--font-sans);
+      border: 1px solid; cursor: pointer; transition: all .22s; font-weight: 500;
+    }
+    .btn-cyan {
+      background: var(--cyan); color: var(--bg); border-color: var(--cyan);
+      box-shadow: var(--glow-cyan); font-weight: 600;
+    }
+    .btn-cyan:hover { background: transparent; color: var(--cyan); text-decoration: none; }
+    .btn-outline { background: transparent; color: var(--fg); border-color: #1e2a40; }
+    .btn-outline:hover { border-color: rgba(221,226,238,.3); text-decoration: none; }
+
+    /* Terminal window */
+    .term-win {
+      border: 1px solid #1a2540; background: rgba(4,6,14,.9);
+      border-radius: 8px; overflow: hidden;
+      box-shadow: 0 0 60px rgba(0,0,0,.8), 0 0 1px rgba(0,212,255,.08), inset 0 1px 0 rgba(255,255,255,.03);
+      position: relative;
+    }
+    .term-win::before {
+      content: '';
+      position: absolute; top: -1px; left: 15%; right: 15%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,.4), transparent);
+    }
+    .term-header {
+      background: #0a0e1a; border-bottom: 1px solid #131929;
+      padding: .6rem 1rem; display: flex; align-items: center; gap: .45rem;
+    }
+    .td { width: 11px; height: 11px; border-radius: 50%; }
+    .td-r { background: #ff5f57; } .td-y { background: #febc2e; } .td-g { background: #28c840; }
+    .term-title { margin-left: .6rem; font-family: var(--font-mono); font-size: .68rem; color: #2e3c5a; }
+    .term-body {
+      padding: 1rem 1.1rem; height: 300px; overflow: hidden;
+      font-family: var(--font-mono); font-size: .74rem; line-height: 1.7;
+    }
+    .tl.cmd  { color: var(--green); }
+    .tl.ok   { color: var(--green); }
+    .tl.crit { color: #ff5555; }
+    .tl.high { color: #ffcc44; }
+    .tl.info { color: var(--fg); }
+    .tl.dim  { color: var(--muted); }
+    .tl.dots { color: var(--cyan); letter-spacing: .04em; }
+    .tl.blank{ min-height: .85rem; display: block; }
+    .t-cur { display: inline-block; width: 6px; height: .82em; background: var(--cyan); vertical-align: text-bottom; animation: blink 1.1s step-end infinite; margin-left: 1px; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
 
-    .hero-loc { color: var(--muted); font-size: .82rem; margin-bottom: .5rem; }
-    h1 { font-size: clamp(1.7rem, 5vw, 2.5rem); line-height: 1.18; margin-bottom: 1rem; }
-    h1 em { font-style: normal; color: var(--accent); text-shadow: var(--glow); }
-    .hero-sub { color: var(--muted); max-width: 560px; margin-bottom: 2rem; line-height: 1.75; }
-
-    .hero-cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
-    .btn {
-      display: inline-block; padding: .55rem 1.25rem;
-      border: 1px solid; font-family: var(--font); font-size: .9rem;
-      cursor: pointer; transition: all .2s;
-    }
-    .btn-primary {
-      background: var(--accent); color: var(--bg); border-color: var(--accent);
-      box-shadow: var(--glow-sm);
-    }
-    .btn-primary:hover { background: transparent; color: var(--accent); text-decoration: none; box-shadow: var(--glow); }
-    .btn-ghost { background: transparent; color: var(--fg); border-color: var(--border); }
-    .btn-ghost:hover { border-color: rgba(232,230,225,.4); text-decoration: none; }
-
-    /* Stats strip */
+    /* ─── Stats strip (HUD style) ─── */
+    .stats-wrap { margin-top: 2.5rem; position: relative; }
+    /* HUD corners on stats */
+    .stats-wrap::before { content: ''; position: absolute; top: 0; left: 0; width: 14px; height: 14px; border-top: 1px solid var(--cyan); border-left: 1px solid var(--cyan); z-index:2; }
+    .stats-wrap::after  { content: ''; position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-bottom: 1px solid var(--cyan); border-right: 1px solid var(--cyan); z-index:2; }
     .stats-strip {
       display: grid; grid-template-columns: repeat(4, 1fr);
-      gap: 1px; border: 1px solid var(--border); background: var(--border);
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
     }
-    .stat-cell { background: var(--card); padding: 1.1rem 1rem; text-align: center; }
-    .stat-n { display: block; font-size: 1.75rem; color: var(--accent); line-height: 1; margin-bottom: .25rem; }
-    .stat-l { font-size: .68rem; color: var(--muted); text-transform: uppercase; letter-spacing: .09em; }
+    .stat { background: var(--card); padding: 1.2rem 1rem; text-align: center; }
+    .stat-n { display: block; font-size: 2rem; font-weight: 700; color: var(--cyan); font-family: var(--font-mono); line-height: 1; margin-bottom: .22rem; }
+    .stat-l { font-family: var(--font-mono); font-size: .65rem; color: var(--muted2); text-transform: uppercase; letter-spacing: .1em; }
 
-    /* ── Section headings ── */
-    h2 { font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: .13em; margin-bottom: 2rem; }
-    h2::before { content: '// '; color: var(--accent); }
+    /* ─── Section global ─── */
+    section { padding: 5rem 0; border-bottom: 1px solid var(--border); }
+    section:last-of-type { border-bottom: none; }
+    section.alt { background: var(--bg2); }
 
-    /* ── Services ── */
-    .services-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
-      gap: 1px; border: 1px solid var(--border); background: var(--border);
+    /* Section label */
+    .sec-label {
+      display: inline-flex; align-items: center; gap: .5rem;
+      font-family: var(--font-mono); font-size: .68rem; color: var(--cyan);
+      text-transform: uppercase; letter-spacing: .15em; margin-bottom: .8rem;
+    }
+    .sec-label::before { content: ''; width: 20px; height: 1px; background: var(--cyan); }
+    h2 {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 700;
+      letter-spacing: -.02em; margin-bottom: .8rem; line-height: 1.2;
+    }
+    .sec-sub { color: var(--muted2); font-size: .92rem; margin-bottom: 2.8rem; max-width: 560px; line-height: 1.75; }
+
+    /* ─── SERVICES ─── */
+    .svc-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px; background: var(--border); border: 1px solid var(--border);
     }
     .svc {
-      background: var(--card); padding: 1.5rem; position: relative;
-      transition: background .2s, box-shadow .2s;
+      background: var(--card); padding: 1.8rem; position: relative;
+      transition: background .25s; overflow: hidden;
     }
-    .svc:hover { background: #131313; box-shadow: inset 0 0 0 1px rgba(0,255,136,.18); }
-    .svc-num { position: absolute; top: 1rem; right: 1rem; font-size: .62rem; color: rgba(107,107,107,.45); letter-spacing: .05em; }
-    .svc-badge {
-      display: inline-block; font-size: .65rem; color: var(--accent);
-      border: 1px solid rgba(0,255,136,.25); padding: .1rem .45rem;
-      letter-spacing: .08em; margin-bottom: .75rem;
+    .svc::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      transform: scaleX(0); transition: transform .3s ease;
     }
-    .svc h3 { color: var(--fg); font-size: .9rem; margin-bottom: .45rem; }
-    .svc p { color: var(--muted); font-size: .84rem; line-height: 1.65; }
+    .svc:hover::after { transform: scaleX(1); }
+    .svc:hover { background: #0b1022; }
+    .svc-num { position: absolute; top: 1.3rem; right: 1.3rem; font-family: var(--font-mono); font-size: .58rem; color: #1e2a40; letter-spacing: .04em; }
+    .svc-icon {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border: 1px solid rgba(0,212,255,.2);
+      margin-bottom: 1rem; font-family: var(--font-mono); font-size: .65rem;
+      color: var(--cyan); letter-spacing: .06em; transition: all .25s;
+    }
+    .svc:hover .svc-icon { background: rgba(0,212,255,.08); border-color: rgba(0,212,255,.4); box-shadow: 0 0 16px rgba(0,212,255,.12); }
+    .svc h3 { font-size: 1rem; font-weight: 600; margin-bottom: .5rem; color: var(--fg); }
+    .svc p { font-size: .85rem; color: var(--muted2); line-height: 1.72; }
 
-    /* Tech stack */
-    .tech-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--border); }
-    .tech { font-size: .7rem; color: var(--muted); border: 1px solid var(--border); padding: .12rem .5rem; transition: all .15s; cursor: default; }
-    .tech:hover { color: var(--accent); border-color: rgba(0,255,136,.35); }
+    /* Tech row */
+    .tech-row { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 2.5rem; padding-top: 2.5rem; border-top: 1px solid var(--border); }
+    .tech {
+      font-family: var(--font-mono); font-size: .67rem; color: var(--muted);
+      border: 1px solid var(--border); padding: .15rem .55rem; transition: all .15s; cursor: default;
+    }
+    .tech:hover { color: var(--cyan); border-color: rgba(0,212,255,.3); background: rgba(0,212,255,.03); }
 
-    /* ── Portfolio ── */
-    .project { margin-bottom: 2.5rem; padding-bottom: 2.5rem; border-bottom: 1px solid var(--border); }
-    .project:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-    .proj-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .5rem; flex-wrap: wrap; }
-    .project h3 { font-size: 1rem; }
+    /* ─── PORTFOLIO ─── */
+    .project { padding: 2.2rem 0; border-bottom: 1px solid var(--border); }
+    .project:first-child { padding-top: 0; }
+    .project:last-child { border-bottom: none; padding-bottom: 0; }
+    .proj-hd { display: flex; align-items: baseline; gap: 1rem; margin-bottom: .6rem; flex-wrap: wrap; }
+    .project h3 { font-size: 1.05rem; font-weight: 600; }
     .tags { display: flex; gap: .4rem; flex-wrap: wrap; }
-    .tag { font-size: .72rem; color: var(--muted); border: 1px solid var(--border); padding: .1rem .4rem; }
-    .metrics { display: flex; flex-wrap: wrap; gap: .4rem; margin: .5rem 0 .8rem; }
-    .metric {
-      font-size: .75rem; color: var(--accent);
-      border: 1px solid rgba(0,255,136,.2); padding: .15rem .55rem;
-    }
-    .metric.live { border-color: rgba(0,255,136,.4); }
-    .project p { color: var(--muted); font-size: .9rem; margin-bottom: .5rem; }
-    .project a { font-size: .85rem; }
+    .tag { font-family: var(--font-mono); font-size: .68rem; color: var(--muted2); border: 1px solid var(--border); padding: .1rem .42rem; }
+    .metrics { display: flex; flex-wrap: wrap; gap: .4rem; margin: .6rem 0 .9rem; }
+    .metric { font-family: var(--font-mono); font-size: .7rem; color: var(--cyan); border: 1px solid rgba(0,212,255,.2); padding: .14rem .55rem; }
+    .metric.live { border-color: rgba(0,255,136,.4); color: var(--green); background: rgba(0,255,136,.04); }
+    .project p { font-size: .9rem; color: var(--muted2); margin-bottom: .55rem; line-height: 1.72; }
+    .project a { font-size: .84rem; }
 
-    /* ── Pricing ── */
-    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
-    th { text-align: left; color: var(--muted); padding: .5rem .8rem; border-bottom: 1px solid var(--border); font-weight: normal; text-transform: uppercase; font-size: .72rem; letter-spacing: .09em; }
-    td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); transition: background .1s; }
+    /* ─── PRICING ─── */
+    table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+    th { text-align: left; font-family: var(--font-mono); color: var(--muted); padding: .55rem .9rem; border-bottom: 1px solid var(--border); font-weight: normal; text-transform: uppercase; font-size: .68rem; letter-spacing: .1em; }
+    td { padding: .65rem .9rem; border-bottom: 1px solid var(--border); transition: background .1s; }
     tr:last-child td { border-bottom: none; }
     tbody tr:hover td { background: var(--card); }
-    td:nth-child(2) { color: var(--accent); }
-    td:nth-child(3) { color: var(--muted); }
+    td:nth-child(2) { font-family: var(--font-mono); color: var(--cyan); font-weight: 600; }
+    td:nth-child(3) { font-family: var(--font-mono); color: var(--muted); font-size: .82rem; }
 
-    .pay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 2rem; }
+    .pay-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; margin-top: 2.5rem; }
     .pay-card {
-      background: var(--card); border: 1px solid var(--border); padding: 1.5rem; text-align: center;
-      transition: border-color .2s, box-shadow .2s; position: relative;
+      background: var(--card); border: 1px solid var(--border); padding: 1.8rem; text-align: center;
+      position: relative; transition: border-color .22s, box-shadow .22s; overflow: hidden;
     }
-    .pay-card:hover { border-color: rgba(0,255,136,.3); box-shadow: 0 0 24px rgba(0,255,136,.07); }
-    .pay-card.featured { border-color: rgba(0,255,136,.35); }
-    .pay-badge {
-      display: inline-block; font-size: .62rem; color: var(--accent);
-      border: 1px solid rgba(0,255,136,.3); padding: .1rem .4rem;
-      text-transform: uppercase; letter-spacing: .09em; margin-bottom: .6rem;
+    .pay-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,.3), transparent);
+      transform: scaleX(0); transition: transform .3s;
     }
-    .pay-price { font-size: 1.85rem; color: var(--accent); display: block; margin-bottom: .3rem; }
-    .pay-card p { color: var(--muted); font-size: .8rem; margin-bottom: 1rem; line-height: 1.5; }
+    .pay-card:hover::before { transform: scaleX(1); }
+    .pay-card:hover { border-color: rgba(0,212,255,.25); box-shadow: 0 0 30px rgba(0,212,255,.07); }
+    .pay-card.pop { border-color: rgba(0,212,255,.3); }
+    .pop-badge { display: inline-block; font-family: var(--font-mono); font-size: .6rem; color: var(--cyan); border: 1px solid rgba(0,212,255,.3); padding: .08rem .4rem; text-transform: uppercase; letter-spacing: .12em; margin-bottom: .7rem; }
+    .pay-price { font-size: 2rem; font-weight: 700; font-family: var(--font-mono); color: var(--cyan); display: block; margin-bottom: .35rem; }
+    .pay-card p { font-size: .8rem; color: var(--muted2); margin-bottom: 1.2rem; line-height: 1.6; }
 
-    /* ── Contact ── */
-    .contact-block { background: var(--card); border: 1px solid var(--border); padding: 2rem; }
-    .contact-block > p { color: var(--muted); margin-bottom: 1.2rem; }
-    .contact-row { display: flex; gap: .6rem; align-items: center; margin-bottom: .45rem; }
-    .c-label { color: var(--muted); font-size: .78rem; width: 76px; flex-shrink: 0; }
+    /* ─── CONTACT ─── */
+    .contact-hud {
+      background: var(--card); border: 1px solid var(--border); padding: 2.5rem;
+      position: relative;
+    }
+    /* HUD corner brackets */
+    .contact-hud::before { content: ''; position: absolute; top: -1px; left: -1px; width: 16px; height: 16px; border-top: 1px solid var(--cyan); border-left: 1px solid var(--cyan); }
+    .contact-hud::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 16px; height: 16px; border-bottom: 1px solid var(--cyan); border-right: 1px solid var(--cyan); }
+    .contact-hud > p { color: var(--muted2); margin-bottom: 1.5rem; }
+    .c-row { display: flex; gap: .75rem; align-items: center; margin-bottom: .6rem; }
+    .c-lbl { font-family: var(--font-mono); color: var(--muted); font-size: .75rem; width: 78px; flex-shrink: 0; letter-spacing: .05em; }
 
-    /* ── Footer ── */
-    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .78rem; }
+    /* ─── FOOTER ─── */
+    footer { padding: 1.8rem 0; border-top: 1px solid var(--border); }
     footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; }
+    .ft { font-family: var(--font-mono); font-size: .72rem; color: var(--muted); }
 
-    @media (max-width: 640px) {
-      .nav-links { display: none; }
-      .hero-cta { flex-direction: column; }
+    /* ─── Responsive ─── */
+    @media (max-width: 760px) {
+      .hero-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .term-win { display: none; }
+      .nav-links, .nav-hire { display: none; }
+      .cta-row { flex-direction: column; }
       .stats-strip { grid-template-columns: repeat(2, 1fr); }
       .pay-grid { grid-template-columns: 1fr; }
     }
@@ -197,112 +306,131 @@
 </head>
 <body>
 
+<!-- ═══════════ NAV ═══════════ -->
 <nav>
-  <div class="container">
-    <div class="nav-brand"><span class="nav-prompt">›</span> BRT Inc.</div>
+  <div class="nav-inner">
+    <div class="nav-brand">
+      <span class="nav-diamond"></span>
+      <span class="nav-name">BRT INC.</span>
+    </div>
     <div class="nav-links">
       <a href="#services">Services</a>
       <a href="#portfolio">Portfolio</a>
       <a href="#pricing">Pricing</a>
       <a href="#contact">Contact</a>
     </div>
+    <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="nav-hire">Start a project</a>
   </div>
 </nav>
 
 <main>
 
-<!-- ── HERO ── -->
+<!-- ═══════════ HERO ═══════════ -->
 <section id="hero">
-  <div class="container">
+  <canvas id="hero-canvas"></canvas>
 
-    <div class="terminal-bar">
-      <span class="t-dot t-red"></span>
-      <span class="t-dot t-yellow"></span>
-      <span class="t-dot t-green"></span>
-      <span class="t-label">brt-inc —</span>
-      <span id="typed-cmd"></span><span class="t-cursor"></span>
+  <div class="hero-content container">
+    <div class="hero-grid">
+
+      <!-- Left -->
+      <div>
+        <div class="hero-badge mono">
+          <span class="pulse-dot"></span>
+          AVAILABLE · MANZINI, ESWATINI
+        </div>
+
+        <h1>Custom software<br><span class="grad">engineered to ship.</span></h1>
+
+        <p class="hero-sub">Web applications, security audits, data science, and DevOps infrastructure — for SADC organisations. Every project ships with a test suite, CI/CD pipeline, and deployment documentation.</p>
+
+        <div class="cta-row">
+          <a href="#contact" class="btn btn-cyan">Start a project</a>
+          <a href="#portfolio" class="btn btn-outline">View work</a>
+          <a href="https://upwork.com/freelancers/charlesbartaria" class="btn btn-outline" target="_blank" rel="noopener">Hire on Upwork</a>
+        </div>
+      </div>
+
+      <!-- Right: Terminal -->
+      <div class="term-win">
+        <div class="term-header">
+          <span class="td td-r"></span><span class="td td-y"></span><span class="td td-g"></span>
+          <span class="term-title mono">brt-inc — bash</span>
+        </div>
+        <div class="term-body" id="term-body">
+          <span class="tl cmd mono">$ <span class="t-cur"></span></span>
+        </div>
+      </div>
+
     </div>
 
-    <p class="hero-loc">Manzini, Kingdom of Eswatini · charleskris9@gmail.com</p>
-    <h1>Custom software<br>engineered to <em>ship.</em></h1>
-    <p class="hero-sub">Web applications, security audits, data science, and DevOps infrastructure — for SADC organisations. Every project ships with a test suite, CI/CD pipeline, and deployment documentation.</p>
-
-    <div class="hero-cta">
-      <a href="#contact" class="btn btn-primary">Start a project</a>
-      <a href="#portfolio" class="btn btn-ghost">View work</a>
-      <a href="https://upwork.com/freelancers/charlesbartaria" class="btn btn-ghost" target="_blank" rel="noopener">Hire on Upwork</a>
-    </div>
-
-    <div class="stats-strip">
-      <div class="stat-cell">
-        <span class="stat-n" data-target="9">0</span>
-        <span class="stat-l">Security findings resolved</span>
-      </div>
-      <div class="stat-cell">
-        <span class="stat-n" data-target="54">0</span>
-        <span class="stat-l">Tests · 100% pass rate</span>
-      </div>
-      <div class="stat-cell">
-        <span class="stat-n" data-target="4">0</span>
-        <span class="stat-l">Production projects</span>
-      </div>
-      <div class="stat-cell">
-        <span class="stat-n" data-target="0">0</span>
-        <span class="stat-l">Regressions shipped</span>
+    <!-- Stats -->
+    <div class="stats-wrap">
+      <div class="stats-strip">
+        <div class="stat">
+          <span class="stat-n" data-target="9">0</span>
+          <span class="stat-l">Security findings resolved</span>
+        </div>
+        <div class="stat">
+          <span class="stat-n" data-target="54">0</span>
+          <span class="stat-l">Tests · 100% pass rate</span>
+        </div>
+        <div class="stat">
+          <span class="stat-n" data-target="4">0</span>
+          <span class="stat-l">Production projects</span>
+        </div>
+        <div class="stat">
+          <span class="stat-n" data-target="0">0</span>
+          <span class="stat-l">Regressions shipped</span>
+        </div>
       </div>
     </div>
-
   </div>
 </section>
 
-<!-- ── SERVICES ── -->
-<section id="services">
+<!-- ═══════════ SERVICES ═══════════ -->
+<section id="services" class="alt">
   <div class="container">
-    <h2>Services</h2>
-    <div class="services-grid">
+    <div class="sec-label">Services</div>
+    <h2>What we build</h2>
+    <p class="sec-sub">End-to-end delivery from architecture to production deployment. No handoffs, no surprises.</p>
 
+    <div class="svc-grid">
       <div class="svc reveal">
         <span class="svc-num">01</span>
-        <span class="svc-badge">WEB</span>
+        <div class="svc-icon mono">WEB</div>
         <h3>Web Applications</h3>
-        <p>PHP 8 · React · FastAPI backends with MySQL or PostgreSQL. REST APIs, RBAC, JWT auth, WebSockets. From simple business tools to complex multi-role platforms.</p>
+        <p>PHP 8 · React · FastAPI with MySQL or PostgreSQL. REST APIs, RBAC, JWT auth, WebSockets. Simple tools to complex multi-role platforms.</p>
       </div>
-
       <div class="svc reveal">
         <span class="svc-num">02</span>
-        <span class="svc-badge">SEC</span>
+        <div class="svc-icon mono">SEC</div>
         <h3>Security Audits</h3>
-        <p>Structural code audits for PHP, Python, and Node.js. OWASP Top 10, auth flows, secrets hygiene, injection surfaces, session management. Written report + reproducible fixes.</p>
+        <p>Structural code audits for PHP, Python, Node.js. OWASP Top 10, auth flows, secrets hygiene, injection surfaces. Written report + reproducible fixes.</p>
       </div>
-
       <div class="svc reveal">
         <span class="svc-num">03</span>
-        <span class="svc-badge">DAT</span>
+        <div class="svc-icon mono">DAT</div>
         <h3>Data Science & Forecasting</h3>
-        <p>ARIMA · SARIMA · Prophet time-series models. Monte Carlo simulations. Plotly Dash dashboards. FastAPI data APIs. Calibrated on real datasets with RMSE/MAE/MAPE evaluation.</p>
+        <p>ARIMA · SARIMA · Prophet models. Monte Carlo simulations. Plotly Dash dashboards. FastAPI data APIs. Calibrated with RMSE/MAE/MAPE evaluation.</p>
       </div>
-
       <div class="svc reveal">
         <span class="svc-num">04</span>
-        <span class="svc-badge">OPS</span>
+        <div class="svc-icon mono">OPS</div>
         <h3>DevOps</h3>
-        <p>Docker Compose · Nginx reverse proxy · GitHub Actions CI/CD · Prometheus/Grafana monitoring. Production-ready infrastructure from day one.</p>
+        <p>Docker Compose · Nginx · GitHub Actions CI/CD · Prometheus/Grafana monitoring. Production-ready infrastructure from day one.</p>
       </div>
-
       <div class="svc reveal">
         <span class="svc-num">05</span>
-        <span class="svc-badge">BIZ</span>
+        <div class="svc-icon mono">BIZ</div>
         <h3>Business Software (SADC)</h3>
-        <p>POS, booking systems, staff portals, inventory management. Built for businesses in Eswatini, South Africa, Botswana, and the wider SADC region. Local context, international quality.</p>
+        <p>POS, booking systems, staff portals, inventory management for businesses in Eswatini, South Africa, Botswana, and the wider SADC region.</p>
       </div>
-
       <div class="svc reveal">
         <span class="svc-num">06</span>
-        <span class="svc-badge">SVC</span>
+        <div class="svc-icon mono">SVC</div>
         <h3>Retainer & Maintenance</h3>
-        <p>Monthly support for live systems. Bug fixes, small feature additions, dependency updates, priority response when something breaks.</p>
+        <p>Monthly support for live systems. Bug fixes, feature additions, dependency updates, priority response when something breaks.</p>
       </div>
-
     </div>
 
     <div class="tech-row">
@@ -316,13 +444,15 @@
   </div>
 </section>
 
-<!-- ── PORTFOLIO ── -->
+<!-- ═══════════ PORTFOLIO ═══════════ -->
 <section id="portfolio">
   <div class="container">
-    <h2>Portfolio</h2>
+    <div class="sec-label">Portfolio</div>
+    <h2>Selected work</h2>
+    <p class="sec-sub">Production systems across security, forecasting, booking, and autonomous systems.</p>
 
     <div class="project reveal">
-      <div class="proj-header">
+      <div class="proj-hd">
         <h3>UEDF Sentinel v5.0</h3>
         <div class="tags">
           <span class="tag">PHP 8</span><span class="tag">MySQL</span>
@@ -344,7 +474,7 @@
     </div>
 
     <div class="project reveal">
-      <div class="proj-header">
+      <div class="proj-hd">
         <h3>Eswatini Macroeconomic Dashboard</h3>
         <div class="tags">
           <span class="tag">Python</span><span class="tag">FastAPI</span>
@@ -361,7 +491,7 @@
     </div>
 
     <div class="project reveal">
-      <div class="proj-header">
+      <div class="proj-hd">
         <h3>Studio P Barbershop App</h3>
         <div class="tags">
           <span class="tag">React</span><span class="tag">Supabase</span><span class="tag">PostgreSQL</span>
@@ -372,11 +502,11 @@
         <span class="metric">8 colour schemes</span>
         <span class="metric">RLS at Postgres layer</span>
       </div>
-      <p>Live booking platform for a barbershop in Manzini, Eswatini. OS-aware UI, two-round parallel booking validation, per-member customisation with photo upload, Supabase with row-level security enforced at the Postgres layer.</p>
+      <p>Live booking platform for a barbershop in Manzini, Eswatini. OS-aware UI, two-round parallel booking validation, per-member customisation with photo upload, Supabase with row-level security enforced at the database layer.</p>
     </div>
 
     <div class="project reveal">
-      <div class="proj-header">
+      <div class="proj-hd">
         <h3>Agentic UAV Stack</h3>
         <div class="tags">
           <span class="tag">Python</span><span class="tag">PX4</span>
@@ -385,14 +515,16 @@
       </div>
       <p>Autonomous UAV platform with three-tier safety architecture: safety governor (DAL-A), mission executor, and AI-assisted planning layer. Private repository.</p>
     </div>
-
   </div>
 </section>
 
-<!-- ── PRICING ── -->
-<section id="pricing">
+<!-- ═══════════ PRICING ═══════════ -->
+<section id="pricing" class="alt">
   <div class="container">
-    <h2>Pricing</h2>
+    <div class="sec-label">Pricing</div>
+    <h2>Transparent rates</h2>
+    <p class="sec-sub">Fixed-scope quotes or hourly. No surprise invoices.</p>
+
     <table>
       <thead>
         <tr><th>Service</th><th>From</th><th>Timeline</th></tr>
@@ -412,50 +544,53 @@
 
     <div class="pay-grid">
       <div class="pay-card">
-        <span class="pay-price">$100</span>
-        <p>Starter deposit — small audits, bug fixes, single-feature builds</p>
-        <a href="STRIPE_STARTER_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
+        <span class="pay-price mono">$100</span>
+        <p>Starter — small audits, bug fixes, single-feature builds</p>
+        <a href="STRIPE_STARTER_URL" class="btn btn-cyan" target="_blank" rel="noopener">Pay deposit</a>
       </div>
-      <div class="pay-card featured">
-        <span class="pay-badge">Most popular</span>
-        <span class="pay-price">$300</span>
-        <p>Professional deposit — full-stack applications, audit + fixes, dashboards</p>
-        <a href="STRIPE_PROFESSIONAL_URL" class="btn btn-primary" target="_blank" rel="noopener">Pay deposit →</a>
+      <div class="pay-card pop">
+        <span class="pop-badge">Most popular</span>
+        <span class="pay-price mono">$300</span>
+        <p>Professional — full-stack apps, audit + fixes, dashboards</p>
+        <a href="STRIPE_PROFESSIONAL_URL" class="btn btn-cyan" target="_blank" rel="noopener">Pay deposit</a>
       </div>
       <div class="pay-card">
-        <span class="pay-price">Custom</span>
-        <p>Custom quote — set your own amount after scoping call</p>
-        <a href="STRIPE_CUSTOM_URL" class="btn btn-ghost" target="_blank" rel="noopener">Pay custom →</a>
+        <span class="pay-price mono">Custom</span>
+        <p>Custom quote — set your amount after a scoping call</p>
+        <a href="STRIPE_CUSTOM_URL" class="btn btn-outline" target="_blank" rel="noopener">Pay custom</a>
       </div>
     </div>
-    <p style="color:var(--muted);font-size:.78rem;margin-top:1rem">Deposit payment constitutes acceptance of BRT Inc. Terms &amp; Conditions. Balance due on delivery. 30-day bug-fix warranty on all fixed-scope projects.</p>
+    <p class="mono" style="color:var(--muted);font-size:.73rem;margin-top:1.2rem">Deposit constitutes acceptance of BRT Inc. Terms &amp; Conditions. Balance due on delivery. 30-day bug-fix warranty on all fixed-scope projects.</p>
   </div>
 </section>
 
-<!-- ── CONTACT ── -->
+<!-- ═══════════ CONTACT ═══════════ -->
 <section id="contact">
   <div class="container">
-    <h2>Contact</h2>
-    <div class="contact-block">
-      <p>I respond within 24 hours. Available for both fixed-scope projects and ongoing hourly engagements.</p>
-      <div class="contact-row">
-        <span class="c-label">Email</span>
+    <div class="sec-label">Contact</div>
+    <h2>Let's build something</h2>
+    <p class="sec-sub">I respond within 24 hours. Available for fixed-scope projects and ongoing hourly engagements.</p>
+
+    <div class="contact-hud">
+      <p>Drop a line with your project brief and I'll respond with a scoping document within 24 hours.</p>
+      <div class="c-row">
+        <span class="c-lbl">EMAIL</span>
         <a href="mailto:charleskris9@gmail.com">charleskris9@gmail.com</a>
       </div>
-      <div class="contact-row">
-        <span class="c-label">Upwork</span>
+      <div class="c-row">
+        <span class="c-lbl">UPWORK</span>
         <a href="https://upwork.com/freelancers/charlesbartaria" target="_blank" rel="noopener">upwork.com/freelancers/charlesbartaria</a>
       </div>
-      <div class="contact-row">
-        <span class="c-label">GitHub</span>
+      <div class="c-row">
+        <span class="c-lbl">GITHUB</span>
         <a href="https://github.com/CBahtaria" target="_blank" rel="noopener">github.com/CBahtaria</a>
       </div>
-      <div class="contact-row">
-        <span class="c-label">Location</span>
-        <span style="color:var(--muted)">Manzini, Kingdom of Eswatini</span>
+      <div class="c-row">
+        <span class="c-lbl">BASE</span>
+        <span style="color:var(--muted2)">Manzini, Kingdom of Eswatini</span>
       </div>
-      <div style="margin-top:1.5rem">
-        <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-primary">Send enquiry →</a>
+      <div style="margin-top:2rem">
+        <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-cyan">Send project brief →</a>
       </div>
     </div>
   </div>
@@ -465,73 +600,157 @@
 
 <footer>
   <div class="container">
-    <span>© 2026 BRT Inc. · Charles Bartaria · Manzini, Eswatini</span>
-    <span>BSc Computer Science, UNESWA · Final year 2026</span>
+    <span class="ft">© 2026 BRT Inc. · Charles Bartaria · Manzini, Eswatini</span>
+    <span class="ft">charleskris9@gmail.com</span>
   </div>
 </footer>
 
 <script>
-  /* ── Typing animation ── */
-  (function() {
-    const phrases = [
-      'git push origin main',
-      'docker compose up --build',
-      'pytest --tb=short -q',
-      'vercel --prod',
-      'gitleaks detect --source .',
-    ];
-    let pi = 0, ci = 0, del = false;
-    const el = document.getElementById('typed-cmd');
-    function tick() {
-      const p = phrases[pi];
-      if (!del) {
-        ci++;
-        el.textContent = '$ ' + p.slice(0, ci);
-        if (ci === p.length) { del = true; setTimeout(tick, 1800); return; }
-      } else {
-        ci--;
-        el.textContent = '$ ' + p.slice(0, ci);
-        if (ci === 0) {
-          del = false;
-          pi = (pi + 1) % phrases.length;
-          setTimeout(tick, 380);
-          return;
+/* ══ HERO CANVAS — particle network ══ */
+(function () {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles;
+  const N = 55, LINK = 130, CYAN = '0,212,255';
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({ length: N }, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - .5) * .28, vy: (Math.random() - .5) * .28,
+      r: Math.random() * 1.2 + .5,
+    }));
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    for (let i = 0; i < N; i++) {
+      const a = particles[i];
+      for (let j = i + 1; j < N; j++) {
+        const b  = particles[j];
+        const dx = a.x - b.x, dy = a.y - b.y;
+        const d  = Math.sqrt(dx * dx + dy * dy);
+        if (d < LINK) {
+          ctx.strokeStyle = `rgba(${CYAN},${((1 - d / LINK) * .14).toFixed(3)})`;
+          ctx.lineWidth = .6;
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
         }
       }
-      setTimeout(tick, del ? 38 : 75);
     }
-    tick();
-  })();
 
-  /* ── Scroll reveal ── */
-  (function() {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
-  })();
+    particles.forEach(p => {
+      ctx.fillStyle = `rgba(${CYAN},.45)`;
+      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+    });
 
-  /* ── Stat count-up ── */
-  (function() {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (!e.isIntersecting) return;
-        const el = e.target;
-        const target = parseInt(el.dataset.target, 10);
-        if (target === 0) { el.textContent = '0'; obs.unobserve(el); return; }
-        const dur = 900, start = performance.now();
-        function frame(now) {
-          const t = Math.min((now - start) / dur, 1);
-          const ease = 1 - Math.pow(1 - t, 3); // ease-out-cubic
-          el.textContent = Math.round(ease * target);
-          if (t < 1) requestAnimationFrame(frame); else el.textContent = target;
-        }
-        requestAnimationFrame(frame);
-        obs.unobserve(el);
-      });
-    }, { threshold: 0.5 });
-    document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
-  })();
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', () => { resize(); });
+  init(); draw();
+})();
+
+/* ══ TERMINAL ANIMATION ══ */
+(function () {
+  const sessions = [
+    [
+      { t: '$ brt-audit --target uedf-sentinel-v5.0', c: 'cmd', d: 0 },
+      { t: 'Scanning 27,900 lines · 16 controllers...', c: 'info', d: 520 },
+      { t: '', c: 'blank', d: 160 },
+      { t: '[CRITICAL] Hardcoded credentials — login.php:42', c: 'crit', d: 300 },
+      { t: '[CRITICAL] API key as source literal — config.php', c: 'crit', d: 240 },
+      { t: '[CRITICAL] CORS wildcard on Bearer endpoints', c: 'crit', d: 240 },
+      { t: '[HIGH]     Session fixation — src/Auth.php', c: 'high', d: 210 },
+      { t: '[HIGH]     Brute-force off-by-one — api/auth.php', c: 'high', d: 210 },
+      { t: '[HIGH]     Raw SQL concat — api/missions.php', c: 'high', d: 210 },
+      { t: '...3 more findings', c: 'dim', d: 160 },
+      { t: '', c: 'blank', d: 200 },
+      { t: 'Generating patch set...', c: 'info', d: 580 },
+      { t: '✓  9/9 findings resolved · 22 files · 317 lines', c: 'ok', d: 680 },
+      { t: '✓  0 regressions · CI gate installed', c: 'ok', d: 160 },
+    ],
+    [
+      { t: '$ pytest tests/ --tb=short -q', c: 'cmd', d: 0 },
+      { t: 'collected 54 items', c: 'info', d: 400 },
+      { t: '......................................................', c: 'dots', d: 1100 },
+      { t: '54 passed in 2.41s', c: 'ok', d: 260 },
+    ],
+    [
+      { t: '$ docker compose up --build -d', c: 'cmd', d: 0 },
+      { t: 'Building api ...   done', c: 'info', d: 650 },
+      { t: 'Building nginx ... done', c: 'info', d: 380 },
+      { t: 'Starting 7 services...', c: 'info', d: 480 },
+      { t: '✓  All services healthy', c: 'ok', d: 560 },
+    ],
+    [
+      { t: '$ vercel --prod', c: 'cmd', d: 0 },
+      { t: 'Deploying sir-charles-projects/brt-inc', c: 'info', d: 360 },
+      { t: 'Build complete · 28ms', c: 'info', d: 780 },
+      { t: '✓  Production · https://brtinc.dev', c: 'ok', d: 400 },
+    ],
+  ];
+
+  const body = document.getElementById('term-body');
+  const MAX  = 14;
+  let si = 0, li = 0;
+
+  function addLine(text, cls) {
+    const d = document.createElement('div');
+    d.className = 'tl mono' + (cls ? ' ' + cls : '');
+    d.textContent = text;
+    body.appendChild(d);
+    while (body.children.length > MAX) body.removeChild(body.firstChild);
+  }
+
+  function run() {
+    const sess = sessions[si];
+    if (li >= sess.length) {
+      setTimeout(() => { body.innerHTML = ''; si = (si + 1) % sessions.length; li = 0; setTimeout(run, 360); }, 2800);
+      return;
+    }
+    const line = sess[li];
+    setTimeout(() => { addLine(line.t, line.c); li++; run(); }, line.d);
+  }
+
+  body.innerHTML = '';
+  setTimeout(run, 1000);
+})();
+
+/* ══ SCROLL REVEAL ══ */
+(function () {
+  const obs = new IntersectionObserver(es => {
+    es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+})();
+
+/* ══ STAT COUNT-UP ══ */
+(function () {
+  const obs = new IntersectionObserver(es => {
+    es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = parseInt(el.dataset.target, 10);
+      if (target === 0) { el.textContent = '0'; obs.unobserve(el); return; }
+      const t0 = performance.now(), dur = 1000;
+      (function f(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        el.textContent = Math.round((1 - Math.pow(1 - p, 3)) * target);
+        if (p < 1) requestAnimationFrame(f); else el.textContent = target;
+      })(t0);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-target]').forEach(el => obs.observe(el));
+})();
 </script>
 
 </body>

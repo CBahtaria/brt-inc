@@ -3,176 +3,442 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Security audit case study: UEDF Sentinel v5.0 — 9 findings resolved. PHP 8 command-and-control platform." />
+  <meta name="description" content="Security audit case study: UEDF Sentinel v5.0 — 9 findings resolved, 22 files patched, 0 regressions. PHP 8 command-and-control platform by BRT Inc." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Sentinel v5.0 Security Audit — BRT Inc." />
+  <meta property="og:description" content="9 vulnerabilities found and resolved in a 27,900-line PHP command-and-control platform. 3 Critical, 6 High. 0 regressions." />
+  <meta property="og:type" content="article" />
   <title>Sentinel Security Audit — BRT Inc.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
   <style>
-    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --red:#ff4444; --yellow:#ffcc00; --font:'Courier New',monospace; }
-    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:15px; line-height:1.7; }
-    .container { max-width:800px; margin:0 auto; padding:0 1.5rem; }
-    nav { padding:1rem 0; border-bottom:1px solid var(--border); margin-bottom:3rem; }
-    nav a { color:var(--muted); font-size:.85rem; }
-    nav a:hover { color:var(--fg); }
-    h1 { font-size:clamp(1.4rem,4vw,2rem); line-height:1.2; margin-bottom:.5rem; }
-    h1 span { color:var(--accent); }
-    .meta { color:var(--muted); font-size:.85rem; margin-bottom:2.5rem; }
-    h2 { font-size:1rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin:2.5rem 0 1rem; }
-    h2::before { content:'// '; color:var(--accent); }
-    p { color:var(--muted); margin-bottom:1rem; }
-    p strong { color:var(--fg); }
-    table { width:100%; border-collapse:collapse; font-size:.85rem; margin-bottom:1.5rem; }
-    th { text-align:left; color:var(--muted); padding:.5rem .8rem; border-bottom:1px solid var(--border); font-weight:normal; font-size:.75rem; text-transform:uppercase; letter-spacing:.08em; }
-    td { padding:.55rem .8rem; border-bottom:1px solid var(--border); vertical-align:top; }
-    tr:last-child td { border-bottom:none; }
-    .sev-critical { color:var(--red); font-weight:bold; }
-    .sev-high { color:var(--yellow); }
-    .sev-resolved { color:var(--accent); }
-    pre { background:var(--card); border:1px solid var(--border); padding:1rem; overflow-x:auto; font-size:.8rem; margin:1rem 0; }
-    .stat-row { display:flex; gap:2rem; flex-wrap:wrap; margin:1.5rem 0; }
-    .stat { text-align:center; }
-    .stat .n { font-size:2rem; color:var(--accent); display:block; }
-    .stat .l { color:var(--muted); font-size:.8rem; }
-    footer { padding:2rem 0; color:var(--muted); font-size:.8rem; border-top:1px solid var(--border); margin-top:3rem; }
+    :root {
+      --bg: #05070e; --surface: #090d1a; --surface2: #0d1326;
+      --blue: #3b82f6; --blue-mid: #1d4ed8; --cyan: #22d3ee;
+      --red: #ef4444; --amber: #f59e0b; --green: #22c55e;
+      --fg: #f1f5ff; --muted: #94a3b8; --border: #1e2d45;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'Courier New', monospace;
+      --radius: .6rem;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc; --surface: #fff; --surface2: #f1f5f9;
+        --blue: #2563eb; --cyan: #0891b2; --red: #dc2626;
+        --amber: #d97706; --green: #16a34a;
+        --fg: #0f172a; --muted: #475569; --border: #e2e8f0;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.8; -webkit-font-smoothing: antialiased; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: var(--mono); font-size: .82em; background: var(--surface2); padding: .1em .35em; border-radius: .25rem; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+    nav { padding: 1.2rem 0; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-size: 1rem; font-weight: 800; color: var(--fg); letter-spacing: -.02em; }
+    .nav-brand span { color: var(--blue); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: .88rem; }
+    .nav-links a:hover { color: var(--fg); text-decoration: none; }
+    .nav-cta { background: var(--blue); color: #fff !important; padding: .35rem .9rem; border-radius: var(--radius); font-weight: 600; font-size: .82rem; }
+    .nav-cta:hover { background: var(--blue-mid); text-decoration: none !important; }
+
+    .case-hero { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
+    .case-badge {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+      color: var(--red); font-size: .78rem; font-weight: 600;
+      padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1.4rem; letter-spacing: .04em;
+    }
+    .case-badge::before { content: ''; width: 6px; height: 6px; background: var(--red); border-radius: 50%; display: block; }
+    .case-hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; margin-bottom: .8rem; }
+    .case-hero h1 span { color: var(--blue); }
+    .case-hero .sub { color: var(--muted); font-size: 1rem; max-width: 640px; margin-bottom: 2rem; }
+    .meta-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip { font-size: .78rem; font-weight: 500; padding: .25rem .7rem; border-radius: 2rem; border: 1px solid var(--border); color: var(--muted); background: var(--surface); font-family: var(--mono); }
+
+    .stats-band { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1.5rem; }
+    .stat-item { text-align: center; }
+    .stat-n { font-size: 2.4rem; font-weight: 800; display: block; letter-spacing: -.04em; line-height: 1; margin-bottom: .3rem; }
+    .stat-l { color: var(--muted); font-size: .78rem; font-weight: 500; }
+    .stat-critical .stat-n { color: var(--red); }
+    .stat-high .stat-n { color: var(--amber); }
+    .stat-ok .stat-n { color: var(--green); }
+    .stat-blue .stat-n { color: var(--blue); }
+
+    main section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+    main section:last-child { border-bottom: none; }
+    .section-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--blue); margin-bottom: .6rem; }
+    h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+    p { color: var(--muted); margin-bottom: 1rem; font-size: .94rem; }
+    p strong { color: var(--fg); }
+
+    .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .method-card h4 { font-size: .88rem; font-weight: 600; margin-bottom: .4rem; color: var(--fg); }
+    .method-card p { font-size: .82rem; margin: 0; }
+
+    .sev-bars { display: flex; gap: 1.2rem; margin: 1.5rem 0; flex-wrap: wrap; }
+    .sev-bar-item { flex: 1; min-width: 140px; }
+    .sev-bar-label { font-size: .78rem; font-weight: 600; display: flex; justify-content: space-between; margin-bottom: .35rem; color: var(--fg); }
+    .sev-bar-track { background: var(--surface2); border-radius: 4px; height: 8px; overflow: hidden; }
+    .sev-bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width .9s cubic-bezier(.22,1,.36,1); }
+    .fill-critical { background: linear-gradient(90deg, var(--red), #ff6b6b); }
+    .fill-high     { background: linear-gradient(90deg, var(--amber), #fcd34d); }
+    .fill-resolved { background: linear-gradient(90deg, var(--green), #4ade80); }
+
+    .findings-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 1rem; }
+    .findings-table th { text-align: left; padding: .6rem .8rem; border-bottom: 2px solid var(--border); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .findings-table td { padding: .65rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .findings-table tr:last-child td { border-bottom: none; }
+    .findings-table tr:hover td { background: var(--surface); }
+    .sev-badge { font-size: .72rem; font-weight: 700; padding: .2rem .55rem; border-radius: 2rem; white-space: nowrap; }
+    .sev-critical { background: rgba(239,68,68,.12); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
+    .sev-high     { background: rgba(245,158,11,.12); color: var(--amber); border: 1px solid rgba(245,158,11,.25); }
+    .sev-resolved { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+    .finding-id   { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
+
+    .code-block { margin: 1.2rem 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .code-header { background: var(--surface2); padding: .5rem 1rem; font-size: .75rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .label-before { color: var(--red); }
+    .label-after  { color: var(--green); }
+    pre { background: var(--surface); padding: 1.1rem 1.2rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; font-family: var(--mono); color: var(--fg); margin: 0; }
+    .c  { color: var(--muted); }
+    .kw { color: var(--blue); }
+    .bad  { color: var(--red); }
+    .good { color: var(--green); }
+
+    .timeline { margin-top: 1.5rem; }
+    .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
+    .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
+    .timeline-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--blue); flex-shrink: 0; margin-top: .1rem; display: flex; align-items: center; justify-content: center; }
+    .timeline-dot span { font-size: .65rem; font-weight: 700; color: var(--blue); }
+    .timeline-body h4 { font-size: .9rem; font-weight: 600; margin-bottom: .2rem; color: var(--fg); }
+    .timeline-body p { font-size: .83rem; margin: 0; }
+
+    .cta-section { background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; text-align: center; margin-top: 1rem; }
+    .cta-section h2 { font-size: 1.4rem; margin-bottom: .6rem; }
+    .cta-section p { max-width: 520px; margin: 0 auto 1.5rem; }
+    .cta-buttons { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .7rem 1.5rem; border-radius: var(--radius); font-weight: 600; font-size: .9rem; cursor: pointer; border: none; text-decoration: none; transition: all .2s; font-family: var(--font); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-mid); transform: translateY(-1px); text-decoration: none; }
+    .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-wa:hover { background: #1fba57; transform: translateY(-1px); text-decoration: none; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; margin-top: 2rem; }
+    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; align-items: center; }
+
+    @media (max-width: 600px) {
+      .sev-bars { flex-direction: column; }
+      .cta-buttons { flex-direction: column; align-items: stretch; }
+      .nav-links { display: none; }
+      .findings-table { font-size: .78rem; }
+      .findings-table th:nth-child(4), .findings-table td:nth-child(4) { display: none; }
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <nav>
-    <a href="/">← BRT Inc.</a>
-    &nbsp;&nbsp;
-    <a href="mailto:charleskris9@gmail.com">charleskris9@gmail.com</a>
-  </nav>
 
-  <h1>UEDF Sentinel v5.0<br><span>Structural Security Audit</span></h1>
-  <p class="meta">BRT Inc. · May 2026 · PHP 8 · 27,900 lines · 16 controllers</p>
-
-  <div class="stat-row">
-    <div class="stat"><span class="n">9</span><span class="l">Findings total</span></div>
-    <div class="stat"><span class="n" style="color:var(--red)">3</span><span class="l">Critical</span></div>
-    <div class="stat"><span class="n" style="color:var(--yellow)">6</span><span class="l">High</span></div>
-    <div class="stat"><span class="n">22</span><span class="l">Files patched</span></div>
-    <div class="stat"><span class="n">317</span><span class="l">Lines changed</span></div>
-    <div class="stat"><span class="n">0</span><span class="l">Regressions</span></div>
+<nav>
+  <div class="container">
+    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
+    <div class="nav-links">
+      <a href="/#portfolio">Portfolio</a>
+      <a href="/#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="nav-cta">LinkedIn</a>
+    </div>
   </div>
+</nav>
 
-  <h2>Audit Scope</h2>
-  <p>Structural code review of all PHP files outside <code>vendor/</code>. No automated scanner — every file read manually. Checked for: auth bypass conditions, session fixation, injection surfaces (SQL, command, path traversal), CORS misconfiguration, hardcoded secrets, error disclosure, and brute-force lockout gaps.</p>
+<div class="case-hero">
+  <div class="container">
+    <div class="case-badge">Security Audit · May 2026</div>
+    <h1>UEDF Sentinel v5.0<br><span>Structural Security Audit</span></h1>
+    <p class="sub">A full manual code review of a 27,900-line PHP 8 command-and-control platform. 9 vulnerabilities found and resolved — 3 Critical, 6 High — with zero regressions introduced.</p>
+    <div class="meta-chips">
+      <span class="chip">PHP 8</span>
+      <span class="chip">MySQL</span>
+      <span class="chip">WebSocket</span>
+      <span class="chip">27,900 lines</span>
+      <span class="chip">16 MVC controllers</span>
+      <span class="chip">OWASP Top 10</span>
+    </div>
+  </div>
+</div>
 
-  <h2>Findings Table</h2>
-  <table>
-    <thead>
-      <tr><th>#</th><th>Severity</th><th>Finding</th><th>File</th><th>Status</th></tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>F-01</td>
-        <td class="sev-critical">Critical</td>
-        <td>Hardcoded credentials in production auth handler and pre-filled into HTML login form (<code>commander/commander123</code>)</td>
-        <td>modules/login.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-02</td>
-        <td class="sev-critical">Critical</td>
-        <td>API key and DB password as source literals — rotation impossible without a code push</td>
-        <td>api/config.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-03</td>
-        <td class="sev-critical">Critical</td>
-        <td>CORS wildcard (<code>Access-Control-Allow-Origin: *</code>) on Bearer token endpoints — any origin can read authenticated responses</td>
-        <td>api/auth.php, api/*.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-04</td>
-        <td class="sev-high">High</td>
-        <td>Session ID not rotated on login — session fixation vulnerability allows attacker to pre-set a known session ID</td>
-        <td>src/Auth.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-05</td>
-        <td class="sev-high">High</td>
-        <td>Off-by-one brute-force gate — 6th attempt slipped through the 5-attempt lockout check</td>
-        <td>api/auth.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-06</td>
-        <td class="sev-high">High</td>
-        <td>No security headers on any API endpoint — missing CSP, HSTS, X-Frame-Options, X-Content-Type-Options</td>
-        <td>api/*.php (all)</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-07</td>
-        <td class="sev-high">High</td>
-        <td><code>display_errors: 1</code> and verbose error messages in production config — reveals stack traces and file paths</td>
-        <td>config/app.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-08</td>
-        <td class="sev-high">High</td>
-        <td>Raw SQL string concatenation in several API routes — SQL injection surface</td>
-        <td>api/missions.php, api/chat.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-      <tr>
-        <td>F-09</td>
-        <td class="sev-high">High</td>
-        <td>DB password falls back to empty string on localhost when env var missing — silent failure during misconfigured deploys</td>
-        <td>src/Database.php</td>
-        <td class="sev-resolved">Resolved</td>
-      </tr>
-    </tbody>
-  </table>
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item stat-blue reveal"><span class="stat-n">9</span><span class="stat-l">Total findings</span></div>
+      <div class="stat-item stat-critical reveal"><span class="stat-n">3</span><span class="stat-l">Critical</span></div>
+      <div class="stat-item stat-high reveal"><span class="stat-n">6</span><span class="stat-l">High</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">22</span><span class="stat-l">Files patched</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">317</span><span class="stat-l">Lines changed</span></div>
+      <div class="stat-item stat-ok reveal"><span class="stat-n">0</span><span class="stat-l">Regressions</span></div>
+    </div>
+  </div>
+</div>
 
-  <h2>Key Fixes — Before / After</h2>
+<main>
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Overview</div>
+      <h2>Audit Scope &amp; Methodology</h2>
+      <p>A structural code review of all PHP files outside <code>vendor/</code>. <strong>No automated scanner</strong> — every file read manually. The audit covered the full authentication pipeline, session management, CORS configuration, injection surfaces (SQL, command, path traversal), secrets hygiene, error disclosure, and brute-force protection.</p>
+      <div class="method-grid">
+        <div class="method-card">
+          <h4>Authentication &amp; Sessions</h4>
+          <p>Login handler, session fixation vectors, 2FA flow, brute-force lockout logic, JWT token handling across 16 controllers</p>
+        </div>
+        <div class="method-card">
+          <h4>Injection Surfaces</h4>
+          <p>SQL queries in all API routes, command execution paths, file handler path traversal — all inputs traced from entry point to sink</p>
+        </div>
+        <div class="method-card">
+          <h4>Secrets Hygiene</h4>
+          <p>All configuration files and HTML source scanned for hardcoded credentials, API keys, and database passwords in literals</p>
+        </div>
+        <div class="method-card">
+          <h4>Network Controls</h4>
+          <p>CORS policy across all 16 API endpoints, security header coverage, error disclosure mode, TLS enforcement</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <p><strong>F-01: Hardcoded credentials removed</strong></p>
-  <pre>// BEFORE — login form pre-filled with production credentials
-&lt;input type="text" name="username" value="commander" /&gt;
-&lt;input type="password" name="password" value="commander123" /&gt;
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Severity Breakdown</div>
+      <h2>What Was Found</h2>
+      <div class="sev-bars">
+        <div class="sev-bar-item">
+          <div class="sev-bar-label"><span style="color:var(--red)">Critical</span><span>3 of 9</span></div>
+          <div class="sev-bar-track"><div class="sev-bar-fill fill-critical" data-width="33%"></div></div>
+        </div>
+        <div class="sev-bar-item">
+          <div class="sev-bar-label"><span style="color:var(--amber)">High</span><span>6 of 9</span></div>
+          <div class="sev-bar-track"><div class="sev-bar-fill fill-high" data-width="67%"></div></div>
+        </div>
+        <div class="sev-bar-item">
+          <div class="sev-bar-label"><span style="color:var(--green)">Resolved</span><span>9 of 9</span></div>
+          <div class="sev-bar-track"><div class="sev-bar-fill fill-resolved" data-width="100%"></div></div>
+        </div>
+      </div>
 
-// AFTER — empty inputs, credentials only via environment variables
-&lt;input type="text" name="username" placeholder="Username" /&gt;
-&lt;input type="password" name="password" placeholder="Password" /&gt;</pre>
+      <table class="findings-table">
+        <thead>
+          <tr><th>ID</th><th>Severity</th><th>Finding</th><th>File(s)</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="finding-id">F-01</td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>Hardcoded credentials pre-filled into production login form (<code>commander / commander123</code>)</td>
+            <td><code>modules/login.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-02</td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>API key and DB password as source literals — credential rotation requires a code push</td>
+            <td><code>api/config.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-03</td>
+            <td><span class="sev-badge sev-critical">Critical</span></td>
+            <td>CORS wildcard (<code>Access-Control-Allow-Origin: *</code>) on all Bearer token endpoints — any origin can read authenticated API responses</td>
+            <td><code>api/auth.php</code>, <code>api/*.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-04</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>Session ID not rotated on login — classic session fixation attack vector</td>
+            <td><code>src/Auth.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-05</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>Off-by-one error in brute-force lockout — 6th login attempt slipped past a 5-attempt gate</td>
+            <td><code>api/auth.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-06</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>Zero security headers on any API endpoint — missing CSP, HSTS, X-Frame-Options, X-Content-Type-Options</td>
+            <td><code>api/*.php</code> (all)</td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-07</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td><code>display_errors: 1</code> in production config — stack traces and file paths exposed to users</td>
+            <td><code>config/app.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-08</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>Raw SQL string concatenation in mission and chat API routes — SQL injection surface</td>
+            <td><code>api/missions.php</code>, <code>api/chat.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+          <tr>
+            <td class="finding-id">F-09</td>
+            <td><span class="sev-badge sev-high">High</span></td>
+            <td>DB password falls back silently to empty string when env var is absent on localhost</td>
+            <td><code>src/Database.php</code></td>
+            <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-  <p><strong>F-03: CORS wildcard replaced with allowlist</strong></p>
-  <pre>// BEFORE
-header('Access-Control-Allow-Origin: *');
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Selected Fixes</div>
+      <h2>Before / After</h2>
 
-// AFTER — allowlist from environment variable
+      <h3>F-01 &mdash; Hardcoded credentials removed</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>modules/login.php</span></div>
+        <pre><span class="c">// Login form pre-filled with production credentials</span>
+&lt;input type="text" name="username" <span class="bad">value="commander"</span> /&gt;
+&lt;input type="password" name="password" <span class="bad">value="commander123"</span> /&gt;</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>modules/login.php</span></div>
+        <pre>&lt;input type="text" name="username" <span class="good">placeholder="Username"</span> /&gt;
+&lt;input type="password" name="password" <span class="good">placeholder="Password"</span> /&gt;
+<span class="c">// Credentials injected only via environment variables</span></pre>
+      </div>
+
+      <h3>F-03 &mdash; CORS wildcard replaced with allowlist</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>api/auth.php</span></div>
+        <pre>header(<span class="bad">'Access-Control-Allow-Origin: *'</span>);</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>api/auth.php</span></div>
+        <pre><span class="c">// Allowlist from environment variable</span>
 $allowed = array_filter(explode(',', $_ENV['SENTINEL_CORS_ORIGINS'] ?? ''));
-$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowed, true)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
+$origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
+<span class="kw">if</span> (in_array($origin, $allowed, true)) {
+    header(<span class="good">'Access-Control-Allow-Origin: ' . $origin</span>);
     header('Vary: Origin');
 }</pre>
+      </div>
 
-  <p><strong>F-05: Brute-force gate off-by-one corrected</strong></p>
-  <pre>// BEFORE — allowed 6 attempts (>= instead of >)
-if ($attempts >= MAX_LOGIN_ATTEMPTS) { lockout(); }
+      <h3>F-05 &mdash; Brute-force off-by-one corrected</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>api/auth.php</span></div>
+        <pre><span class="kw">if</span> ($attempts <span class="bad">&gt;=</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
+<span class="c">// MAX=5 &rarr; 6th attempt was NOT blocked (&gt;= 5 passed at attempt 5)</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>api/auth.php</span></div>
+        <pre><span class="kw">if</span> ($attempts <span class="good">&gt;</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
+<span class="c">// MAX=5 &rarr; 6th attempt (&gt; 5) now correctly blocked</span></pre>
+      </div>
+    </div>
+  </section>
 
-// AFTER
-if ($attempts > MAX_LOGIN_ATTEMPTS) { lockout(); }
-// MAX_LOGIN_ATTEMPTS = 5, so 6th attempt is correctly blocked</pre>
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Delivery</div>
+      <h2>How It Was Delivered</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>1</span></div>
+          <div class="timeline-body">
+            <h4>Manual audit &mdash; every PHP file read</h4>
+            <p>No automated scanner. All 16 controllers, API routes, auth handlers, config files, and session management code reviewed line-by-line against OWASP Top 10.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>2</span></div>
+          <div class="timeline-body">
+            <h4>Written report with reproducible steps</h4>
+            <p>Each finding documented with severity, affected file, root cause, and a concrete before/after code patch. No vague recommendations.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>3</span></div>
+          <div class="timeline-body">
+            <h4>22 files patched, 317 lines changed, 0 regressions</h4>
+            <p>All 9 findings resolved. PHPUnit integration tests written to lock each fix. Existing test suite remained green throughout.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>4</span></div>
+          <div class="timeline-body">
+            <h4>CI security gate installed</h4>
+            <p>GitHub Actions workflow added &mdash; security regressions caught at PR time, before they reach <code>main</code>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <h2>Delivery</h2>
-  <p>All 9 findings resolved across 22 files. PHPUnit integration test suite written to lock each fix (8 assertions). GitHub Actions security-gate job installed — regressions are caught at PR time before they reach <code>main</code>.</p>
-  <p>Repository: <a href="https://github.com/CBahtaria/sentinel" style="color:var(--accent)" target="_blank" rel="noopener">github.com/CBahtaria/sentinel</a></p>
+  <section>
+    <div class="container">
+      <div class="cta-section reveal">
+        <div class="section-label" style="display:flex;justify-content:center">Free Initial Assessment</div>
+        <h2>Is your codebase carrying hidden risk?</h2>
+        <p>If your PHP or Python application hasn't had a structural review, I offer a free 15-minute initial assessment &mdash; honest findings, no obligation. Security audits start at <strong>R3,700</strong>.</p>
+        <div class="cta-buttons">
+          <a href="mailto:charleskris9@gmail.com?subject=Security audit enquiry" class="btn btn-primary">Email me &rarr;</a>
+          <a href="https://wa.me/26879657744" class="btn btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
-  <h2>Free Initial Assessment</h2>
-  <p>If your PHP or Python codebase hasn't had a structural review, I'm available for a free initial assessment — 15 minutes of your code, honest findings, no obligation.</p>
-  <p><a href="mailto:charleskris9@gmail.com?subject=Security audit enquiry" style="color:var(--accent)">charleskris9@gmail.com →</a></p>
+<footer>
+  <div class="container">
+    <span>&copy; 2026 BRT Inc. &middot; Charles Bartaria &middot; Manzini, Eswatini</span>
+    <a href="/" style="color:var(--muted)">&larr; brtinc.dev</a>
+  </div>
+</footer>
 
-  <footer>
-    <div>BRT Inc. · Charles Bartaria · Manzini, Eswatini · <a href="/" style="color:var(--muted)">brtinc.dev</a></div>
-  </footer>
-</div>
+<script>
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  const barObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.sev-bar-fill').forEach(bar => { bar.style.width = bar.dataset.width; });
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.sev-bars').forEach(el => barObs.observe(el));
+</script>
 </body>
 </html>

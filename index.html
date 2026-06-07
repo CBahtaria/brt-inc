@@ -413,11 +413,75 @@
       animation: marquee 28s linear infinite;
     }
     @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    /* ── STUDIO P PORTS ── */
+    .hero-grain {
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      opacity: .04;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-repeat: repeat; background-size: 192px 192px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-grain { animation: grain 8s steps(10) infinite; }
+    }
+    @keyframes grain {
+      0%,100% { transform: translate(0,0); }
+      10% { transform: translate(-2%,-3%); }
+      20% { transform: translate(3%,2%); }
+      30% { transform: translate(-1%,4%); }
+      40% { transform: translate(4%,-1%); }
+      50% { transform: translate(-3%,1%); }
+      60% { transform: translate(2%,3%); }
+      70% { transform: translate(-4%,-2%); }
+      80% { transform: translate(1%,-4%); }
+      90% { transform: translate(-2%,2%); }
+    }
+    .svc-grid .svc-card:nth-child(1) { --i: 0; }
+    .svc-grid .svc-card:nth-child(2) { --i: 1; }
+    .svc-grid .svc-card:nth-child(3) { --i: 2; }
+    .svc-grid .svc-card:nth-child(4) { --i: 3; }
+    .svc-grid .svc-card:nth-child(5) { --i: 4; }
+    .svc-grid .svc-card:nth-child(6) { --i: 5; }
+    .svc-grid .svc-card.reveal { transition-delay: calc(var(--i,0) * 80ms) !important; }
+    @supports (backdrop-filter: blur(1px)) {
+      .svc-card {
+        background: rgba(10,15,30,.72);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(59,130,246,.12);
+      }
+    }
+    @media (prefers-color-scheme: light) {
+      @supports (backdrop-filter: blur(1px)) {
+        .svc-card { background: rgba(255,255,255,.82); border: 1px solid rgba(37,99,235,.14); }
+      }
+    }
+    @keyframes glow {
+      0%,100% { box-shadow: 0 0 22px rgba(59,130,246,.35), 0 0 8px rgba(59,130,246,.2); }
+      50%      { box-shadow: 0 0 42px rgba(59,130,246,.65), 0 0 16px rgba(34,211,238,.28); }
+    }
+    .btn-primary { animation: glow 3s ease-in-out infinite; }
+    @media (prefers-reduced-motion: reduce) { .btn-primary { animation: none; } }
+    @keyframes dockBounce {
+      0%   { transform: translateY(0) scale(1); }
+      40%  { transform: translateY(-7px) scale(1.02); }
+      60%  { transform: translateY(-3px) scale(1.01); }
+      80%  { transform: translateY(-6px) scale(1.015); }
+      100% { transform: translateY(-3px) scale(1); }
+    }
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .svc-card:hover {
+        transform: none;
+        animation: dockBounce .5s cubic-bezier(.22,1,.36,1) forwards;
+      }
+    }
+
     .stack-tag {
       padding: .3rem 1.4rem;
       font-size: .8rem;
       font-weight: 500;
       color: var(--muted);
+      letter-spacing: .14em;
       border-right: 1px solid var(--border);
       white-space: nowrap;
       letter-spacing: .02em;
@@ -891,6 +955,7 @@
       width="1920" height="1080"
     />
     <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
   </div>
 
   <div class="hero-body container">
@@ -1418,11 +1483,12 @@
   /* ─── PAGE-LOAD HERO STAGGER ─── */
   if (!noMotion) {
     document.querySelectorAll('[data-anim]').forEach(el => {
+      const isHeadline = el.dataset.anim === '1';
       el.style.opacity = '0';
-      el.style.transform = 'translateY(28px)';
+      el.style.transform = `translateY(28px)${isHeadline ? ' skewY(2deg)' : ''}`;
       const delay = parseInt(el.dataset.anim, 10) * 150 + 260;
       setTimeout(() => {
-        el.style.transition = 'opacity .7s ease, transform .7s ease';
+        el.style.transition = 'opacity .7s ease, transform .8s cubic-bezier(.22,1,.36,1)';
         el.style.opacity = '1';
         el.style.transform = 'none';
       }, delay);

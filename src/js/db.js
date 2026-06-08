@@ -3,7 +3,10 @@
 // All functions are async and throw on Supabase error.
 
 (function () {
-  const client = () => window.supabaseClient;
+  const client = () => {
+    if (!window.supabaseClient) throw new Error('supabaseClient not initialized — fill in credentials in supabase-client.js');
+    return window.supabaseClient;
+  };
 
   function throwIfError(error) {
     if (error) throw new Error(error.message || JSON.stringify(error));
@@ -97,6 +100,11 @@
     throwIfError(error);
     if (!data || data.length === 0 || data[0].invoice_number == null) return 1001;
     return data[0].invoice_number + 1;
+  }
+
+  async function deleteInvoice(id) {
+    const { error } = await client().from('invoices').delete().eq('id', id);
+    throwIfError(error);
   }
 
   // ----------------------------------------------------------
@@ -201,6 +209,7 @@
     // invoices
     getInvoices,
     upsertInvoice,
+    deleteInvoice,
     getNextInvoiceNumber,
     // onboarding_submissions
     insertOnboardingSubmission,

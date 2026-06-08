@@ -8,7 +8,7 @@
 -- ------------------------------------------------------------
 CREATE TABLE clients (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        UUID REFERENCES auth.users,
+  user_id        UUID NOT NULL REFERENCES auth.users,
   name           TEXT,
   email          TEXT,
   stage          TEXT,
@@ -32,7 +32,7 @@ CREATE POLICY "owner_all" ON clients
 -- ------------------------------------------------------------
 CREATE TABLE proposals (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id     UUID REFERENCES auth.users,
+  user_id     UUID NOT NULL REFERENCES auth.users,
   client_id   UUID REFERENCES clients(id) ON DELETE SET NULL,
   title       TEXT,
   scope       TEXT,
@@ -54,9 +54,9 @@ CREATE POLICY "owner_all" ON proposals
 -- ------------------------------------------------------------
 CREATE TABLE invoices (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        UUID REFERENCES auth.users,
+  user_id        UUID NOT NULL REFERENCES auth.users,
   client_id      UUID REFERENCES clients(id) ON DELETE SET NULL,
-  invoice_number INTEGER,
+  invoice_number INTEGER UNIQUE,
   line_items     JSONB DEFAULT '[]',
   total          NUMERIC,
   paid_at        TIMESTAMPTZ,
@@ -104,7 +104,7 @@ CREATE POLICY "owner_select" ON onboarding_submissions
 -- ------------------------------------------------------------
 CREATE TABLE service_agreements (
   id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id        UUID REFERENCES auth.users,
+  user_id        UUID NOT NULL REFERENCES auth.users,
   client_id      UUID REFERENCES clients(id) ON DELETE SET NULL,
   project_title  TEXT,
   scope          TEXT,
@@ -130,7 +130,7 @@ CREATE POLICY "owner_all" ON service_agreements
 -- ------------------------------------------------------------
 CREATE TABLE runbook_templates (
   id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id      UUID REFERENCES auth.users,
+  user_id      UUID NOT NULL REFERENCES auth.users,
   title        TEXT,
   category     TEXT,
   content      TEXT,

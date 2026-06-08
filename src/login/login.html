@@ -95,7 +95,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="../js/supabase-client.js"></script>
+  <script src="/src/js/supabase-client.js"></script>
   <script>
     (function () {
       const form = document.getElementById('login-form');
@@ -107,7 +107,7 @@
       function getReturnUrl() {
         const params = new URLSearchParams(window.location.search);
         const ret = params.get('return');
-        if (ret && ret.startsWith('/')) return ret;
+        if (ret && ret.startsWith('/') && !ret.startsWith('//')) return ret;
         return '/tools';
       }
 

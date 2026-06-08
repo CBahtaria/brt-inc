@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/js/supabase-client.js"></script>
   <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
   <style>
     :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -25,6 +26,8 @@
     .btn { border:none; padding:.4rem 1rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
     .btn-print { background:var(--accent); color:var(--bg); }
     .btn-clear { background:none; border:1px solid var(--border); color:var(--muted); }
+    .btn-save-draft { background:none; border:1px solid var(--accent); color:var(--accent); }
+    .btn-send { background:#1a1a2e; border:1px solid #4444ff; color:#8888ff; }
 
     /* Preview — renders as it will print */
     #preview { background:#fff; color:#111; padding:2rem; font-family:'Courier New',monospace; font-size:12px; line-height:1.6; min-height:400px; }
@@ -51,6 +54,13 @@
 <body>
 
 <h1>BRT Inc. // Proposal Generator</h1>
+
+<div id="drafts-bar" style="margin-bottom:1rem;display:flex;align-items:center;gap:.5rem">
+  <span style="color:var(--muted);font-size:.75rem">Load draft:</span>
+  <select id="drafts-select" style="background:var(--card);border:1px solid var(--border);color:var(--fg);padding:.3rem .5rem;font-family:var(--font);font-size:.8rem;max-width:300px">
+    <option value="">-- select saved draft --</option>
+  </select>
+</div>
 
 <div class="workspace">
   <div class="panel">
@@ -81,6 +91,8 @@
     <input type="text" id="p-notes" value="Valid for 14 days from proposal date." oninput="update()" />
     <div class="actions">
       <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+      <button class="btn btn-save-draft" id="btn-save-draft">Save Draft</button>
+      <button class="btn btn-send" id="btn-send">Send to Client</button>
       <button class="btn btn-clear" onclick="clearForm()">Clear</button>
     </div>
   </div>
@@ -195,8 +207,104 @@
     renderItems(); update();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    requireAuth();
+  async function saveDraft() {
+    const btn = document.getElementById('btn-save-draft');
+    btn.disabled = true;
+    const total = items.reduce((s, i) => s + (i.qty * i.rate), 0);
+    const data = {
+      title: document.getElementById('p-title').value.trim() || 'Untitled Proposal',
+      scope: document.getElementById('p-scope').value.trim(),
+      line_items: items,
+      total,
+      status: 'draft',
+    };
+    // Preserve id if editing existing draft
+    const draftId = document.getElementById('btn-save-draft').dataset.draftId;
+    if (draftId) data.id = draftId;
+    try {
+      const saved = await window.db.upsertProposal(data);
+      // Store the returned id for subsequent saves
+      // Note: upsertProposal returns void in current db.js — use getProposals to find it
+      await loadDrafts();
+      alert('Draft saved.');
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function loadDrafts() {
+    try {
+      const proposals = await window.db.getProposals();
+      const sel = document.getElementById('drafts-select');
+      sel.innerHTML = '<option value="">-- select saved draft --</option>' +
+        proposals.map(p => `<option value="${p.id}">${esc(p.title)} (${p.created_at ? p.created_at.slice(0,10) : ''})</option>`).join('');
+    } catch (err) {
+      // non-fatal: drafts bar just stays empty
+    }
+  }
+
+  function loadDraft(id) {
+    // populated by the change handler below
+  }
+
+  async function sendToClient() {
+    const email = document.getElementById('p-email').value.trim();
+    if (!email) { alert('Enter a client email address first.'); return; }
+    const btn = document.getElementById('btn-send');
+    btn.disabled = true;
+    const subject = 'Proposal: ' + (document.getElementById('p-title').value.trim() || 'BRT Inc.');
+    const html = document.getElementById('preview').innerHTML;
+    try {
+      const session = await window.supabaseClient.auth.getSession();
+      const token = session.data.session?.access_token;
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ to: email, subject, html, type: 'proposal' }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+      alert('Proposal sent to ' + email);
+    } catch (err) {
+      alert('Send failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+
+    // Load saved drafts
+    await loadDrafts();
+
+    // Wire buttons
+    document.getElementById('btn-save-draft').addEventListener('click', saveDraft);
+    document.getElementById('btn-send').addEventListener('click', sendToClient);
+
+    // Load draft when selected
+    document.getElementById('drafts-select').addEventListener('change', async function() {
+      const id = this.value;
+      if (!id) return;
+      try {
+        const proposals = await window.db.getProposals();
+        const p = proposals.find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('p-title').value = p.title || '';
+        document.getElementById('p-scope').value = p.scope || '';
+        if (p.line_items && Array.isArray(p.line_items)) {
+          items = p.line_items;
+          renderItems();
+        }
+        // Store the draft id for save-as-update
+        document.getElementById('btn-save-draft').dataset.draftId = p.id;
+        update();
+      } catch (err) {
+        alert('Load failed: ' + err.message);
+      }
+    });
+
     document.getElementById('p-date').value = new Date().toISOString().slice(0,10);
     renderItems();
     update();

@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/js/supabase-client.js"></script>
   <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
   <style>
     :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -25,6 +26,8 @@
     .btn { border:none; padding:.4rem 1rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
     .btn-print { background:var(--accent); color:var(--bg); }
     .btn-clear { background:none; border:1px solid var(--border); color:var(--muted); }
+    .btn-save-inv { background:none; border:1px solid var(--accent); color:var(--accent); }
+    .btn-send { background:#1a1a2e; border:1px solid #4444ff; color:#8888ff; }
 
     /* Preview — renders as it will print */
     #preview { background:#fff; color:#111; padding:2rem; font-family:'Courier New',monospace; font-size:12px; line-height:1.6; min-height:400px; }
@@ -86,6 +89,8 @@
     <input type="text" id="inv-notes" placeholder="Any additional notes..." oninput="update()" />
     <div class="actions">
       <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+      <button class="btn btn-save-inv" id="btn-save-inv">Save Invoice</button>
+      <button class="btn btn-send" id="btn-send-inv">Send to Client</button>
       <button class="btn btn-clear" onclick="clearForm()">Clear</button>
     </div>
   </div>
@@ -97,14 +102,6 @@
 </div>
 
 <script>
-  const INVOICE_KEY = 'brt_invoice_counter';
-
-  function nextInvoiceNum() {
-    const n = parseInt(localStorage.getItem(INVOICE_KEY) || '1000');
-    localStorage.setItem(INVOICE_KEY, n + 1);
-    return 'BRT-' + String(n);
-  }
-
   let items = [{ desc: 'Development', qty: 1, rate: 0 }];
 
   function addItem() {
@@ -233,15 +230,68 @@
     renderItems(); update();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    requireAuth();
+  async function saveInvoice() {
+    const btn = document.getElementById('btn-save-inv');
+    btn.disabled = true;
+    const invNumStr = document.getElementById('inv-number').value; // e.g. "BRT-1001"
+    const invNumInt = parseInt(invNumStr.replace('BRT-', '')) || null;
+    const total = items.reduce((s, i) => s + (i.qty * i.rate), 0);
+    const data = {
+      invoice_number: invNumInt,
+      line_items: items,
+      total,
+    };
+    try {
+      await window.db.upsertInvoice(data);
+      alert('Invoice saved.');
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function sendInvoiceToClient() {
+    const email = document.getElementById('inv-email').value.trim();
+    if (!email) { alert('Enter a client email address first.'); return; }
+    const btn = document.getElementById('btn-send-inv');
+    btn.disabled = true;
+    const invNum = document.getElementById('inv-number').value;
+    const subject = 'Invoice ' + invNum + ' — BRT Inc.';
+    const html = document.getElementById('preview').innerHTML;
+    try {
+      const session = await window.supabaseClient.auth.getSession();
+      const token = session.data.session?.access_token;
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ to: email, subject, html, type: 'invoice' }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+      alert('Invoice sent to ' + email);
+    } catch (err) {
+      alert('Send failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
     const today = new Date().toISOString().slice(0, 10);
     const due = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    document.getElementById('inv-number').value = nextInvoiceNum();
+    try {
+      const n = await window.db.getNextInvoiceNumber();
+      document.getElementById('inv-number').value = 'BRT-' + n;
+    } catch {
+      document.getElementById('inv-number').value = 'BRT-1001';
+    }
     document.getElementById('inv-date').value = today;
     document.getElementById('inv-due').value = due;
     renderItems();
     update();
+    document.getElementById('btn-save-inv').addEventListener('click', saveInvoice);
+    document.getElementById('btn-send-inv').addEventListener('click', sendInvoiceToClient);
   });
 </script>
 </body>

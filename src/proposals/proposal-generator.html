@@ -211,10 +211,18 @@
     const btn = document.getElementById('btn-save-draft');
     btn.disabled = true;
     const total = items.reduce((s, i) => s + (i.qty * i.rate), 0);
+    const metaEntry = {
+      _meta: true,
+      client: document.getElementById('p-client').value.trim(),
+      email: document.getElementById('p-email').value.trim(),
+      deliverables: document.getElementById('p-deliverables').value.trim(),
+      notes: document.getElementById('p-notes').value.trim(),
+      terms: document.getElementById('p-terms').value,
+    };
     const data = {
       title: document.getElementById('p-title').value.trim() || 'Untitled Proposal',
       scope: document.getElementById('p-scope').value.trim(),
-      line_items: items,
+      line_items: [...items, metaEntry],
       total,
       status: 'draft',
     };
@@ -223,8 +231,9 @@
     if (draftId) data.id = draftId;
     try {
       const saved = await window.db.upsertProposal(data);
-      // Store the returned id for subsequent saves
-      // Note: upsertProposal returns void in current db.js — use getProposals to find it
+      if (saved && saved[0]?.id) {
+        document.getElementById('btn-save-draft').dataset.draftId = saved[0].id;
+      }
       await loadDrafts();
       alert('Draft saved.');
     } catch (err) {
@@ -245,10 +254,6 @@
     }
   }
 
-  function loadDraft(id) {
-    // populated by the change handler below
-  }
-
   async function sendToClient() {
     const email = document.getElementById('p-email').value.trim();
     if (!email) { alert('Enter a client email address first.'); return; }
@@ -259,6 +264,7 @@
     try {
       const session = await window.supabaseClient.auth.getSession();
       const token = session.data.session?.access_token;
+      if (!token) throw new Error('Session expired — please reload and try again.');
       const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -291,10 +297,20 @@
         const proposals = await window.db.getProposals();
         const p = proposals.find(x => x.id === id);
         if (!p) return;
+        // Extract meta entry if present
+        const meta = p.line_items?.find(x => x._meta);
+        const lineItems = p.line_items?.filter(x => !x._meta) || [];
         document.getElementById('p-title').value = p.title || '';
         document.getElementById('p-scope').value = p.scope || '';
-        if (p.line_items && Array.isArray(p.line_items)) {
-          items = p.line_items;
+        if (meta) {
+          document.getElementById('p-client').value = meta.client || '';
+          document.getElementById('p-email').value = meta.email || '';
+          document.getElementById('p-deliverables').value = meta.deliverables || '';
+          document.getElementById('p-notes').value = meta.notes || '';
+          document.getElementById('p-terms').value = meta.terms || document.getElementById('p-terms').value;
+        }
+        if (lineItems.length) {
+          items = lineItems;
           renderItems();
         }
         // Store the draft id for save-as-update

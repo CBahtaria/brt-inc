@@ -91,7 +91,7 @@
       <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
       <button class="btn btn-save-inv" id="btn-save-inv">Save Invoice</button>
       <button class="btn btn-send" id="btn-send-inv">Send to Client</button>
-      <button class="btn btn-clear" onclick="clearForm()">Clear</button>
+      <button class="btn btn-clear">Clear</button>
     </div>
   </div>
 
@@ -219,7 +219,7 @@
 
   function update() { updatePreviewOnly(); }
 
-  function clearForm() {
+  async function clearForm() {
     const today = new Date().toISOString().slice(0, 10);
     const due = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
     document.getElementById('inv-date').value = today;
@@ -227,6 +227,12 @@
     ['inv-client', 'inv-email', 'inv-project', 'inv-notes'].forEach(id => document.getElementById(id).value = '');
     document.getElementById('inv-payment').value = 'wise';
     items = [{ desc: 'Development', qty: 1, rate: 0 }];
+    try {
+      const n = await window.db.getNextInvoiceNumber();
+      document.getElementById('inv-number').value = 'BRT-' + n;
+    } catch {
+      // leave invoice number as-is if DB unavailable
+    }
     renderItems(); update();
   }
 
@@ -262,6 +268,7 @@
     try {
       const session = await window.supabaseClient.auth.getSession();
       const token = session.data.session?.access_token;
+      if (!token) throw new Error('Session expired — please reload and try again.');
       const res = await fetch('/api/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -292,6 +299,7 @@
     update();
     document.getElementById('btn-save-inv').addEventListener('click', saveInvoice);
     document.getElementById('btn-send-inv').addEventListener('click', sendInvoiceToClient);
+    document.querySelector('.btn-clear').addEventListener('click', () => clearForm());
   });
 </script>
 </body>

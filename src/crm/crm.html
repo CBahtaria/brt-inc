@@ -75,7 +75,7 @@
         <th onclick="sortTable('stage')">Stage</th>
         <th onclick="sortTable('service')">Service</th>
         <th onclick="sortTable('value')">Value</th>
-        <th onclick="sortTable('date')">Date</th>
+        <th onclick="sortTable('created_at')">Date</th>
         <th>Notes</th>
       </tr>
     </thead>
@@ -117,14 +117,9 @@
 
 <script>
   const STAGES = ['Lead', 'Contacted', 'Proposal Sent', 'Active', 'Completed'];
-  const STORE_KEY = 'brt_crm_v1';
 
-  function load() { try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; } catch { return []; } }
-  function save(data) { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
-  function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
-
-  let clients = load();
-  let sortKey = 'date', sortAsc = false;
+  let clients = [];
+  let sortKey = 'created_at', sortAsc = false;
 
   function renderKanban() {
     const board = document.getElementById('kanban');
@@ -156,7 +151,7 @@
       <tr data-id="${esc(c.id)}" style="cursor:pointer">
         <td>${esc(c.name)}</td><td>${esc(c.stage)}</td><td>${esc(c.service || '—')}</td>
         <td>${c.value ? 'R' + Number(c.value).toLocaleString() : '—'}</td>
-        <td>${c.date ? c.date.slice(0,10) : '—'}</td>
+        <td>${c.created_at ? c.created_at.slice(0,10) : '—'}</td>
         <td style="color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.notes || '')}</td>
       </tr>`).join('');
   }
@@ -198,33 +193,34 @@
 
   function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
 
-  function saveClient() {
+  async function saveClient() {
     const id = document.getElementById('edit-id').value;
     const entry = {
-      id: id || uid(),
       name: document.getElementById('f-name').value.trim(),
       stage: document.getElementById('f-stage').value,
       service: document.getElementById('f-service').value.trim(),
       value: document.getElementById('f-value').value,
       email: document.getElementById('f-email').value.trim(),
       notes: document.getElementById('f-notes').value.trim(),
-      date: id ? (clients.find(c => c.id === id)?.date || new Date().toISOString()) : new Date().toISOString(),
     };
     if (!entry.name) { alert('Name is required.'); return; }
-    if (id) { clients = clients.map(c => c.id === id ? entry : c); }
-    else { clients.push(entry); }
-    save(clients); render(); closeModal();
+    if (id) { entry.id = id; }
+    await window.db.upsertClient(entry);
+    clients = await window.db.getClients();
+    render(); closeModal();
   }
 
-  function deleteClient() {
+  async function deleteClient() {
     if (!confirm('Delete this client record?')) return;
     const id = document.getElementById('edit-id').value;
-    clients = clients.filter(c => c.id !== id);
-    save(clients); render(); closeModal();
+    await window.db.deleteClient(id);
+    clients = await window.db.getClients();
+    render(); closeModal();
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    requireAuth();
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+    clients = await window.db.getClients();
     render();
     document.getElementById('client-table').addEventListener('click', e => {
       const row = e.target.closest('tr[data-id]');

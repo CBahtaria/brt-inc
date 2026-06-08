@@ -12,6 +12,12 @@
     if (error) throw new Error(error.message || JSON.stringify(error));
   }
 
+  async function currentUserId() {
+    const { data: { session } } = await client().auth.getSession();
+    if (!session?.user?.id) throw new Error('No active session');
+    return session.user.id;
+  }
+
   // ----------------------------------------------------------
   // clients
   // ----------------------------------------------------------
@@ -27,7 +33,7 @@
   async function upsertClient(record) {
     const { data, error } = await client()
       .from('clients')
-      .upsert(record)
+      .upsert({ ...record, user_id: await currentUserId() })
       .select();
     throwIfError(error);
     return data;
@@ -56,7 +62,7 @@
   async function upsertProposal(record) {
     const { data, error } = await client()
       .from('proposals')
-      .upsert(record)
+      .upsert({ ...record, user_id: await currentUserId() })
       .select();
     throwIfError(error);
     return data;
@@ -85,7 +91,7 @@
   async function upsertInvoice(record) {
     const { data, error } = await client()
       .from('invoices')
-      .upsert(record)
+      .upsert({ ...record, user_id: await currentUserId() })
       .select();
     throwIfError(error);
     return data;
@@ -143,7 +149,7 @@
   async function upsertServiceAgreement(record) {
     const { data, error } = await client()
       .from('service_agreements')
-      .upsert(record)
+      .upsert({ ...record, user_id: await currentUserId() })
       .select();
     throwIfError(error);
     return data;
@@ -172,7 +178,7 @@
   async function upsertRunbookTemplate(record) {
     const { data, error } = await client()
       .from('runbook_templates')
-      .upsert(record)
+      .upsert({ ...record, user_id: await currentUserId() })
       .select();
     throwIfError(error);
     return data;

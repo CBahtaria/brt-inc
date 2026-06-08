@@ -10,10 +10,11 @@ const handler = async function(req, res) {
   if (!sig) return res.status(400).json({ error: 'Missing stripe-signature header' });
 
   // Collect raw body chunks
-  let rawBody = '';
+  const chunks = [];
   for await (const chunk of req) {
-    rawBody += chunk;
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
+  const rawBody = Buffer.concat(chunks);
 
   let event;
   try {
@@ -30,7 +31,7 @@ const handler = async function(req, res) {
     if (invoiceId) {
       const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
       const { error } = await supabase.from('invoices').update({ paid_at: new Date().toISOString() }).eq('id', invoiceId);
-      if (error) console.error('Failed to mark invoice paid:', error);
+      if (error) console.error('Failed to mark invoice paid:', { invoiceId, error: error.message });
     }
   }
 

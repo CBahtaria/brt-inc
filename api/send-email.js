@@ -9,7 +9,7 @@ module.exports = async function handler(req, res) {
 
   // Validate auth: extract Bearer token and verify with Supabase
   const authHeader = req.headers.authorization || '';
-  const token = authHeader.replace('Bearer ', '');
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
   if (!token) {
     return res.status(401).json({ error: 'Missing authorization token' });
   }

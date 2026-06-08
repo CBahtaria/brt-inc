@@ -19,6 +19,12 @@
       ]
     },
     {
+      "source": "/onboard",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" }
+      ]
+    },
+    {
       "source": "/src/(.*)",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
@@ -32,6 +38,8 @@
     { "source": "/invoice", "destination": "/src/proposals/invoice.html" },
     { "source": "/status", "destination": "/src/status/status-dashboard.html" },
     { "source": "/casestudy/sentinel", "destination": "/src/casestudy/sentinel-audit.html" },
-    { "source": "/terms", "destination": "/src/legal/terms.html" }
+    { "source": "/terms", "destination": "/src/legal/terms.html" },
+    { "source": "/login", "destination": "/src/login/login.html" },
+    { "source": "/onboard", "destination": "/src/onboarding/onboarding-form.html" }
   ]
 }

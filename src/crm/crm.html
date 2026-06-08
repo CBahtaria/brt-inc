@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/js/supabase-client.js"></script>
   <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
   <style>
     :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -107,10 +108,10 @@
     <textarea id="f-notes" placeholder="Key details, follow-up actions..."></textarea>
     <div class="modal-actions">
       <div>
-        <button class="btn-del" id="del-btn" onclick="deleteClient()" style="display:none">Delete</button>
+        <button class="btn-del" id="del-btn" style="display:none">Delete</button>
         <button class="btn-cancel" onclick="closeModal()">Cancel</button>
       </div>
-      <button class="btn-save" onclick="saveClient()">Save</button>
+      <button class="btn-save">Save</button>
     </div>
   </div>
 </div>
@@ -203,23 +204,38 @@
       email: document.getElementById('f-email').value.trim(),
       notes: document.getElementById('f-notes').value.trim(),
     };
+    if (id) entry.id = id;
     if (!entry.name) { alert('Name is required.'); return; }
-    if (id) { entry.id = id; }
-    await window.db.upsertClient(entry);
-    clients = await window.db.getClients();
-    render(); closeModal();
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true;
+    try {
+      await window.db.upsertClient(entry);
+      clients = await window.db.getClients();
+      render(); closeModal();
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
   }
 
   async function deleteClient() {
-    if (!confirm('Delete this client record?')) return;
     const id = document.getElementById('edit-id').value;
-    await window.db.deleteClient(id);
-    clients = await window.db.getClients();
-    render(); closeModal();
+    if (!id) return;
+    if (!confirm('Delete this client record?')) return;
+    try {
+      await window.db.deleteClient(id);
+      clients = await window.db.getClients();
+      render(); closeModal();
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
     await requireAuth();
+    document.getElementById('del-btn').addEventListener('click', () => deleteClient());
+    document.querySelector('.btn-save').addEventListener('click', () => saveClient());
     clients = await window.db.getClients();
     render();
     document.getElementById('client-table').addEventListener('click', e => {

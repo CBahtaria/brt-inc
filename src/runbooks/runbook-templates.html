@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>BRT Inc. // Runbooks</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/js/supabase-client.js"></script>
+  <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; display:flex; height:100vh; overflow:hidden; }
+
+    /* Left panel */
+    .left-panel {
+      width:280px;
+      flex-shrink:0;
+      border-right:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .left-header {
+      padding:1rem;
+      border-bottom:1px solid var(--border);
+    }
+    .left-header h1 {
+      color:var(--accent);
+      font-size:.9rem;
+      margin-bottom:.8rem;
+    }
+    .section-header {
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .section-label {
+      color:var(--muted);
+      font-size:.7rem;
+      text-transform:uppercase;
+      letter-spacing:.1em;
+    }
+    .btn-new {
+      background:none;
+      border:1px solid var(--border);
+      color:var(--accent);
+      padding:.2rem .5rem;
+      font-family:var(--font);
+      font-size:.7rem;
+      cursor:pointer;
+    }
+    .btn-new:hover { border-color:var(--accent); }
+
+    .template-list {
+      flex:1;
+      overflow-y:auto;
+      padding:.5rem 0;
+    }
+    .template-card {
+      padding:.6rem 1rem;
+      border-left:2px solid transparent;
+      cursor:pointer;
+      border-bottom:1px solid var(--border);
+    }
+    .template-card:hover { background:var(--card); }
+    .template-card.active { border-left-color:var(--accent); background:var(--card); }
+    .card-title { color:var(--fg); font-size:.85rem; margin-bottom:.2rem; }
+    .card-badge {
+      display:inline-block;
+      background:var(--border);
+      color:var(--muted);
+      font-size:.65rem;
+      padding:.1rem .4rem;
+      margin-right:.3rem;
+    }
+    .card-used {
+      display:block;
+      color:var(--muted);
+      font-size:.65rem;
+      margin-top:.2rem;
+    }
+
+    /* Right panel */
+    .right-panel {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .editor-header {
+      padding:1rem 1.2rem;
+      border-bottom:1px solid var(--border);
+      display:flex;
+      flex-direction:column;
+      gap:.5rem;
+    }
+    .editor-title-row {
+      display:flex;
+      align-items:center;
+      gap:.8rem;
+    }
+    .editor-title-input {
+      flex:1;
+      background:var(--bg);
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:.4rem .7rem;
+      font-family:var(--font);
+      font-size:.95rem;
+      outline:none;
+    }
+    .editor-title-input:focus { border-color:var(--accent); }
+    .editor-title-input[readonly] { color:var(--muted); cursor:default; }
+    .editor-category {
+      background:var(--bg);
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:.4rem .6rem;
+      font-family:var(--font);
+      font-size:.85rem;
+      outline:none;
+      cursor:pointer;
+    }
+    .editor-category:focus { border-color:var(--accent); }
+    .editor-category:disabled { color:var(--muted); cursor:default; opacity:1; }
+    .builtin-note {
+      color:var(--muted);
+      font-size:.7rem;
+      font-style:italic;
+    }
+    .editor-body {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      padding:1rem 1.2rem;
+      gap:.8rem;
+      overflow:hidden;
+    }
+    .editor-textarea {
+      flex:1;
+      background:var(--card);
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:.8rem 1rem;
+      font-family:monospace;
+      font-size:.85rem;
+      line-height:1.6;
+      resize:none;
+      outline:none;
+      min-height:400px;
+    }
+    .editor-textarea:focus { border-color:var(--accent); }
+    .actions {
+      display:flex;
+      gap:.6rem;
+      flex-wrap:wrap;
+      padding-bottom:.5rem;
+    }
+    .btn {
+      background:none;
+      border:1px solid var(--border);
+      color:var(--fg);
+      padding:.35rem .9rem;
+      font-family:var(--font);
+      font-size:.8rem;
+      cursor:pointer;
+    }
+    .btn:hover { border-color:var(--muted); }
+    .btn-primary {
+      background:var(--accent);
+      color:var(--bg);
+      border-color:var(--accent);
+    }
+    .btn-primary:hover { opacity:.9; }
+    .btn-danger {
+      color:#ff4444;
+      border-color:#333;
+    }
+    .btn-danger:hover { border-color:#ff4444; }
+
+    @media print {
+      .left-panel { display:none !important; }
+      .right-panel { width:100% !important; }
+      .actions { display:none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="left-panel">
+  <div class="left-header">
+    <h1>BRT Inc. // Runbooks</h1>
+    <div class="section-header">
+      <span class="section-label">Templates</span>
+      <button class="btn-new" id="btn-new">[+ New]</button>
+    </div>
+  </div>
+  <div class="template-list" id="template-list"></div>
+</div>
+
+<div class="right-panel">
+  <div class="editor-header">
+    <div class="editor-title-row">
+      <input type="text" class="editor-title-input" id="editor-title" placeholder="Template title..." />
+      <select class="editor-category" id="editor-category">
+        <option value="vercel">vercel</option>
+        <option value="docker">docker</option>
+        <option value="github-actions">github-actions</option>
+        <option value="database">database</option>
+        <option value="general">general</option>
+      </select>
+    </div>
+    <div class="builtin-note" id="builtin-note" style="display:none">(built-in — Save as Custom to create an editable copy)</div>
+  </div>
+  <div class="editor-body">
+    <textarea class="editor-textarea" id="editor-content" placeholder="Write Markdown content here..."></textarea>
+    <div class="actions">
+      <button class="btn btn-primary" id="btn-save-custom">Save as Custom</button>
+      <button class="btn" id="btn-export">Export .md</button>
+      <button class="btn" id="btn-print">Print</button>
+      <button class="btn btn-danger" id="btn-delete" style="display:none">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ----------------------------------------------------------------
+  // Built-in templates
+  // ----------------------------------------------------------------
+  const BUILT_IN_TEMPLATES = [
+    {
+      id: 'builtin-vercel',
+      title: 'Vercel Static Deploy',
+      category: 'vercel',
+      content: `# Vercel Static Deploy Runbook
+
+## Pre-deploy Checklist
+- [ ] All HTML/CSS/JS changes committed
+- [ ] vercel.json rewrites/headers verified
+- [ ] Environment variables set in Vercel dashboard
+- [ ] CSP headers tested locally
+
+## Deploy Steps
+1. Push to \`main\` branch → Vercel auto-deploys
+2. Monitor build logs in Vercel dashboard
+3. Verify deployment URL works
+4. Test all page routes (rewrites)
+5. Check browser console for errors
+
+## Post-deploy Verification
+- [ ] Auth flow works (login → redirect → logout)
+- [ ] Supabase queries succeed (check network tab)
+- [ ] CSP not blocking any resources
+- [ ] All internal tools load correctly
+
+## Rollback
+- Vercel dashboard → Deployments → Promote previous deployment`,
+      last_used_at: null,
+      created_at: null,
+    },
+    {
+      id: 'builtin-docker',
+      title: 'Docker + Nginx',
+      category: 'docker',
+      content: `# Docker + Nginx Deploy Runbook
+
+## Pre-deploy Checklist
+- [ ] Docker image builds locally: \`docker build -t app .\`
+- [ ] Environment variables ready
+- [ ] Nginx config tested
+- [ ] SSL certificate valid
+
+## Deploy Steps
+1. Pull latest code: \`git pull origin main\`
+2. Build image: \`docker build -t app:$(git rev-parse --short HEAD) .\`
+3. Stop old container: \`docker stop app && docker rm app\`
+4. Start new container: \`docker run -d --name app -p 3000:3000 --env-file .env app:<tag>\`
+5. Reload Nginx: \`sudo nginx -s reload\`
+6. Verify: \`curl -I https://yourdomain.com\`
+
+## Post-deploy Verification
+- [ ] Container running: \`docker ps\`
+- [ ] Logs clean: \`docker logs app --tail 50\`
+- [ ] HTTPS working
+- [ ] Health endpoint responding
+
+## Rollback
+\`docker stop app && docker rm app && docker run -d --name app app:<previous-tag>\``,
+      last_used_at: null,
+      created_at: null,
+    },
+    {
+      id: 'builtin-github-actions',
+      title: 'GitHub Actions CI/CD',
+      category: 'github-actions',
+      content: `# GitHub Actions CI/CD Runbook
+
+## Workflow Overview
+Triggered on push to \`main\`. Runs tests → builds → deploys.
+
+## Pre-flight Checks
+- [ ] Secrets configured in repo Settings → Secrets
+- [ ] Branch protection rules set on \`main\`
+- [ ] Required status checks enabled
+
+## Monitoring a Run
+1. GitHub → Actions tab → select workflow run
+2. Expand each job to see step logs
+3. Failed step? Click to expand, read error
+
+## Common Failures
+| Failure | Fix |
+|---|---|
+| Test failure | Fix test, push again |
+| Missing secret | Add in repo Settings → Secrets |
+| Build timeout | Optimize build or increase timeout |
+| Deploy permission | Check deploy key / token expiry |
+
+## Manual Trigger
+\`gh workflow run deploy.yml --ref main\`
+
+## Rollback
+\`git revert HEAD && git push\` or re-run a previous workflow via GitHub Actions UI.`,
+      last_used_at: null,
+      created_at: null,
+    },
+    {
+      id: 'builtin-postgres',
+      title: 'PostgreSQL Migration Checklist',
+      category: 'database',
+      content: `# PostgreSQL Migration Checklist
+
+## Before Running Migration
+- [ ] Backup production DB: \`pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql\`
+- [ ] Test migration on staging first
+- [ ] Estimate downtime (if any)
+- [ ] Notify stakeholders if downtime > 0
+
+## Running the Migration
+1. Connect to DB: \`psql $DATABASE_URL\`
+2. Begin transaction: \`BEGIN;\`
+3. Run migration SQL
+4. Verify data looks correct: \`SELECT COUNT(*) FROM affected_table;\`
+5. Commit: \`COMMIT;\` (or \`ROLLBACK;\` if something looks wrong)
+
+## Post-migration Verification
+- [ ] Row counts match expectations
+- [ ] Indexes created successfully: \`\\d table_name\`
+- [ ] RLS policies still in effect: \`SELECT * FROM pg_policies WHERE tablename = 'your_table';\`
+- [ ] Application queries working
+
+## Rollback
+\`\`\`sql
+-- Restore from backup
+psql $DATABASE_URL < backup_YYYYMMDD.sql
+\`\`\`
+
+## Supabase-Specific Notes
+- Migrations live in \`supabase/migrations/\`
+- Apply via: \`supabase db push\` (remote) or \`supabase db reset\` (local)
+- RLS: always test with \`SET ROLE authenticated;\` before committing`,
+      last_used_at: null,
+      created_at: null,
+    },
+  ];
+
+  // ----------------------------------------------------------------
+  // State
+  // ----------------------------------------------------------------
+  let customTemplates = [];
+  let activeTemplate = null;
+
+  // ----------------------------------------------------------------
+  // Helpers
+  // ----------------------------------------------------------------
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, c => (
+      { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    ));
+  }
+
+  function slugify(s) {
+    return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'runbook';
+  }
+
+  function formatDate(iso) {
+    if (!iso) return null;
+    try {
+      const d = new Date(iso);
+      return d.toLocaleDateString('en-ZA', { year: 'numeric', month: 'short', day: 'numeric' });
+    } catch {
+      return iso.slice(0, 10);
+    }
+  }
+
+  function isBuiltin(template) {
+    return template && String(template.id).startsWith('builtin-');
+  }
+
+  // ----------------------------------------------------------------
+  // Render list
+  // ----------------------------------------------------------------
+  function renderList() {
+    const list = document.getElementById('template-list');
+    const all = [...BUILT_IN_TEMPLATES, ...customTemplates];
+    let html = '';
+    for (const t of all) {
+      const isActive = activeTemplate && activeTemplate.id === t.id;
+      const usedAt = t.last_used_at ? formatDate(t.last_used_at) : null;
+      html += `<div class="template-card${isActive ? ' active' : ''}" data-id="${esc(String(t.id))}">
+        <div class="card-title">${esc(t.title)}</div>
+        <span class="card-badge">${esc(t.category)}</span>${isBuiltin(t) ? '<span class="card-badge" style="color:var(--accent);opacity:.7">built-in</span>' : ''}
+        ${usedAt ? `<span class="card-used">used ${esc(usedAt)}</span>` : ''}
+      </div>`;
+    }
+    list.innerHTML = html;
+
+    list.querySelectorAll('.template-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const id = card.dataset.id;
+        const found = all.find(t => String(t.id) === id);
+        if (found) loadTemplate(found);
+      });
+    });
+  }
+
+  // ----------------------------------------------------------------
+  // Load template into editor
+  // ----------------------------------------------------------------
+  async function loadTemplate(template) {
+    activeTemplate = template;
+
+    document.getElementById('editor-title').value = template.title;
+    document.getElementById('editor-category').value = template.category;
+    document.getElementById('editor-content').value = template.content;
+
+    const builtin = isBuiltin(template);
+
+    // Title: readonly for built-ins
+    const titleInput = document.getElementById('editor-title');
+    if (builtin) {
+      titleInput.setAttribute('readonly', '');
+    } else {
+      titleInput.removeAttribute('readonly');
+    }
+
+    // Category: disabled for built-ins
+    const catSelect = document.getElementById('editor-category');
+    if (builtin) {
+      catSelect.setAttribute('disabled', '');
+    } else {
+      catSelect.removeAttribute('disabled');
+    }
+
+    // Built-in note
+    document.getElementById('builtin-note').style.display = builtin ? 'block' : 'none';
+
+    // Delete button: only for custom templates
+    document.getElementById('btn-delete').style.display = builtin ? 'none' : 'inline-block';
+
+    // Touch last_used_at for custom templates
+    if (!builtin) {
+      try {
+        await window.db.touchRunbookTemplate(template.id);
+        // Update in local array too
+        const idx = customTemplates.findIndex(t => t.id === template.id);
+        if (idx !== -1) customTemplates[idx].last_used_at = new Date().toISOString();
+      } catch (err) {
+        // non-fatal
+        console.warn('touchRunbookTemplate failed:', err);
+      }
+    }
+
+    renderList();
+  }
+
+  // ----------------------------------------------------------------
+  // Save as custom
+  // ----------------------------------------------------------------
+  async function saveAsCustom() {
+    const title = document.getElementById('editor-title').value.trim();
+    const category = document.getElementById('editor-category').value;
+    const content = document.getElementById('editor-content').value;
+
+    if (!title) { alert('Please enter a template title.'); return; }
+
+    const record = { title, category, content };
+
+    // If active is a custom (non-builtin), update it
+    if (activeTemplate && !isBuiltin(activeTemplate)) {
+      record.id = activeTemplate.id;
+    }
+    // If active is a builtin, omit id → creates new record
+
+    const btn = document.getElementById('btn-save-custom');
+    btn.disabled = true;
+    try {
+      const saved = await window.db.upsertRunbookTemplate(record);
+      customTemplates = await window.db.getRunbookTemplates();
+      // Set activeTemplate to the saved record
+      if (saved && saved.length > 0) {
+        activeTemplate = saved[0];
+      }
+      renderList();
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // Export .md
+  // ----------------------------------------------------------------
+  function exportMd() {
+    const title = document.getElementById('editor-title').value.trim() || 'runbook';
+    const content = document.getElementById('editor-content').value;
+    const filename = slugify(title) + '.md';
+    const blob = new Blob([content], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // ----------------------------------------------------------------
+  // Delete custom template
+  // ----------------------------------------------------------------
+  async function deleteCustom() {
+    if (!activeTemplate || isBuiltin(activeTemplate)) return;
+    if (!confirm('Delete this template?')) return;
+
+    try {
+      await window.db.deleteRunbookTemplate(activeTemplate.id);
+      customTemplates = customTemplates.filter(t => t.id !== activeTemplate.id);
+      renderList();
+      // Load first built-in
+      await loadTemplate(BUILT_IN_TEMPLATES[0]);
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  }
+
+  // ----------------------------------------------------------------
+  // New blank custom template
+  // ----------------------------------------------------------------
+  function newTemplate() {
+    // Create a transient object — not saved until "Save as Custom" is clicked
+    activeTemplate = {
+      id: 'new-unsaved',
+      title: 'New Runbook',
+      category: 'general',
+      content: '# New Runbook\n\n## Steps\n1. \n',
+      last_used_at: null,
+      created_at: null,
+    };
+
+    document.getElementById('editor-title').value = activeTemplate.title;
+    document.getElementById('editor-category').value = activeTemplate.category;
+    document.getElementById('editor-content').value = activeTemplate.content;
+    document.getElementById('editor-title').removeAttribute('readonly');
+    document.getElementById('editor-category').removeAttribute('disabled');
+    document.getElementById('builtin-note').style.display = 'none';
+    document.getElementById('btn-delete').style.display = 'none';
+
+    // De-highlight all cards
+    renderList();
+    document.getElementById('editor-title').focus();
+    document.getElementById('editor-title').select();
+  }
+
+  // ----------------------------------------------------------------
+  // Boot
+  // ----------------------------------------------------------------
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+
+    try {
+      customTemplates = await window.db.getRunbookTemplates();
+    } catch (err) {
+      alert('Failed to load templates: ' + err.message);
+      customTemplates = [];
+    }
+
+    renderList();
+    await loadTemplate(BUILT_IN_TEMPLATES[0]);
+
+    document.getElementById('btn-new').addEventListener('click', newTemplate);
+    document.getElementById('btn-save-custom').addEventListener('click', saveAsCustom);
+    document.getElementById('btn-export').addEventListener('click', exportMd);
+    document.getElementById('btn-print').addEventListener('click', () => window.print());
+    document.getElementById('btn-delete').addEventListener('click', deleteCustom);
+  });
+</script>
+</body>
+</html>

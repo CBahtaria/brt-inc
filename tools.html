@@ -8,6 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="/src/js/supabase-client.js"></script>
   <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
   <style>
     :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -30,7 +31,7 @@
 <div class="grid">
   <div class="tool-card">
     <h2>CRM</h2>
-    <p>Client pipeline — kanban board and table view. Persists in localStorage.</p>
+    <p>Client pipeline — kanban board and table view. Synced across devices.</p>
     <a href="/src/crm/crm.html" class="tool-link">Open CRM →</a>
   </div>
   <div class="tool-card">
@@ -49,6 +50,21 @@
     <a href="/src/status/status-dashboard.html" class="tool-link">Open Status →</a>
   </div>
   <div class="tool-card">
+    <h2>Service Agreements</h2>
+    <p>Generate, save, and send contracts to clients. Draft → Sent → Countersigned workflow.</p>
+    <a href="/agreements" class="tool-link">Open Agreements →</a>
+  </div>
+  <div class="tool-card">
+    <h2>Runbook Templates</h2>
+    <p>Deployment runbooks for Vercel, Docker, GitHub Actions, and database migrations.</p>
+    <a href="/runbooks" class="tool-link">Open Runbooks →</a>
+  </div>
+  <div class="tool-card">
+    <h2>Client Onboarding</h2>
+    <p>Public intake form for prospects. Share the link, collect project requirements.</p>
+    <a href="/onboard" class="tool-link" target="_blank" rel="noopener noreferrer">Open Form →</a>
+  </div>
+  <div class="tool-card">
     <h2>Sentinel Case Study</h2>
     <p>Public case study page — open to share with clients.</p>
     <a href="/src/casestudy/sentinel-audit.html" class="tool-link">Open Case Study →</a>
@@ -60,10 +76,46 @@
   </div>
 </div>
 
-<button class="logout" onclick="sessionStorage.clear(); location.reload()">[ logout ]</button>
+<div id="submissions-section" style="margin-top:2.5rem">
+  <h2 style="color:var(--muted);font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:1rem">Onboarding Submissions</h2>
+  <div id="submissions-list" style="font-size:.8rem;color:var(--muted)">Loading...</div>
+</div>
+
+<button class="logout" onclick="logout()">[ logout ]</button>
 
 <script>
-  document.addEventListener('DOMContentLoaded', requireAuth);
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+    try {
+      const subs = await window.db.getOnboardingSubmissions();
+      const el = document.getElementById('submissions-list');
+      if (!subs || subs.length === 0) {
+        el.textContent = 'No submissions yet.';
+        return;
+      }
+      function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+      el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.8rem">
+        <thead><tr>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Company</th>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Contact</th>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Email</th>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Project</th>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Budget</th>
+          <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Date</th>
+        </tr></thead>
+        <tbody>${subs.map(s=>`<tr>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">${esc(s.company)}</td>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">${esc(s.contact_name||'—')}</td>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">${esc(s.email||'—')}</td>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border)">${esc(s.project_type||'—')}</td>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border);color:var(--accent)">${esc(s.budget_range||'—')}</td>
+          <td style="padding:.4rem .6rem;border-bottom:1px solid var(--border);color:var(--muted)">${s.created_at?s.created_at.slice(0,10):'—'}</td>
+        </tr>`).join('')}</tbody>
+      </table>`;
+    } catch (err) {
+      document.getElementById('submissions-list').textContent = 'Could not load submissions.';
+    }
+  });
 </script>
 </body>
 </html>

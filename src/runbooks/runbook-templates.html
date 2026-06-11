@@ -490,7 +490,7 @@ psql $DATABASE_URL < backup_YYYYMMDD.sql
     const record = { title, category, content };
 
     // If active is a custom (non-builtin), update it
-    if (activeTemplate && !isBuiltin(activeTemplate)) {
+    if (activeTemplate && !isBuiltin(activeTemplate) && activeTemplate.id) {
       record.id = activeTemplate.id;
     }
     // If active is a builtin, omit id → creates new record
@@ -540,6 +540,7 @@ psql $DATABASE_URL < backup_YYYYMMDD.sql
     try {
       await window.db.deleteRunbookTemplate(activeTemplate.id);
       customTemplates = customTemplates.filter(t => t.id !== activeTemplate.id);
+      activeTemplate = null;
       renderList();
       // Load first built-in
       await loadTemplate(BUILT_IN_TEMPLATES[0]);
@@ -554,7 +555,7 @@ psql $DATABASE_URL < backup_YYYYMMDD.sql
   function newTemplate() {
     // Create a transient object — not saved until "Save as Custom" is clicked
     activeTemplate = {
-      id: 'new-unsaved',
+      id: null,
       title: 'New Runbook',
       category: 'general',
       content: '# New Runbook\n\n## Steps\n1. \n',

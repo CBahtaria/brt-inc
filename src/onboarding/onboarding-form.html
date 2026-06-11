@@ -89,8 +89,8 @@
         <option value="Web Application">Web Application</option>
         <option value="Mobile App">Mobile App</option>
         <option value="Security Audit">Security Audit</option>
-        <option value="Data Science / AI">Data Science / AI</option>
-        <option value="DevOps / Infrastructure">DevOps / Infrastructure</option>
+        <option value="Data Science/AI">Data Science/AI</option>
+        <option value="DevOps/Infrastructure">DevOps/Infrastructure</option>
         <option value="Business Software">Business Software</option>
         <option value="Other">Other</option>
       </select>
@@ -300,7 +300,8 @@
       successEl.style.display = 'block';
 
     } catch (err) {
-      globalErr.textContent = 'Submission failed: ' + (err.message || 'Please try again.');
+      console.error('Submission error:', err);
+      globalErr.textContent = 'Submission failed. Please try again or email charleskris9@gmail.com.';
       globalErr.classList.add('visible');
       btn.disabled = false;
       btn.textContent = 'Send to BRT Inc.';

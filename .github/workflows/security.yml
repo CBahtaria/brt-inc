@@ -64,7 +64,7 @@ jobs:
             echo "FAIL: Potential Stripe live publishable key found" >&2
             FAILED=1
           fi
-          if grep -rniE 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]{20,}\.' --include="*.html" --include="*.js" src/ api/ 2>/dev/null | grep -v supabase-client.js; then
+          if grep -rniE 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]{20,}\.' --include="*.html" --include="*.js" --exclude="supabase-client.js" src/ api/ 2>/dev/null; then
             echo "FAIL: Potential Supabase JWT service role key found in source" >&2
             FAILED=1
           fi

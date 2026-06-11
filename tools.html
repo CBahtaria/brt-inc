@@ -84,6 +84,8 @@
 <button class="logout" onclick="logout()">[ logout ]</button>
 
 <script>
+  function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
   document.addEventListener('DOMContentLoaded', async () => {
     await requireAuth();
     try {
@@ -93,7 +95,6 @@
         el.textContent = 'No submissions yet.';
         return;
       }
-      function esc(s) { return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
       el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:.8rem">
         <thead><tr>
           <th style="text-align:left;color:var(--muted);padding:.4rem .6rem;border-bottom:1px solid var(--border);font-weight:normal">Company</th>

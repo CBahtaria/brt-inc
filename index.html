@@ -30,6 +30,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <!-- MediaPipe Hand Tracking — deferred, loads after paint -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3.1640029074/camera_utils.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3.1620248257/drawing_utils.js" crossorigin="anonymous"></script>
   <style>
     /* ─── DESIGN TOKENS — DARK (default) ─── */
     :root {
@@ -100,6 +104,8 @@
       }
       .reveal { opacity: 1 !important; transform: none !important; }
       [data-anim] { opacity: 1 !important; transform: none !important; }
+      #particle-canvas { display: none; }
+      .vid-scanline { display: none; }
     }
 
     /* ─── RESET ─── */
@@ -265,11 +271,10 @@
       color: #f1f5ff;
     }
     .hero-bg { position: absolute; inset: 0; z-index: 0; }
-    .hero-img {
-      width: 100%; height: 110%;
-      object-fit: cover;
-      object-position: center;
-      will-change: transform;
+    #particle-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
     }
     .hero-overlay {
       position: absolute; inset: 0;
@@ -284,12 +289,195 @@
     .hero-body {
       position: relative; z-index: 2;
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
+      display: grid;
+      grid-template-columns: 55fr 45fr;
+      align-items: center;
+      gap: 3rem;
       padding-top: calc(var(--nav-h) + 4rem);
       padding-bottom: 3rem;
     }
+    .hero-left { display: flex; flex-direction: column; }
+    .hero-right {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+
+    /* ─── VIDEO FRAME ─── */
+    .video-frame {
+      position: relative;
+      width: 100%;
+      border-radius: 1rem;
+      overflow: hidden;
+      border: 1px solid rgba(59,130,246,.35);
+      box-shadow: 0 0 40px rgba(59,130,246,.18), inset 0 0 0 1px rgba(255,255,255,.04);
+      background: #040810;
+      aspect-ratio: 16/9;
+    }
+    .video-frame::before {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 1rem;
+      background: linear-gradient(180deg, rgba(59,130,246,.06) 0%, transparent 40%);
+      pointer-events: none; z-index: 2;
+    }
+    #hero-reel {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      opacity: .92;
+    }
+    .vid-corner {
+      position: absolute;
+      font-size: .6rem;
+      font-family: var(--mono);
+      letter-spacing: .1em;
+      font-weight: 600;
+      z-index: 3;
+      padding: .4rem .6rem;
+    }
+    .vid-corner-tl {
+      top: .6rem; left: .7rem;
+      color: #ef4444;
+      display: flex; align-items: center; gap: .35rem;
+    }
+    .vid-corner-tl::before {
+      content: '';
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 6px #ef4444;
+      animation: recBlink 1.4s ease-in-out infinite;
+    }
+    @keyframes recBlink {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .35; }
+    }
+    .vid-corner-tr {
+      top: .6rem; right: .7rem;
+      color: rgba(148,163,184,.6);
+    }
+    .vid-scanline {
+      position: absolute; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(59,130,246,.5), transparent);
+      z-index: 3;
+      animation: scanDown 3.5s linear infinite;
+      top: 0;
+    }
+    @keyframes scanDown {
+      0%   { top: 0; opacity: .8; }
+      80%  { opacity: .8; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ─── CAMERA CARD ─── */
+    .camera-card {
+      position: relative;
+      width: 220px;
+      background: rgba(5,7,14,.82);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(34,211,238,.28);
+      border-radius: .75rem;
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(34,211,238,.1);
+    }
+    .cam-label {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      font-size: .6rem;
+      font-family: var(--mono);
+      font-weight: 600;
+      letter-spacing: .14em;
+      color: rgba(34,211,238,.8);
+      padding: .45rem .7rem .3rem;
+      border-bottom: 1px solid rgba(34,211,238,.12);
+      text-transform: uppercase;
+    }
+    .cam-dot-indicator {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: pulse-dot 1.8s ease-in-out infinite;
+    }
+    .cam-viewport {
+      position: relative;
+      width: 220px; height: 165px;
+      overflow: hidden;
+      background: #020408;
+    }
+    #cam-feed {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transform: scaleX(-1);
+      display: block;
+      opacity: .85;
+    }
+    #hand-canvas {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .cam-grid-overlay {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(34,211,238,.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34,211,238,.06) 1px, transparent 1px);
+      background-size: 27.5px 20.6px;
+      pointer-events: none; z-index: 2;
+    }
+    .cam-crosshair {
+      position: absolute; top: 50%; left: 50%;
+      width: 24px; height: 24px;
+      transform: translate(-50%,-50%);
+      z-index: 3; pointer-events: none;
+    }
+    .cam-crosshair::before, .cam-crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(34,211,238,.4);
+    }
+    .cam-crosshair::before { top: 50%; left: 0; right: 0; height: 1px; }
+    .cam-crosshair::after  { left: 50%; top: 0; bottom: 0; width: 1px; }
+    .cam-skeleton-fallback {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 2;
+    }
+    .cam-skeleton-fallback svg { opacity: .3; }
+    #cam-enable {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      border-top: 1px solid rgba(34,211,238,.12);
+      color: rgba(34,211,238,.7);
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: .1em;
+      padding: .5rem .7rem;
+      cursor: pointer;
+      text-align: left;
+      transition: color .2s, background .2s;
+    }
+    #cam-enable:hover { color: #22d3ee; background: rgba(34,211,238,.05); }
+    #cam-enable.active { color: #22c55e; }
+    .cam-hint-text { color: rgba(148,163,184,.5); font-size: .6rem; font-family: var(--mono); padding: .4rem .7rem; }
+
+    /* ─── HERO SLIDE TRANSITION ─── */
+    #hero h1 { transition: opacity .35s ease, transform .35s ease; }
+
+    /* ─── BORDER PULSE ON VIDEO ─── */
+    @keyframes borderPulse {
+      0%,100% { box-shadow: 0 0 40px rgba(59,130,246,.18), inset 0 0 0 1px rgba(255,255,255,.04); }
+      50%      { box-shadow: 0 0 60px rgba(59,130,246,.32), inset 0 0 0 1px rgba(255,255,255,.06); }
+    }
+    .video-frame { animation: borderPulse 3s ease-in-out infinite; }
     .hero-badge {
       display: inline-flex;
       align-items: center;
@@ -884,6 +1072,10 @@
     #back-top:hover { background: #2563eb; transform: translateY(-2px); }
 
     /* ─── RESPONSIVE ─── */
+    @media (max-width: 1100px) {
+      .hero-body { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-right { width: 100%; max-width: 540px; margin: 0 auto; }
+    }
     @media (max-width: 960px) {
       .impact-grid  { grid-template-columns: repeat(2, 1fr); gap: 3rem; }
       .process-grid { grid-template-columns: repeat(2, 1fr); }
@@ -902,6 +1094,9 @@
       .contact-grid { grid-template-columns: 1fr; }
       .footer-grid  { grid-template-columns: 1fr; }
       .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 600px) {
+      .hero-right { display: none; }
     }
     @media (max-width: 480px) {
       .impact-grid { grid-template-columns: 1fr 1fr; }
@@ -944,45 +1139,96 @@
 <!-- ─── HERO ─── -->
 <section id="hero" aria-label="Hero">
   <div class="hero-bg">
-    <img
-      id="hero-img"
-      class="hero-img"
-      src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1920&q=80"
-      alt=""
-      aria-hidden="true"
-      loading="eager"
-      fetchpriority="high"
-      width="1920" height="1080"
-    />
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-grain" aria-hidden="true"></div>
   </div>
 
   <div class="hero-body container">
-    <div class="hero-badge" data-anim="0">
-      <span class="hero-dot" aria-hidden="true"></span>
-      Available for projects &nbsp;·&nbsp; Manzini, Eswatini
-    </div>
 
-    <h1 data-anim="1">
-      Software engineered<br>
-      <span class="grad">to ship.</span>
-    </h1>
+    <!-- LEFT: content -->
+    <div class="hero-left">
+      <div class="hero-badge" data-anim="0" id="hero-badge">
+        <span class="hero-dot" aria-hidden="true"></span>
+        <span id="badge-text">Available for projects &nbsp;·&nbsp; Manzini, Eswatini</span>
+      </div>
 
-    <p class="hero-sub" data-anim="2">
-      Custom web applications, security audits, data science, and DevOps
-      infrastructure for SADC organisations. Every project ships with a test
-      suite, CI/CD pipeline, and deployment documentation.
-    </p>
+      <h1 data-anim="1" aria-live="polite">
+        Software engineered<br>
+        <span class="grad">to ship.</span>
+      </h1>
 
-    <div class="cta-row" data-anim="3">
-      <a href="#contact" class="btn btn-primary">Start a project</a>
-      <a href="#portfolio" class="btn btn-ghost">View work</a>
-      <a href="/src/casestudy/sentinel-audit.html" class="btn btn-outline">Read case study</a>
-    </div>
+      <p class="hero-sub" data-anim="2" id="hero-sub">
+        Custom web applications, security audits, data science, and DevOps
+        infrastructure for SADC organisations. Every project ships with a test
+        suite, CI/CD pipeline, and deployment documentation.
+      </p>
 
-    <div class="scroll-indicator" data-anim="4" aria-hidden="true">Scroll to explore</div>
-  </div>
+      <div class="cta-row" data-anim="3">
+        <a href="#contact" class="btn btn-primary">Start a project</a>
+        <a href="#portfolio" class="btn btn-ghost">View work</a>
+        <a href="/src/casestudy/sentinel-audit.html" class="btn btn-outline">Read case study</a>
+      </div>
+
+      <div class="scroll-indicator" data-anim="4" aria-hidden="true" id="scroll-ind">Scroll to explore</div>
+    </div><!-- /hero-left -->
+
+    <!-- RIGHT: video + camera -->
+    <div class="hero-right" aria-hidden="true">
+
+      <!-- Demo reel with scroll-driven scrub -->
+      <div class="video-frame">
+        <video
+          id="hero-reel"
+          muted
+          playsinline
+          preload="auto"
+          loop
+          src="https://assets.mixkit.co/videos/preview/mixkit-abstract-technology-connectivity-lines-animation-43704-large.mp4"
+          aria-hidden="true"
+        ></video>
+        <div class="vid-corner vid-corner-tl">REC</div>
+        <div class="vid-corner vid-corner-tr">4K · LIVE</div>
+        <div class="vid-scanline" aria-hidden="true"></div>
+      </div>
+
+      <!-- Camera + MediaPipe hand skeleton -->
+      <div class="camera-card" id="cam-card">
+        <div class="cam-label" aria-hidden="true">
+          <span class="cam-dot-indicator"></span>
+          HAND TRACK
+        </div>
+        <div class="cam-viewport">
+          <video id="cam-feed" muted playsinline autoplay aria-hidden="true"></video>
+          <canvas id="hand-canvas" aria-hidden="true" tabindex="-1"></canvas>
+          <div class="cam-grid-overlay" aria-hidden="true"></div>
+          <div class="cam-crosshair" aria-hidden="true"></div>
+          <!-- Static skeleton shown before camera is enabled -->
+          <div class="cam-skeleton-fallback" id="cam-fallback">
+            <svg width="80" height="120" viewBox="0 0 80 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <!-- Simple hand outline skeleton -->
+              <line x1="40" y1="110" x2="40" y2="70" stroke="#22d3ee" stroke-width="1.5" opacity=".5"/>
+              <line x1="40" y1="70" x2="20" y2="40" stroke="#22d3ee" stroke-width="1.5" opacity=".4"/>
+              <line x1="40" y1="70" x2="30" y2="30" stroke="#22d3ee" stroke-width="1.5" opacity=".4"/>
+              <line x1="40" y1="70" x2="42" y2="28" stroke="#22d3ee" stroke-width="1.5" opacity=".4"/>
+              <line x1="40" y1="70" x2="55" y2="32" stroke="#22d3ee" stroke-width="1.5" opacity=".4"/>
+              <line x1="40" y1="70" x2="65" y2="48" stroke="#22d3ee" stroke-width="1.5" opacity=".4"/>
+              <circle cx="40" cy="110" r="3" fill="#3b82f6" opacity=".6"/>
+              <circle cx="40" cy="70"  r="3" fill="#3b82f6" opacity=".6"/>
+              <circle cx="20" cy="40"  r="2" fill="#22d3ee" opacity=".5"/>
+              <circle cx="30" cy="30"  r="2" fill="#22d3ee" opacity=".5"/>
+              <circle cx="42" cy="28"  r="2" fill="#22d3ee" opacity=".5"/>
+              <circle cx="55" cy="32"  r="2" fill="#22d3ee" opacity=".5"/>
+              <circle cx="65" cy="48"  r="2" fill="#22d3ee" opacity=".5"/>
+            </svg>
+          </div>
+        </div>
+        <button id="cam-enable" aria-label="Enable hand tracking camera">enable camera →</button>
+      </div><!-- /camera-card -->
+
+    </div><!-- /hero-right -->
+
+  </div><!-- /hero-body -->
 
   <div class="stats-bar" role="region" aria-label="Key statistics">
     <div class="container">
@@ -1470,16 +1716,6 @@
   window.addEventListener('scroll', updateNav, { passive: true });
   updateNav();
 
-  /* ─── HERO PARALLAX (skip if reduced-motion) ─── */
-  if (!noMotion) {
-    const heroImg = document.getElementById('hero-img');
-    window.addEventListener('scroll', () => {
-      if (window.scrollY < window.innerHeight) {
-        heroImg.style.transform = 'translateY(' + (window.scrollY * 0.38) + 'px)';
-      }
-    }, { passive: true });
-  }
-
   /* ─── PAGE-LOAD HERO STAGGER ─── */
   if (!noMotion) {
     document.querySelectorAll('[data-anim]').forEach(el => {
@@ -1549,6 +1785,280 @@
     backTop.classList.toggle('visible', window.scrollY > 500);
   }, { passive: true });
   backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: noMotion ? 'instant' : 'smooth' }));
+
+  /* ─── SCROLL INDICATOR FADE OUT ─── */
+  const scrollInd = document.getElementById('scroll-ind');
+  if (scrollInd) {
+    window.addEventListener('scroll', () => {
+      if (scrollInd) scrollInd.style.opacity = window.scrollY > 80 ? '0' : '';
+    }, { passive: true });
+  }
+
+  /* ════════════════════════════════════════════
+     PARTICLE CANVAS — replaces background image
+  ════════════════════════════════════════════ */
+  (function initParticles() {
+    if (noMotion) return;
+    const canvas = document.getElementById('particle-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let W, H, particles;
+    const COUNT = 60, LINK_DIST = 120, SPEED = 0.3;
+
+    function resize() {
+      W = canvas.width  = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+
+    function mkParticle() {
+      return {
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - .5) * SPEED,
+        vy: (Math.random() - .5) * SPEED,
+        r: Math.random() * 1.5 + .6,
+        hue: Math.random() > .5 ? 210 : 190,
+      };
+    }
+
+    function init() {
+      resize();
+      particles = Array.from({ length: COUNT }, mkParticle);
+    }
+
+    let scrollY = 0;
+    window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const speedMult = 1 + scrollY / window.innerHeight * 1.8;
+
+      for (const p of particles) {
+        p.x += p.vx * speedMult;
+        p.y += p.vy * speedMult;
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue},90%,65%,.55)`;
+        ctx.fill();
+      }
+
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < LINK_DIST) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(59,130,246,${(1 - d / LINK_DIST) * .12})`;
+            ctx.lineWidth = .8;
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', () => { resize(); });
+    init();
+    requestAnimationFrame(draw);
+  })();
+
+  /* ════════════════════════════════════════════
+     SCROLL → VIDEO SCRUB
+  ════════════════════════════════════════════ */
+  (function initVideoScrub() {
+    const reel = document.getElementById('hero-reel');
+    if (!reel) return;
+
+    // Play briefly on load to show motion, then hand off to scroll
+    reel.addEventListener('canplay', () => {
+      reel.play().then(() => {
+        setTimeout(() => { reel.pause(); }, 1800);
+      }).catch(() => {});
+    }, { once: true });
+
+    function onScroll() {
+      if (!reel.duration) return;
+      const heroEl = document.getElementById('hero');
+      const rect   = heroEl.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, 1 - rect.bottom / window.innerHeight));
+      reel.currentTime = progress * reel.duration;
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+  })();
+
+  /* ════════════════════════════════════════════
+     AUTO-SHUFFLE HERO SLIDES
+  ════════════════════════════════════════════ */
+  (function initHeroShuffle() {
+    const SLIDES = [
+      {
+        headline: 'Software engineered<br><span class="grad">to ship.</span>',
+        sub: 'Custom web applications, security audits, data science, and DevOps infrastructure for SADC organisations. Every project ships with a test suite, CI/CD pipeline, and deployment documentation.',
+        badge: 'Available for projects &nbsp;·&nbsp; Manzini, Eswatini',
+      },
+      {
+        headline: 'AI systems built<br><span class="grad" style="background:linear-gradient(90deg,#22c55e,#22d3ee);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">for SADC.</span>',
+        sub: 'RAG pipelines, embedding search, and agent orchestration tailored for SADC organisations. Hybrid dense + sparse retrieval. Self-hostable on a single server.',
+        badge: 'BRT Platform &nbsp;·&nbsp; AI Orchestration',
+      },
+      {
+        headline: 'Security that<br><span class="grad" style="background:linear-gradient(90deg,#ef4444,#f59e0b);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">actually holds.</span>',
+        sub: 'OWASP Top 10 structural audits for PHP, Python, and Node.js. Auth flows, secrets hygiene, injection surfaces, session management. Written report + reproducible fixes.',
+        badge: 'UEDF Sentinel Audited &nbsp;·&nbsp; 9 findings resolved',
+      },
+    ];
+
+    const h1El     = document.querySelector('#hero h1');
+    const subEl    = document.getElementById('hero-sub');
+    const badgeEl  = document.getElementById('badge-text');
+    if (!h1El) return;
+
+    let idx = 0;
+
+    function applySlide(slide) {
+      const fade = (el, html) => {
+        el.style.transition = 'opacity .3s ease, transform .3s ease';
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(10px)';
+        setTimeout(() => {
+          el.innerHTML = html;
+          el.style.transition = 'opacity .5s ease, transform .5s ease';
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+        }, 310);
+      };
+      fade(h1El,    slide.headline);
+      if (subEl)   fade(subEl,   slide.sub);
+      if (badgeEl) fade(badgeEl, slide.badge);
+    }
+
+    const timer = setInterval(() => {
+      idx = (idx + 1) % SLIDES.length;
+      if (!noMotion) {
+        applySlide(SLIDES[idx]);
+      } else {
+        // Instant swap (no transition) for reduced-motion
+        h1El.innerHTML = SLIDES[idx].headline;
+        if (subEl)   subEl.innerHTML   = SLIDES[idx].sub;
+        if (badgeEl) badgeEl.innerHTML = SLIDES[idx].badge;
+      }
+    }, 6000);
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearInterval(timer);
+    });
+  })();
+
+  /* ════════════════════════════════════════════
+     MEDIAPIPE HAND TRACKING
+  ════════════════════════════════════════════ */
+  (function initCamera() {
+    const btn      = document.getElementById('cam-enable');
+    const camFeed  = document.getElementById('cam-feed');
+    const handCanvas = document.getElementById('hand-canvas');
+    const fallback = document.getElementById('cam-fallback');
+    if (!btn || !camFeed || !handCanvas) return;
+
+    let handTrackActive = false;
+    let handScrollEnabled = false;
+
+    function onHandResults(results) {
+      const ctx = handCanvas.getContext('2d');
+      ctx.clearRect(0, 0, handCanvas.width, handCanvas.height);
+      if (!results.multiHandLandmarks || !results.multiHandLandmarks.length) return;
+
+      const lm = results.multiHandLandmarks[0];
+
+      // Draw skeleton using MediaPipe utils (if loaded)
+      if (typeof drawConnectors !== 'undefined') {
+        drawConnectors(ctx, lm, HAND_CONNECTIONS, { color: 'rgba(34,211,238,.7)', lineWidth: 1.5 });
+        drawLandmarks(ctx, lm, { color: '#3b82f6', fillColor: 'rgba(59,130,246,.4)', lineWidth: 1, radius: 3 });
+      } else {
+        // Fallback: manual draw
+        ctx.strokeStyle = 'rgba(34,211,238,.7)';
+        ctx.lineWidth = 1.5;
+        ctx.fillStyle = '#3b82f6';
+        lm.forEach(pt => {
+          ctx.beginPath();
+          ctx.arc(pt.x * handCanvas.width, pt.y * handCanvas.height, 3, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
+
+      // Map wrist (landmark 0) Y → page scroll
+      if (handScrollEnabled) {
+        const wristY = lm[0].y; // 0 = top of cam frame, 1 = bottom
+        const targetScroll = wristY * (document.body.scrollHeight - window.innerHeight);
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      }
+    }
+
+    async function startTracking() {
+      if (handTrackActive) return;
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { width: 320, height: 240, facingMode: 'user' }
+        });
+        camFeed.srcObject = stream;
+        handCanvas.width  = 220;
+        handCanvas.height = 165;
+        if (fallback) fallback.style.display = 'none';
+        btn.textContent = 'hand scroll: off — click to enable';
+        btn.classList.add('active');
+        handTrackActive = true;
+
+        btn.addEventListener('click', toggleScroll);
+        btn.removeEventListener('click', startTracking);
+
+        // Wait for MediaPipe to be available (deferred scripts)
+        let attempts = 0;
+        const waitForMP = setInterval(() => {
+          attempts++;
+          if (typeof Hands !== 'undefined' && typeof Camera !== 'undefined') {
+            clearInterval(waitForMP);
+            const hands = new Hands({
+              locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/${f}`
+            });
+            hands.setOptions({
+              modelComplexity: 0,
+              maxNumHands: 1,
+              selfieMode: true,
+              minDetectionConfidence: 0.65,
+              minTrackingConfidence: 0.5,
+            });
+            hands.onResults(onHandResults);
+            new Camera(camFeed, {
+              onFrame: async () => { await hands.send({ image: camFeed }); },
+              width: 320, height: 240,
+            }).start();
+          } else if (attempts > 40) {
+            clearInterval(waitForMP);
+          }
+        }, 250);
+
+      } catch (err) {
+        btn.textContent = 'camera denied';
+        btn.style.color = 'rgba(239,68,68,.7)';
+      }
+    }
+
+    function toggleScroll() {
+      handScrollEnabled = !handScrollEnabled;
+      btn.textContent = handScrollEnabled
+        ? 'hand scroll: ON — click to disable'
+        : 'hand scroll: off — click to enable';
+    }
+
+    btn.addEventListener('click', startTracking, { once: true });
+  })();
 </script>
 </body>
 </html>

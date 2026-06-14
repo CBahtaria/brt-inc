@@ -30,6 +30,8 @@ Fable never says "this looks good" without checking the actual changed files.
 - Line count, structure checks, syntax validation
 - Quick searches across the repo
 
+**Exception**: pure grep/bash in the orchestrating session (Fable) is faster and cheaper than spawning a Haiku agent. Only spawn Haiku when reading + light reasoning are both needed (e.g. "read this file and tell me if the invariant holds"). For bare `grep`/`find`/`wc`, use Bash directly in Fable's session.
+
 ---
 
 ## Review → Fix → Re-Review Loop
@@ -41,9 +43,11 @@ Fable never says "this looks good" without checking the actual changed files.
 4. If gaps found:
    → SendMessage({ to: <agentId>, message: "fix X — you missed Y" })
    → Implementer fixes and reports DONE again
-5. Repeat until Fable confirms the file matches spec
-6. Fable dispatches haiku verifier to spot-check key lines
-7. Task marked complete only after haiku confirms
+5. Repeat — MAX 3 CORRECTION ROUNDS per task.
+   Round 3 failure → do NOT re-dispatch sonnet.
+   Escalate: dispatch opus to redesign the approach from scratch.
+6. Fable runs `make lint` (or direct Bash grep) to spot-check key invariants
+7. Task marked complete only after verification passes
 ```
 
 Never move to the next task while the current task has open issues.
@@ -92,14 +96,12 @@ supabase/migrations/           ← DB schema
 - CSP blocks inline scripts except `'unsafe-inline'` (existing constraint)
 - `Permissions-Policy: camera=(self)` — only this origin can request camera
 
-### Hero Section (current state)
-- Two-column grid: left = content, right = video frame + camera card
-- `#particle-canvas` — 60-dot connected graph, `requestAnimationFrame` loop
-- `#hero-reel` — scroll-driven video scrub (`video.currentTime = progress * duration`)
-- `.camera-card` — MediaPipe hand skeleton (21 landmarks), opt-in on button click
-- Hand tracking scroll: wrist Y position → `window.scrollTo()`
-- Auto-shuffle: 3 hero variants rotate every 6s with fade transition
-- Responsive: single column ≤1100px, `.hero-right` hidden ≤600px
+### Hero Section (live state)
+Do **not** read hardcoded descriptions — grep the file directly:
+```bash
+grep -n 'id="hero\|class="hero\|#particle\|#hero-reel\|camera-card\|initParticles\|initVideoScrub\|initHeroShuffle\|initCamera' index.html | head -40
+```
+This always reflects the current implementation, not stale docs.
 
 ---
 
@@ -120,10 +122,15 @@ supabase/migrations/           ← DB schema
 ```bash
 # Always deploy from the main brt-inc directory (not the worktree)
 cd /home/cbartaria1/brt-inc
-vercel --prod
+
+# Merge worktree branch first if working from a worktree
+git merge worktree-feature+operational-toolkit --no-edit
+
+# Lint before deploying
+make lint
+
+# Deploy + verify
+make deploy
 ```
 
-After pushing to the worktree branch, merge into main before deploying:
-```bash
-git -C /home/cbartaria1/brt-inc merge worktree-feature+operational-toolkit --no-edit
-```
+`make deploy` runs `vercel --prod` then curls the live URL to confirm key elements are present. If either check prints WARN, inspect the deployment before sharing the URL.

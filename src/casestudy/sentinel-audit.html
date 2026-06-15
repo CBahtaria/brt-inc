@@ -151,6 +151,8 @@
     footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; margin-top: 2rem; }
     footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; align-items: center; }
 
+    .arch-diagram { margin: 1.8rem 0; overflow-x: auto; }
+
     @media (max-width: 600px) {
       .sev-bars { flex-direction: column; }
       .cta-buttons { flex-direction: column; align-items: stretch; }
@@ -229,6 +231,61 @@
           <p>NATS JetStream for pub/sub between PHP backend and Node.js telemetry relay. MAVLink 2 telemetry from drones &rarr; NATS &rarr; WebSocket broker &rarr; browser dashboard. PHPUnit integration tests for all API routes.</p>
         </div>
       </div>
+
+      <figure class="arch-diagram">
+        <svg role="img" aria-label="Sentinel platform architecture: Drone fleet sends MAVLink to Node.js WebSocket shim, which forwards via NATS JetStream to the PHP 8.3 monolith. The monolith serves a browser dashboard over WebSocket and persists to MySQL 8 with a blockchain-chained audit log." viewBox="0 0 600 175" width="100%" height="auto" style="min-width:460px" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="sent-arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="var(--muted)"/>
+            </marker>
+          </defs>
+
+          <!-- Drone Fleet -->
+          <rect x="10" y="25" width="95" height="50" rx="5" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+          <text x="57" y="46" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="600" fill="var(--fg)">Drone Fleet</text>
+          <text x="57" y="63" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">MAVLink 2</text>
+
+          <!-- Arrow: Drone → Node.js -->
+          <line x1="105" y1="50" x2="148" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#sent-arr)"/>
+          <text x="126" y="44" text-anchor="middle" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">MAVLink</text>
+
+          <!-- Node.js WS shim -->
+          <rect x="150" y="25" width="95" height="50" rx="5" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+          <text x="197" y="46" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="600" fill="var(--fg)">Node.js</text>
+          <text x="197" y="63" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">WS shim</text>
+
+          <!-- Arrow: Node.js → PHP -->
+          <line x1="245" y1="50" x2="288" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#sent-arr)"/>
+          <text x="266" y="44" text-anchor="middle" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">NATS</text>
+
+          <!-- PHP 8.3 Monolith (highlighted — audit target) -->
+          <rect x="290" y="18" width="105" height="64" rx="5" fill="rgba(59,130,246,.08)" stroke="var(--blue)" stroke-width="1.8"/>
+          <text x="342" y="41" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="700" fill="var(--blue)">PHP 8.3</text>
+          <text x="342" y="57" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">27,900 lines</text>
+          <text x="342" y="72" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--muted)">audit target</text>
+
+          <!-- Arrow: PHP → Browser -->
+          <line x1="395" y1="50" x2="438" y2="50" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#sent-arr)"/>
+          <text x="416" y="44" text-anchor="middle" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">WebSocket</text>
+
+          <!-- Browser Dashboard -->
+          <rect x="440" y="25" width="95" height="50" rx="5" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+          <text x="487" y="46" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="600" fill="var(--fg)">Browser</text>
+          <text x="487" y="63" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">dashboard</text>
+
+          <!-- Arrow: PHP → MySQL (vertical) -->
+          <line x1="342" y1="82" x2="342" y2="110" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#sent-arr)"/>
+          <text x="347" y="100" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">SQL / events</text>
+
+          <!-- MySQL + Audit Log -->
+          <rect x="290" y="112" width="105" height="52" rx="5" fill="var(--surface2)" stroke="var(--border)" stroke-width="1.5"/>
+          <text x="342" y="132" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="600" fill="var(--fg)">MySQL 8</text>
+          <text x="342" y="150" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--muted)">⛓ SHA-256 audit log</text>
+
+          <!-- NATS JetStream label under Node.js→PHP arrow -->
+          <text x="266" y="59" text-anchor="middle" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">JetStream</text>
+        </svg>
+      </figure>
 
       <h3>Role-Based Access Control matrix</h3>
       <table class="rbac-table">

@@ -128,6 +128,8 @@
     footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; margin-top: 2rem; }
     footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; align-items: center; }
 
+    .arch-diagram { margin: 1.8rem 0; overflow-x: auto; }
+
     @media (max-width: 600px) {
       .cta-buttons { flex-direction: column; align-items: stretch; }
       .nav-links { display: none; }
@@ -203,6 +205,51 @@
           <p>The AI never writes to the flight command path. Every AI suggestion passes through the formal shield. On exception, the governor returns <strong>NO_GO</strong> immediately.</p>
         </div>
       </div>
+
+      <figure class="arch-diagram">
+        <svg role="img" aria-label="Three-tier safety architecture: Advisory async AI layer at top, Executive Zig governor (10–50 Hz) in middle, Reactive PX4 (1 kHz) at bottom. Command flows downward; telemetry upward. AI never crosses to the reactive tier." viewBox="0 0 600 292" width="100%" height="auto" style="min-width:420px" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="uav-arr" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+              <polygon points="0 0, 7 3.5, 0 7" fill="var(--muted)"/>
+            </marker>
+          </defs>
+
+          <!-- Advisory tier -->
+          <rect x="44" y="10" width="512" height="62" rx="6" fill="rgba(59,130,246,.09)" stroke="var(--blue)" stroke-width="1.5"/>
+          <text x="300" y="35" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="var(--blue)" letter-spacing=".08em">ADVISORY LAYER · ASYNC</text>
+          <text x="300" y="54" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">Claude Sonnet / mistral:7b · $5/day cap · circuit breaker · waypoint suggestions only</text>
+
+          <!-- Gap 1 arrows -->
+          <line x1="175" y1="72" x2="175" y2="108" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#uav-arr)"/>
+          <text x="180" y="94" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">suggestion</text>
+          <line x1="425" y1="108" x2="425" y2="72" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#uav-arr)"/>
+          <text x="420" y="94" text-anchor="end" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">EKF state</text>
+
+          <!-- Executive tier -->
+          <rect x="44" y="112" width="512" height="62" rx="6" fill="rgba(34,197,94,.09)" stroke="var(--green)" stroke-width="1.5"/>
+          <text x="300" y="137" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="var(--green)" letter-spacing=".08em">EXECUTIVE LAYER · 10–50 Hz</text>
+          <text x="300" y="156" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">Zig 0.14.0 governor · 5-invariant shield · 13-state EKF · deadman switch · AES-GCM-256</text>
+
+          <!-- AI boundary in gap 2 -->
+          <line x1="44" y1="196" x2="556" y2="196" stroke="var(--red)" stroke-width="1" stroke-dasharray="4 3"/>
+          <text x="300" y="207" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--red)" letter-spacing=".05em">AI NEVER CROSSES THIS BOUNDARY</text>
+
+          <!-- Gap 2 arrows -->
+          <line x1="175" y1="174" x2="175" y2="217" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#uav-arr)"/>
+          <text x="180" y="189" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">MAVLink setpoint</text>
+          <line x1="425" y1="217" x2="425" y2="174" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#uav-arr)"/>
+          <text x="420" y="189" text-anchor="end" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">telemetry stream</text>
+
+          <!-- Reactive tier -->
+          <rect x="44" y="220" width="512" height="62" rx="6" fill="rgba(245,158,11,.09)" stroke="var(--amber)" stroke-width="1.5"/>
+          <text x="300" y="245" text-anchor="middle" font-family="var(--mono)" font-size="11" font-weight="700" fill="var(--amber)" letter-spacing=".08em">REACTIVE LAYER · 1 kHz</text>
+          <text x="300" y="264" text-anchor="middle" font-family="var(--mono)" font-size="9.5" fill="var(--muted)">PX4 / NuttX RTOS · hard real-time servo control · treated as certified black box</text>
+
+          <!-- Side labels -->
+          <text font-family="var(--mono)" font-size="9" fill="var(--muted)" text-anchor="middle" transform="rotate(-90) translate(-151, 22)">COMMAND ↓</text>
+          <text font-family="var(--mono)" font-size="9" fill="var(--muted)" text-anchor="middle" transform="rotate(90) translate(151, -578)">TELEMETRY ↑</text>
+        </svg>
+      </figure>
     </div>
   </section>
 

@@ -230,14 +230,14 @@
     top: 3px; left: 0; right: 0;
     z-index: 300;
     height: var(--nav-h);
-    transition: background .35s, box-shadow .35s, backdrop-filter .35s;
+    transition: background .35s, box-shadow .35s;
     display: flex;
     align-items: center;
-  }
-  nav.scrolled {
     background: var(--nav-blur-bg);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
+  }
+  nav.scrolled {
     box-shadow: 0 1px 0 var(--border);
   }
   nav .container { display: flex; align-items: center; justify-content: space-between; width: 100%; }
@@ -298,6 +298,17 @@
     background: linear-gradient(135deg, rgba(11,11,12,.88) 0%, rgba(13,25,80,.62) 50%, rgba(11,11,12,.9) 100%);
     background-size: 200% 200%;
     animation: gradShift 12s ease infinite;
+  }
+  [data-theme="light"] .hero-overlay {
+    background: linear-gradient(135deg, rgba(248,249,250,.86) 0%, rgba(0,82,136,.32) 50%, rgba(248,249,250,.9) 100%);
+    background-size: 200% 200%;
+  }
+  [data-theme="light"] #hero { color: #0B1426; }
+  [data-theme="light"] #hero h1 { color: #0B1426; }
+  [data-theme="light"] .hero-sub { color: #334155; }
+  [data-theme="midnight"] .hero-overlay {
+    background: linear-gradient(135deg, rgba(4,6,8,.9) 0%, rgba(0,200,255,.14) 50%, rgba(4,6,8,.92) 100%);
+    background-size: 200% 200%;
   }
   @keyframes gradShift {
     0%, 100% { background-position: 0% 50%; }

@@ -217,7 +217,7 @@
 <span class="c">//           position(m)   velocity(m/s)  attitude(unit quat)  gyro bias(rad/s)</span></pre>
       </div>
       <p>The math library is built on <strong>SE(3) Lie groups</strong> using Zig comptime generics: <code>Vec3(T)</code>, <code>Mat3(T)</code>, <code>Mat4(T)</code>, <code>Quaternion(T)</code>, <code>SE3(T)</code> — all instantiated at compile time for <code>f32</code> and <code>f64</code> with zero runtime cost.</p>
-      <p>SO(3) exp/log maps convert angular velocity to quaternion increments using Taylor series near zero to avoid the sinc singularity. Mahalanobis distance gates GPS measurements: innovation <code>y</code>, <code>d&sup2; = y&sup;T&middot;S&sup;&#x207B;&sup1;&middot;y</code>, reject if <code>d&sup2; &gt; 9.21</code> (chi&sup2;&#x2083; 95th percentile).</p>
+      <p>SO(3) exp/log maps convert angular velocity to quaternion increments using Taylor series near zero to avoid the sinc singularity. Mahalanobis distance gates GPS measurements: innovation <code>y</code>, <code>d&sup2; = y<sup>T</sup>&middot;S<sup>-1</sup>&middot;y</code>, reject if <code>d&sup2; &gt; 9.21</code> (chi&sup2;&#x2083; 95th percentile).</p>
 
       <h3>EKF Predict — 100 Hz IMU integration</h3>
       <div class="code-block">

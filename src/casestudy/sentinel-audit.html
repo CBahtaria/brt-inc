@@ -470,13 +470,13 @@ $_SESSION['role']    = $user->role;</pre>
       <h3>F-05 &mdash; Brute-force off-by-one corrected</h3>
       <div class="code-block">
         <div class="code-header"><span class="label-before">Before</span><span>api/auth.php</span></div>
-        <pre><span class="kw">if</span> ($attempts <span class="bad">&gt;=</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
-<span class="c">// MAX=5 &rarr; 6th attempt was NOT blocked (&gt;= 5 passed at attempt 5)</span></pre>
+        <pre><span class="kw">if</span> ($attempts <span class="bad">&gt;</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
+<span class="c">// MAX=5 &rarr; 6th attempt NOT blocked (&gt; 5 is false when attempts=5)</span></pre>
       </div>
       <div class="code-block">
         <div class="code-header"><span class="label-after">After</span><span>api/auth.php</span></div>
-        <pre><span class="kw">if</span> ($attempts <span class="good">&gt;</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
-<span class="c">// MAX=5 &rarr; 6th attempt (&gt; 5) now correctly blocked</span></pre>
+        <pre><span class="kw">if</span> ($attempts <span class="good">&gt;=</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
+<span class="c">// MAX=5 &rarr; 6th attempt blocked (&gt;= 5 is true when attempts=5)</span></pre>
       </div>
 
       <h3>F-08 &mdash; Raw SQL replaced with prepared statements</h3>

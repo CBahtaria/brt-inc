@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Multi-scale autonomous drone platform. Three-tier DAL-A safety architecture: Zig executive governor, 13-state EKF, AES-GCM-256 per-packet auth, NATS edge gateway." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Agentic UAV Stack Case Study — BRT Inc." />
+  <meta property="og:description" content="Multi-scale autonomous drone platform. Three-tier DAL-A safety architecture: Zig executive governor, 13-state EKF, AES-GCM-256 per-packet auth, NATS edge gateway." />
+  <meta property="og:type" content="article" />
+  <title>Agentic UAV Stack — BRT Inc.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <style>
+    :root {
+      --bg: #05070e; --surface: #090d1a; --surface2: #0d1326;
+      --blue: #3b82f6; --blue-mid: #1d4ed8; --cyan: #22d3ee;
+      --red: #ef4444; --amber: #f59e0b; --green: #22c55e;
+      --fg: #f1f5ff; --muted: #94a3b8; --border: #1e2d45;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'Courier New', monospace;
+      --radius: .6rem;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc; --surface: #fff; --surface2: #f1f5f9;
+        --blue: #2563eb; --cyan: #0891b2; --red: #dc2626;
+        --amber: #d97706; --green: #16a34a;
+        --fg: #0f172a; --muted: #475569; --border: #e2e8f0;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.8; -webkit-font-smoothing: antialiased; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: var(--mono); font-size: .82em; background: var(--surface2); padding: .1em .35em; border-radius: .25rem; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+
+    nav { padding: 1.2rem 0; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-size: 1rem; font-weight: 800; color: var(--fg); letter-spacing: -.02em; }
+    .nav-brand span { color: var(--blue); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: .88rem; }
+    .nav-links a:hover { color: var(--fg); text-decoration: none; }
+    .nav-cta { background: var(--blue); color: #fff !important; padding: .35rem .9rem; border-radius: var(--radius); font-weight: 600; font-size: .82rem; }
+    .nav-cta:hover { background: var(--blue-mid); text-decoration: none !important; }
+
+    .case-hero { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
+    .case-badge {
+      display: inline-flex; align-items: center; gap: .45rem;
+      background: rgba(59,130,246,.1); border: 1px solid rgba(59,130,246,.25);
+      color: #93c5fd; font-size: .78rem; font-weight: 600;
+      padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1.4rem; letter-spacing: .04em;
+    }
+    .case-badge::before { content: ''; width: 6px; height: 6px; background: var(--blue); border-radius: 50%; display: block; }
+    .case-hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; margin-bottom: .8rem; }
+    .case-hero h1 span { color: var(--blue); }
+    .case-hero .sub { color: var(--muted); font-size: 1rem; max-width: 640px; margin-bottom: 2rem; }
+    .meta-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip { font-size: .78rem; font-weight: 500; padding: .25rem .7rem; border-radius: 2rem; border: 1px solid var(--border); color: var(--muted); background: var(--surface); font-family: var(--mono); }
+
+    .stats-band { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1.5rem; }
+    .stat-item { text-align: center; }
+    .stat-n { font-size: 2.4rem; font-weight: 800; display: block; letter-spacing: -.04em; line-height: 1; margin-bottom: .3rem; }
+    .stat-l { color: var(--muted); font-size: .78rem; font-weight: 500; }
+    .stat-critical .stat-n { color: var(--red); }
+    .stat-high .stat-n { color: var(--amber); }
+    .stat-ok .stat-n { color: var(--green); }
+    .stat-blue .stat-n { color: var(--blue); }
+
+    main section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+    main section:last-child { border-bottom: none; }
+    .section-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--blue); margin-bottom: .6rem; }
+    h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+    p { color: var(--muted); margin-bottom: 1rem; font-size: .94rem; }
+    p strong { color: var(--fg); }
+
+    .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .method-card h4 { font-size: .88rem; font-weight: 600; margin-bottom: .4rem; color: var(--fg); }
+    .method-card p { font-size: .82rem; margin: 0; }
+
+    .code-block { margin: 1.2rem 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .code-header { background: var(--surface2); padding: .5rem 1rem; font-size: .75rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .label-lang { color: var(--blue); }
+    pre { background: var(--surface); padding: 1.1rem 1.2rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; font-family: var(--mono); color: var(--fg); margin: 0; }
+    .c  { color: var(--muted); }
+    .kw { color: var(--blue); }
+    .ty { color: var(--cyan); }
+    .st { color: var(--green); }
+    .nm { color: var(--amber); }
+
+    .invariants-list { list-style: none; margin: 1.2rem 0; display: flex; flex-direction: column; gap: .6rem; }
+    .invariants-list li { display: flex; gap: .8rem; align-items: flex-start; font-size: .88rem; color: var(--muted); }
+    .inv-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.3); color: var(--blue); font-size: .72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-top: .15rem; }
+    .invariants-list li strong { color: var(--fg); }
+
+    .timeline { margin-top: 1.5rem; }
+    .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
+    .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
+    .timeline-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--blue); flex-shrink: 0; margin-top: .1rem; display: flex; align-items: center; justify-content: center; }
+    .timeline-dot span { font-size: .65rem; font-weight: 700; color: var(--blue); }
+    .timeline-body h4 { font-size: .9rem; font-weight: 600; margin-bottom: .2rem; color: var(--fg); }
+    .timeline-body p { font-size: .83rem; margin: 0; }
+
+    .cta-section { background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; text-align: center; margin-top: 1rem; }
+    .cta-section h2 { font-size: 1.4rem; margin-bottom: .6rem; }
+    .cta-section p { max-width: 520px; margin: 0 auto 1.5rem; }
+    .cta-buttons { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .7rem 1.5rem; border-radius: var(--radius); font-weight: 600; font-size: .9rem; cursor: pointer; border: none; text-decoration: none; transition: all .2s; font-family: var(--font); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-mid); transform: translateY(-1px); text-decoration: none; }
+    .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-wa:hover { background: #1fba57; transform: translateY(-1px); text-decoration: none; }
+
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+
+    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; margin-top: 2rem; }
+    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; align-items: center; }
+
+    @media (max-width: 600px) {
+      .cta-buttons { flex-direction: column; align-items: stretch; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
+    <div class="nav-links">
+      <a href="/#portfolio">Portfolio</a>
+      <a href="/#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="nav-cta">LinkedIn</a>
+    </div>
+  </div>
+</nav>
+
+<div class="case-hero">
+  <div class="container">
+    <div class="case-badge">Systems Engineering · 2026</div>
+    <h1>Agentic UAV Stack<br><span>Three-Tier DAL-A Autonomous Platform</span></h1>
+    <p class="sub">Multi-scale autonomous drone platform designed for defence-grade reliability. Reactive, executive, and advisory layers enforce hard separation of concerns — the AI never writes to the flight command path.</p>
+    <div class="meta-chips">
+      <span class="chip">Zig 0.14.0</span>
+      <span class="chip">Python 3.12</span>
+      <span class="chip">NATS JetStream</span>
+      <span class="chip">MAVLink 2</span>
+      <span class="chip">ROS 2 Jazzy</span>
+      <span class="chip">aarch64-linux-musl</span>
+      <span class="chip">PX4/NuttX</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item stat-blue reveal"><span class="stat-n">3</span><span class="stat-l">Architecture tiers</span></div>
+      <div class="stat-item stat-ok reveal"><span class="stat-n">58</span><span class="stat-l">Tests passing</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">5</span><span class="stat-l">Formal invariants</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">13</span><span class="stat-l">EKF state dims</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">256</span><span class="stat-l">bit AES-GCM</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">4096</span><span class="stat-l">slot ring buffer</span></div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Overview</div>
+      <h2>Three-Tier Safety Architecture</h2>
+      <p>The platform separates flight control into three strictly isolated tiers. Each tier communicates only downward through well-defined interfaces — <strong>no tier can bypass the one below it</strong>. The AI advisory layer sits entirely outside the command path.</p>
+      <div class="method-grid">
+        <div class="method-card">
+          <h4>Reactive Layer — 1 kHz</h4>
+          <p>PX4 firmware on NuttX RTOS. Attitude quaternions, motor mixing matrices, hard real-time servo control. No user code runs here — this layer is treated as a certified black box.</p>
+        </div>
+        <div class="method-card">
+          <h4>Executive Layer — 10–50 Hz</h4>
+          <p>Zig 0.14.0 onboard companion. Safety governor, formal shield (5 geometric invariants), deadman switch with NTP-attack detection, 13-state EKF. DAL-A discipline: no <code>eval</code>, no dynamic dispatch in safety paths.</p>
+        </div>
+        <div class="method-card">
+          <h4>Advisory Layer — Async</h4>
+          <p>Claude Sonnet / Ollama <code>mistral:7b</code> AI router with $5/day cap and circuit breaker. Produces waypoint suggestions and mission analysis. Never touches actuators directly.</p>
+        </div>
+        <div class="method-card">
+          <h4>Safety Principle</h4>
+          <p>The AI never writes to the flight command path. Every AI suggestion passes through the formal shield. On exception, the governor returns <strong>NO_GO</strong> immediately.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Mathematics</div>
+      <h2>SE(3) Mathematics &amp; 13-State EKF</h2>
+      <p>The state vector encodes full rigid-body pose with IMU bias compensation:</p>
+      <div class="code-block">
+        <div class="code-header"><span class="label-lang">State vector</span><span>x[13]</span></div>
+        <pre><span class="c">// x[13] = [ px  py  pz | vx  vy  vz | qw  qx  qy  qz | bgx  bgy  bgz ]</span>
+<span class="c">//           position(m)   velocity(m/s)  attitude(unit quat)  gyro bias(rad/s)</span></pre>
+      </div>
+      <p>The math library is built on <strong>SE(3) Lie groups</strong> using Zig comptime generics: <code>Vec3(T)</code>, <code>Mat3(T)</code>, <code>Mat4(T)</code>, <code>Quaternion(T)</code>, <code>SE3(T)</code> — all instantiated at compile time for <code>f32</code> and <code>f64</code> with zero runtime cost.</p>
+      <p>SO(3) exp/log maps convert angular velocity to quaternion increments using Taylor series near zero to avoid the sinc singularity. Mahalanobis distance gates GPS measurements: innovation <code>y</code>, <code>d&sup2; = y&sup;T&middot;S&sup;&#x207B;&sup1;&middot;y</code>, reject if <code>d&sup2; &gt; 9.21</code> (chi&sup2;&#x2083; 95th percentile).</p>
+
+      <h3>EKF Predict — 100 Hz IMU integration</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-lang">Zig</span><span>ekf.zig — predict</span></div>
+        <pre><span class="c">// EKF predict — called at 100 Hz from IMU interrupt</span>
+<span class="kw">pub fn</span> <span class="nm">predict</span>(s: *<span class="ty">EkfState</span>, dt: <span class="ty">f64</span>, gyro: <span class="ty">Vec3f64</span>, accel: <span class="ty">Vec3f64</span>) <span class="ty">void</span> {
+    <span class="kw">const</span> q = <span class="ty">Quaternion</span>(<span class="ty">f64</span>){ .w=s.x[6], .x=s.x[7], .y=s.x[8], .z=s.x[9] };
+    <span class="kw">const</span> R = q.<span class="nm">to_rotation_matrix</span>();
+    <span class="kw">const</span> bias = <span class="ty">Vec3f64</span>{ .x=s.x[10], .y=s.x[11], .z=s.x[12] };
+    <span class="kw">const</span> w_corrected = gyro.<span class="nm">sub</span>(bias);
+    <span class="c">// State propagation</span>
+    s.x[0] += s.x[3]*dt;  s.x[1] += s.x[4]*dt;  s.x[2] += s.x[5]*dt;
+    <span class="kw">const</span> a_world = R.<span class="nm">mul_vec</span>(accel);
+    s.x[3] += a_world.x*dt; s.x[4] += a_world.y*dt; s.x[5] += (a_world.z - <span class="nm">9.81</span>)*dt;
+    <span class="kw">const</span> dq = <span class="ty">Quaternion</span>(<span class="ty">f64</span>).<span class="nm">exp_so3</span>(w_corrected.<span class="nm">scale</span>(dt));
+    _ = dq; <span class="c">// quaternion applied via Hamilton product in propagate_covariance</span>
+    <span class="c">// P propagation: P = F·P·Fᵀ + Q  (Jacobian F computed inline)</span>
+    <span class="nm">propagate_covariance</span>(s, dt, R, w_corrected);
+}</pre>
+      </div>
+
+      <h3>GPS Update — Mahalanobis-gated measurement</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-lang">Zig</span><span>ekf.zig — update_gps</span></div>
+        <pre><span class="kw">pub fn</span> <span class="nm">update_gps</span>(s: *<span class="ty">EkfState</span>, z: <span class="ty">Vec3f64</span>) <span class="ty">void</span> {
+    <span class="kw">const</span> y = <span class="ty">Vec3f64</span>{ .x=z.x-s.x[0], .y=z.y-s.x[1], .z=z.z-s.x[2] };
+    <span class="kw">const</span> S = <span class="nm">compute_innovation_cov</span>(s);  <span class="c">// S = H·P·Hᵀ + R_gps</span>
+    <span class="kw">const</span> d_sq = <span class="nm">mahalanobis_sq</span>(y, S);
+    <span class="kw">if</span> (d_sq &gt; <span class="nm">9.21</span>) <span class="kw">return</span>;  <span class="c">// Mahalanobis gate: chi²₃ at 95%</span>
+    <span class="kw">const</span> K = <span class="nm">kalman_gain</span>(s, S);
+    <span class="nm">apply_update</span>(s, K, y);
+}</pre>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Cryptography</div>
+      <h2>AES-GCM-256 Per-Packet Cryptography</h2>
+      <p>Every MAVLink 2 packet is encrypted with <strong>AES-GCM-256</strong> before transmission over NATS. A counter-based nonce (<code>u96</code>, incremented per packet) avoids a CSPRNG call in the hot loop while guaranteeing nonce uniqueness under the same key.</p>
+      <p>The NATS subject (e.g. <code>"uav.v1.telemetry.attitude"</code>) is bound as <strong>Additional Data</strong> in the AEAD construction. A tampered routing label causes decryption to fail — routing attacks are cryptographically prevented, not just detected.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="label-lang">Zig</span><span>crypto.zig — seal</span></div>
+        <pre><span class="kw">const</span> <span class="ty">Aes256Gcm</span> = std.crypto.aead.aes_gcm.<span class="ty">Aes256Gcm</span>;
+
+<span class="kw">pub fn</span> <span class="nm">seal</span>(key: [<span class="nm">32</span>]<span class="ty">u8</span>, plaintext: []<span class="kw">const</span> <span class="ty">u8</span>, subject: []<span class="kw">const</span> <span class="ty">u8</span>,
+            nonce_ctr: *<span class="ty">u96</span>) <span class="ty">AuthPacket</span> {
+    <span class="kw">var</span> nonce: [<span class="nm">12</span>]<span class="ty">u8</span> = <span class="kw">undefined</span>;
+    std.mem.<span class="nm">writeInt</span>(<span class="ty">u96</span>, &amp;nonce, nonce_ctr.*, .little);
+    nonce_ctr.* += <span class="nm">1</span>;  <span class="c">// counter never reuses nonce under same key</span>
+    <span class="kw">var</span> pkt = <span class="ty">AuthPacket</span>{ .nonce = nonce, .len = @intCast(plaintext.len) };
+    <span class="ty">Aes256Gcm</span>.<span class="nm">encrypt</span>(
+        pkt.ciphertext[<span class="nm">0</span>..plaintext.len], &amp;pkt.tag,
+        plaintext, subject,  <span class="c">// subject = additional data (AEAD)</span>
+        nonce, key,
+    );
+    <span class="kw">return</span> pkt;
+}</pre>
+      </div>
+      <p>Decryption verifies the GCM tag before any plaintext is released. A mismatched <code>subject</code> — even a single byte different — produces a tag failure. Packets from a compromised relay that attempts to re-route telemetry to a different NATS subject are silently dropped.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Edge Gateway</div>
+      <h2>NATS Edge Gateway &amp; Ring Buffer</h2>
+      <p>The onboard companion connects to a NATS JetStream broker over the RF link. RF dropout is expected — the 4096-slot ring buffer absorbs the gap with <strong>zero heap allocation</strong>: the backing array is a fixed-size comptime parameter, stack-allocated at startup.</p>
+      <p>On disconnect, encrypted packets are enqueued to the ring. On reconnect, the buffer drains in FIFO order before live telemetry resumes. Reconnect uses <strong>exponential backoff</strong>: 100ms → 200ms → 400ms → &hellip; capped at 30s. Cross-compiles to <code>aarch64-linux-musl</code> for Jetson Orin and Raspberry Pi 5 with a single <code>zig build -Dtarget=aarch64-linux-musl</code>.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="label-lang">Zig</span><span>ring.zig — RingBuffer</span></div>
+        <pre><span class="kw">pub fn</span> <span class="ty">RingBuffer</span>(<span class="kw">comptime</span> T: <span class="ty">type</span>, <span class="kw">comptime</span> N: <span class="ty">usize</span>) <span class="ty">type</span> {
+    <span class="kw">return struct</span> {
+        data:  [N]T  = <span class="kw">undefined</span>,
+        head:  <span class="ty">usize</span> = <span class="nm">0</span>,
+        tail:  <span class="ty">usize</span> = <span class="nm">0</span>,
+        count: <span class="ty">usize</span> = <span class="nm">0</span>,
+
+        <span class="c">// push returns false when full (caller chooses: drop or backpressure)</span>
+        <span class="kw">pub fn</span> <span class="nm">push</span>(self: *@This(), item: T) <span class="ty">bool</span> { ... }
+        <span class="kw">pub fn</span> <span class="nm">pop</span>(self: *@This()) ?T { ... }
+    };
+}
+<span class="c">// Telemetry buffer: RingBuffer(AuthPacket, 4096)</span>
+<span class="c">// ≈ 4096 × 308 bytes = 1.2 MB stack-allocated</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Formal Safety</div>
+      <h2>Formal Safety Shield</h2>
+      <p>The executive governor enforces <strong>5 geometric invariants</strong> before any setpoint reaches PX4. Invariant checks are inlined into a single function with no allocations and no dynamic dispatch — the compiler can verify the path is branch-free on the happy path.</p>
+      <ul class="invariants-list">
+        <li>
+          <span class="inv-num">1</span>
+          <span><strong>Altitude floor:</strong> <code>pos.z &gt;= FLOOR_M</code> — never fly below the hard deck</span>
+        </li>
+        <li>
+          <span class="inv-num">2</span>
+          <span><strong>Geofence:</strong> <code>distance_from_home(pos) &lt;= MAX_RADIUS_M</code> — hard cylinder boundary</span>
+        </li>
+        <li>
+          <span class="inv-num">3</span>
+          <span><strong>Velocity limit:</strong> <code>vel.norm() &lt;= MAX_VEL_MS</code> — catches runaway EKF divergence</span>
+        </li>
+        <li>
+          <span class="inv-num">4</span>
+          <span><strong>Attitude limit:</strong> <code>2&middot;acos(|q.w|) &lt;= MAX_TILT_RAD</code> — prevents inverted flight</span>
+        </li>
+        <li>
+          <span class="inv-num">5</span>
+          <span><strong>Deadman switch:</strong> <code>monotonic_clock_delta() &lt;= HEARTBEAT_PERIOD_S</code> — detects NTP spoofing and operator link loss</span>
+        </li>
+      </ul>
+      <p style="margin-top:1rem">On any invariant violation the governor returns <strong>NO_GO</strong> immediately. Decision variables are pre-bound before the <code>try</code> block so an unexpected exception can never leave the return value unset. The shield is the last line of defence — it cannot be bypassed by the advisory layer.</p>
+
+      <div class="timeline" style="margin-top:2rem">
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>1</span></div>
+          <div class="timeline-body">
+            <h4>Math library &mdash; SE(3) comptime generics</h4>
+            <p>Vec3/Mat3/Mat4/Quaternion/SE3 with exp/log maps and full unit test coverage across f32 and f64 instantiations.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>2</span></div>
+          <div class="timeline-body">
+            <h4>13-state EKF &mdash; IMU + GPS + barometer fusion</h4>
+            <p>Mahalanobis gating on GPS and barometer updates, covariance propagation with analytic Jacobian, gyro bias convergence tests.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>3</span></div>
+          <div class="timeline-body">
+            <h4>MAVLink 2 parser &mdash; zero allocation</h4>
+            <p>X.25 CRC, packed structs, message dispatch table. No heap in the hot path — all parsing in caller-provided fixed buffers.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>4</span></div>
+          <div class="timeline-body">
+            <h4>AES-GCM-256 + NATS edge gateway</h4>
+            <p>Counter nonce, AEAD subject binding, 4096-slot ring buffer, exponential backoff reconnect with ordered replay.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>5</span></div>
+          <div class="timeline-body">
+            <h4>Formal shield + 58 tests passing</h4>
+            <p>5 geometric invariants verified at every governor tick. CI gate enforces DAL-A rules: no dynamic dispatch, no heap in safety paths, all 58 tests green.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="cta-section reveal">
+        <div class="section-label" style="display:flex;justify-content:center">Work With Me</div>
+        <h2>Need a safety-critical system built right?</h2>
+        <p>I design aerospace-grade software that separates concerns by hard boundary &mdash; not by convention. Engagements start with an architecture review.</p>
+        <div class="cta-buttons">
+          <a href="mailto:charleskris9@gmail.com?subject=UAV systems enquiry" class="btn btn-primary">Email me &rarr;</a>
+          <a href="https://wa.me/26879657744" class="btn btn-wa" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+          <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" class="btn btn-ghost" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2026 BRT Inc. &middot; Charles Bartaria &middot; Manzini, Eswatini</span>
+    <a href="/" style="color:var(--muted)">&larr; brtinc.dev</a>
+  </div>
+</footer>
+
+<script>
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+
+  const barObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.sev-bar-fill').forEach(bar => { bar.style.width = bar.dataset.width; });
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.sev-bars').forEach(el => barObs.observe(el));
+</script>
+</body>
+</html>

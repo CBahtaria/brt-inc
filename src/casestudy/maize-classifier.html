@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Binary CNN for Cercospora gray leaf spot detection. MobileNetV2, 94.2% accuracy, FastAPI &lt;200ms inference, React PWA with offline support." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Maize Leaf Disease Classifier — BRT Inc." />
+  <meta property="og:description" content="Binary CNN for Cercospora gray leaf spot detection. MobileNetV2, 94.2% accuracy, FastAPI &lt;200ms inference, React PWA with offline support." />
+  <meta property="og:type" content="article" />
+  <title>Maize Leaf Disease Classifier — BRT Inc.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <style>
+    :root {
+      --bg: #05070e; --surface: #090d1a; --surface2: #0d1326;
+      --blue: #3b82f6; --blue-mid: #1d4ed8; --cyan: #22d3ee;
+      --red: #ef4444; --amber: #f59e0b; --green: #22c55e;
+      --fg: #f1f5ff; --muted: #94a3b8; --border: #1e2d45;
+      --font: 'Inter', system-ui, sans-serif;
+      --mono: 'Courier New', monospace;
+      --radius: .6rem;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc; --surface: #fff; --surface2: #f1f5f9;
+        --blue: #2563eb; --cyan: #0891b2; --red: #dc2626;
+        --amber: #d97706; --green: #16a34a;
+        --fg: #0f172a; --muted: #475569; --border: #e2e8f0;
+      }
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.8; -webkit-font-smoothing: antialiased; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { font-family: var(--mono); font-size: .82em; background: var(--surface2); padding: .1em .35em; border-radius: .25rem; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+    nav { padding: 1.2rem 0; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 50; }
+    nav .container { display: flex; align-items: center; justify-content: space-between; }
+    .nav-brand { font-size: 1rem; font-weight: 800; color: var(--fg); letter-spacing: -.02em; }
+    .nav-brand span { color: var(--blue); }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: .88rem; }
+    .nav-links a:hover { color: var(--fg); text-decoration: none; }
+    .nav-cta { background: var(--blue); color: #fff !important; padding: .35rem .9rem; border-radius: var(--radius); font-weight: 600; font-size: .82rem; }
+    .nav-cta:hover { background: var(--blue-mid); text-decoration: none !important; }
+    .case-hero { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
+    .case-badge { display: inline-flex; align-items: center; gap: .45rem; font-size: .78rem; font-weight: 600; padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1.4rem; letter-spacing: .04em; }
+    .case-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; display: block; }
+    .case-hero h1 { font-size: clamp(1.8rem, 4.5vw, 2.8rem); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; margin-bottom: .8rem; }
+    .case-hero h1 span { color: var(--blue); }
+    .case-hero .sub { color: var(--muted); font-size: 1rem; max-width: 640px; margin-bottom: 2rem; }
+    .meta-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+    .chip { font-size: .78rem; font-weight: 500; padding: .25rem .7rem; border-radius: 2rem; border: 1px solid var(--border); color: var(--muted); background: var(--surface); font-family: var(--mono); }
+    .stats-band { padding: 2.5rem 0; border-bottom: 1px solid var(--border); }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 1.5rem; }
+    .stat-item { text-align: center; }
+    .stat-n { font-size: 2.4rem; font-weight: 800; display: block; letter-spacing: -.04em; line-height: 1; margin-bottom: .3rem; }
+    .stat-l { color: var(--muted); font-size: .78rem; font-weight: 500; }
+    .stat-critical .stat-n { color: var(--red); }
+    .stat-high .stat-n { color: var(--amber); }
+    .stat-ok .stat-n { color: var(--green); }
+    .stat-blue .stat-n { color: var(--blue); }
+    main section { padding: 3rem 0; border-bottom: 1px solid var(--border); }
+    main section:last-child { border-bottom: none; }
+    .section-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--blue); margin-bottom: .6rem; }
+    h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 1rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.4rem 0 .5rem; }
+    p { color: var(--muted); margin-bottom: 1rem; font-size: .94rem; }
+    p strong { color: var(--fg); }
+    .method-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.2rem; }
+    .method-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; }
+    .method-card h4 { font-size: .88rem; font-weight: 600; margin-bottom: .4rem; color: var(--fg); }
+    .method-card p { font-size: .82rem; margin: 0; }
+    .code-block { margin: 1.2rem 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .code-header { background: var(--surface2); padding: .5rem 1rem; font-size: .75rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .label-before { color: var(--red); }
+    .label-after  { color: var(--green); }
+    pre { background: var(--surface); padding: 1.1rem 1.2rem; overflow-x: auto; font-size: .8rem; line-height: 1.7; font-family: var(--mono); color: var(--fg); margin: 0; }
+    .c  { color: var(--muted); }
+    .kw { color: var(--blue); }
+    .bad  { color: var(--red); }
+    .good { color: var(--green); }
+    .timeline { margin-top: 1.5rem; }
+    .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
+    .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
+    .timeline-dot { width: 24px; height: 24px; border-radius: 50%; background: var(--surface); border: 2px solid var(--blue); flex-shrink: 0; margin-top: .1rem; display: flex; align-items: center; justify-content: center; }
+    .timeline-dot span { font-size: .65rem; font-weight: 700; color: var(--blue); }
+    .timeline-body h4 { font-size: .9rem; font-weight: 600; margin-bottom: .2rem; color: var(--fg); }
+    .timeline-body p { font-size: .83rem; margin: 0; }
+    .cta-section { background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; text-align: center; margin-top: 1rem; }
+    .cta-section h2 { font-size: 1.4rem; margin-bottom: .6rem; }
+    .cta-section p { max-width: 520px; margin: 0 auto 1.5rem; }
+    .cta-buttons { display: flex; gap: .8rem; justify-content: center; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: .4rem; padding: .7rem 1.5rem; border-radius: var(--radius); font-weight: 600; font-size: .9rem; cursor: pointer; border: none; text-decoration: none; transition: all .2s; font-family: var(--font); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-mid); transform: translateY(-1px); text-decoration: none; }
+    .btn-ghost { background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); text-decoration: none; }
+    .btn-wa { background: #25d366; color: #fff; }
+    .btn-wa:hover { background: #1fba57; transform: translateY(-1px); text-decoration: none; }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; } }
+    footer { padding: 2rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .82rem; margin-top: 2rem; }
+    footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .8rem; align-items: center; }
+    @media (max-width: 600px) { .cta-buttons { flex-direction: column; align-items: stretch; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <a href="/" class="nav-brand">BRT<span>Inc.</span></a>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/#portfolio">Portfolio</a>
+      <a href="/#services">Services</a>
+      <a href="mailto:charleskris9@gmail.com" class="nav-cta">Hire Me</a>
+    </div>
+  </div>
+</nav>
+
+<header class="case-hero">
+  <div class="container">
+    <div class="case-badge" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--green);">
+      Machine Learning · 2025
+    </div>
+    <h1>Maize Leaf Disease Classifier<br><span>Binary CNN for Agricultural AI</span></h1>
+    <p class="sub">Computer vision system for detecting Cercospora gray leaf spot in maize crops. Addresses sub-Saharan agricultural losses from manual inspection limitations. MobileNetV2 backbone fine-tuned on 3,500 labelled field images, deployed as FastAPI inference server + React PWA.</p>
+    <div class="meta-chips">
+      <span class="chip">Python</span>
+      <span class="chip">TensorFlow</span>
+      <span class="chip">MobileNetV2</span>
+      <span class="chip">FastAPI</span>
+      <span class="chip">React PWA</span>
+      <span class="chip">Docker</span>
+      <span class="chip">Blue-Green Deploy</span>
+    </div>
+  </div>
+</header>
+
+<div class="stats-band">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item stat-blue reveal">
+        <span class="stat-n">3,500</span>
+        <span class="stat-l">Training images</span>
+      </div>
+      <div class="stat-item stat-ok reveal">
+        <span class="stat-n">94.2%</span>
+        <span class="stat-l">Accuracy</span>
+      </div>
+      <div class="stat-item stat-blue reveal">
+        <span class="stat-n">&lt;200ms</span>
+        <span class="stat-l">Inference</span>
+      </div>
+      <div class="stat-item stat-ok reveal">
+        <span class="stat-n">100%</span>
+        <span class="stat-l">Uptime</span>
+      </div>
+      <div class="stat-item stat-blue reveal">
+        <span class="stat-n">2</span>
+        <span class="stat-l">Deploy slots blue-green</span>
+      </div>
+      <div class="stat-item stat-ok reveal">
+        <span class="stat-n">0</span>
+        <span class="stat-l">Downtime on update</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="container">
+
+    <section class="reveal">
+      <div class="section-label">Overview</div>
+      <h2>The Problem</h2>
+      <p>Cercospora gray leaf spot reduces maize yields by <strong>20–50%</strong> in affected fields across sub-Saharan Africa. Manual inspection by agronomists is slow, expensive, and inconsistent — a single agronomist can inspect ~50 plants per hour. Early detection (before visible spread) requires lab analysis inaccessible to small-hold farmers.</p>
+      <p>This system gives any farmer with a smartphone the ability to photograph a leaf and get a disease probability in under 200ms, <strong>without internet connectivity</strong> after the initial PWA install.</p>
+
+      <div class="method-grid">
+        <div class="method-card">
+          <h4>Dataset</h4>
+          <p>3,500 field images labelled by agronomists. Class balance 52% healthy / 48% diseased. Augmentation: random flip, brightness ±20%, rotation ±15°, zoom ±10%.</p>
+        </div>
+        <div class="method-card">
+          <h4>Model Architecture</h4>
+          <p>MobileNetV2 pretrained on ImageNet. Top layers replaced: GlobalAveragePooling → Dropout(0.3) → Dense(128, ReLU) → Dense(1, sigmoid). Fine-tuned for 20 epochs, learning rate 1e-4.</p>
+        </div>
+        <div class="method-card">
+          <h4>Confidence Calibration</h4>
+          <p>Platt scaling applied post-training. Raw sigmoid outputs biased toward 0.85+ even for uncertain predictions. Calibration maps to true probability — 0.7 output = 70% historical accuracy.</p>
+        </div>
+        <div class="method-card">
+          <h4>Offline PWA</h4>
+          <p>Service worker caches model weights + app shell. Inference runs in browser via TensorFlow.js after first load. FastAPI backend used for batch/high-accuracy mode.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <div class="section-label">Implementation</div>
+      <h2>FastAPI Inference Server</h2>
+      <p>REST API with a <code>/predict</code> endpoint. Accepts image upload (JPEG/PNG, max 5MB). Preprocessing: resize to 224×224, normalize to <code>[-1, 1]</code> (MobileNetV2 range). Returns JSON with disease prediction, calibrated confidence, and measured latency.</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>api/predict.py</span>
+          <span class="label-after">FastAPI · TensorFlow</span>
+        </div>
+        <pre><span class="c"># api/predict.py</span>
+<span class="kw">@app</span>.post(<span class="good">"/predict"</span>)
+<span class="kw">async def</span> predict(file: UploadFile = File(...)):
+    img_bytes = <span class="kw">await</span> file.read()
+    img = Image.open(io.BytesIO(img_bytes)).convert(<span class="good">"RGB"</span>).resize((224, 224))
+    arr = tf.keras.applications.mobilenet_v2.preprocess_input(
+        np.array(img, dtype=np.float32)[np.newaxis]
+    )
+    t0 = time.perf_counter()
+    prob = float(model(arr, training=<span class="kw">False</span>)[0, 0])
+    latency_ms = int((time.perf_counter() - t0) * 1000)
+    <span class="c"># Apply Platt calibration</span>
+    prob_calibrated = platt_sigmoid(prob, A=PLATT_A, B=PLATT_B)
+    <span class="kw">return</span> {
+        <span class="good">"diseased"</span>: prob_calibrated >= 0.5,
+        <span class="good">"confidence"</span>: round(prob_calibrated, 3),
+        <span class="good">"latency_ms"</span>: latency_ms,
+    }</pre>
+      </div>
+
+      <p>The <code>platt_sigmoid</code> function applies learned parameters <code>A</code> and <code>B</code> to map the raw network output to a well-calibrated probability. These parameters are fitted on a held-out calibration set after training using maximum likelihood estimation.</p>
+    </section>
+
+    <section class="reveal">
+      <div class="section-label">Infrastructure</div>
+      <h2>Blue-Green Zero-Downtime Deploy</h2>
+      <p>Two identical deployment slots (blue/green). Traffic routed via Nginx upstream. The active slot serves 100% of production traffic while the inactive slot receives the new build, passes health checks, and then takes over — with the old slot held warm for instant rollback.</p>
+
+      <h3>Deploy sequence</h3>
+      <p>
+        1. Build new image → deploy to inactive slot.<br>
+        2. Health check: <code>GET /healthz</code> must return 200 three times consecutively.<br>
+        3. Switch Nginx upstream to new slot (reload, no connection drop).<br>
+        4. Old slot kept warm for 5 minutes for instant rollback.
+      </p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>nginx.conf — upstream block</span>
+          <span class="label-after">Nginx</span>
+        </div>
+        <pre>upstream maize_api {
+    server 127.0.0.1:8001;  <span class="c"># blue slot (active)</span>
+    <span class="c"># server 127.0.0.1:8002;  # green slot (standby)</span>
+}
+<span class="c"># Health check script flips the comment and reloads nginx</span></pre>
+      </div>
+
+      <div class="code-block">
+        <div class="code-header">
+          <span>deploy.sh</span>
+          <span class="label-after">Bash · Docker</span>
+        </div>
+        <pre><span class="c">#!/usr/bin/env bash</span>
+<span class="c"># deploy.sh — switches active slot without downtime</span>
+ACTIVE=$(cat /var/run/maize-active-slot)  <span class="c"># "blue" or "green"</span>
+NEW=$([ <span class="good">"$ACTIVE"</span> = <span class="good">"blue"</span> ] &amp;&amp; echo <span class="good">"green"</span> || echo <span class="good">"blue"</span>)
+docker compose up -d maize-$NEW
+<span class="c"># Health check loop</span>
+<span class="kw">for</span> i <span class="kw">in</span> $(seq 1 3); <span class="kw">do</span>
+  curl -sf http://localhost:800$([ <span class="good">"$NEW"</span> = <span class="good">"green"</span> ] &amp;&amp; echo 2 || echo 1)/healthz || exit 1
+  sleep 2
+<span class="kw">done</span>
+nginx-slot-switch $NEW &amp;&amp; echo <span class="good">"$NEW"</span> > /var/run/maize-active-slot</pre>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <div class="section-label">Timeline</div>
+      <h2>Build Sequence</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>1</span></div>
+          <div class="timeline-body">
+            <h4>Dataset curation — 3,500 labelled images</h4>
+            <p>Agronomist labels, class balance audit, augmentation pipeline</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>2</span></div>
+          <div class="timeline-body">
+            <h4>MobileNetV2 fine-tuning — 20 epochs</h4>
+            <p>Transfer learning, Platt calibration post-training</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>3</span></div>
+          <div class="timeline-body">
+            <h4>FastAPI inference server</h4>
+            <p>Preprocessing pipeline, &lt;200ms target, health endpoint</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>4</span></div>
+          <div class="timeline-body">
+            <h4>React PWA + TensorFlow.js</h4>
+            <p>Service worker, offline inference, camera capture UI</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"><span>5</span></div>
+          <div class="timeline-body">
+            <h4>Blue-green deployment — zero downtime</h4>
+            <p>Nginx upstream switch, health gate, rollback slot</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reveal">
+      <div class="cta-section">
+        <h2>Need a production ML system?</h2>
+        <p>I build ML pipelines that go beyond Jupyter notebooks — calibrated models, REST APIs, PWA delivery, and zero-downtime deploy. Available for agricultural, medical, and industrial vision applications.</p>
+        <div class="cta-buttons">
+          <a href="mailto:charleskris9@gmail.com?subject=ML%20system%20enquiry" class="btn btn-primary">Email Me</a>
+          <a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer" class="btn btn-wa">WhatsApp</a>
+          <a href="https://linkedin.com/in/cbartaria" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <span>&copy; 2025 BRT Inc. — Eswatini</span>
+    <span><a href="/">brtinc.vercel.app</a></span>
+  </div>
+</footer>
+
+<script>
+  const revealObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
+    });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
+</script>
+</body>
+</html>

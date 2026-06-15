@@ -479,6 +479,45 @@ $_SESSION['role']    = $user->role;</pre>
 <span class="c">// MAX=5 &rarr; 6th attempt blocked (&gt;= 5 is true when attempts=5)</span></pre>
       </div>
 
+      <h3>F-06 &mdash; Security headers added to all API responses</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>api/config.php (all API entry points)</span></div>
+        <pre>header('Content-Type: application/json');
+<span class="bad">header('Access-Control-Allow-Origin: *');</span>
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+<span class="c">// No X-Content-Type-Options, X-Frame-Options, CSP, HSTS, or Referrer-Policy</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>api/config.php (all API entry points)</span></div>
+        <pre><span class="c">// ... CORS allowlist (see F-03) ...</span>
+
+<span class="c">// Defence-in-depth headers on every API response</span>
+header(<span class="good">'X-Content-Type-Options: nosniff'</span>);
+header(<span class="good">'X-Frame-Options: DENY'</span>);
+header(<span class="good">'Content-Security-Policy: default-src \'self\''</span>);
+header(<span class="good">'Strict-Transport-Security: max-age=31536000; includeSubDomains'</span>);
+header(<span class="good">'Referrer-Policy: no-referrer'</span>);
+header(<span class="good">'X-Permitted-Cross-Domain-Policies: none'</span>);</pre>
+      </div>
+
+      <h3>F-07 &mdash; Error disclosure disabled in production</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>config/settings.php</span></div>
+        <pre><span class="c">// Feature Flags</span>
+'websocket' => true,
+<span class="bad">'debug' => true,</span>
+'maintenance' => false,
+<span class="c">// PHP renders exceptions, stack traces, and file paths directly to the HTTP response</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>config/settings.php</span></div>
+        <pre><span class="c">// Feature Flags</span>
+'websocket' => true,
+<span class="good">'debug' => false,</span>  <span class="c">// Never expose errors to users in production; use error_log instead</span>
+'maintenance' => false,</pre>
+      </div>
+
       <h3>F-08 &mdash; Raw SQL replaced with prepared statements</h3>
       <div class="code-block">
         <div class="code-header"><span class="label-before">Before</span><span>api/missions.php</span></div>
@@ -493,6 +532,26 @@ $result = $db->query(<span class="bad">"SELECT * FROM missions WHERE id=" . $id<
 <span class="kw">$stmt</span>->execute([$_GET[<span class="good">'id'</span>], $_SESSION[<span class="good">'user_id'</span>]]);
 <span class="c">// Parameter binding prevents injection. user_id check enforces RBAC at query level.</span>
 $result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
+      </div>
+
+      <h3>F-09 &mdash; Silent DB fallback removed</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>includes/functions.php</span></div>
+        <pre><span class="kw">function</span> logActivity($user_id, $action, $details = '') {
+    <span class="kw">try</span> {
+        $pdo = <span class="kw">new</span> PDO(<span class="bad">'mysql:host=localhost;dbname=uedf_sentinel'</span>, <span class="bad">'root'</span>, <span class="bad">''</span>);
+        <span class="c">// Hardcoded localhost + empty password — silently used if env vars are absent</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>includes/functions.php</span></div>
+        <pre><span class="kw">function</span> logActivity($user_id, $action, $details = '') {
+    <span class="kw">try</span> {
+        $dbHost = $_ENV[<span class="good">'DB_HOST'</span>] ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'DB_HOST not set'</span>);
+        $dbName = $_ENV[<span class="good">'DB_NAME'</span>] ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'DB_NAME not set'</span>);
+        $dbUser = $_ENV[<span class="good">'DB_USER'</span>] ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'DB_USER not set'</span>);
+        $dbPass = $_ENV[<span class="good">'DB_PASS'</span>] ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'DB_PASS not set'</span>);
+        $pdo = <span class="kw">new</span> PDO(<span class="good">"mysql:host={$dbHost};dbname={$dbName}"</span>, $dbUser, $dbPass);
+        <span class="c">// Missing env var throws immediately — no silent misconfiguration possible</span></pre>
       </div>
     </div>
   </section>

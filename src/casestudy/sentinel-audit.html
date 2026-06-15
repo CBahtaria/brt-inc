@@ -106,6 +106,14 @@
     .sev-resolved { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
     .finding-id   { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
 
+    .rbac-table { width:100%; border-collapse:collapse; font-size:.875rem; margin-top:1rem; }
+    .rbac-table th { text-align:left; padding:.6rem .8rem; border-bottom:2px solid var(--border); font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+    .rbac-table td { padding:.55rem .8rem; border-bottom:1px solid var(--border); }
+    .rbac-table tr:last-child td { border-bottom:none; }
+    .rbac-table .role-name { font-weight:600; color:var(--fg); }
+    .rbac-tick { color:var(--green); font-weight:700; }
+    .rbac-dash { color:var(--border); }
+
     .code-block { margin: 1.2rem 0; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
     .code-header { background: var(--surface2); padding: .5rem 1rem; font-size: .75rem; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
     .label-before { color: var(--red); }
@@ -190,11 +198,88 @@
       <div class="stat-item stat-blue reveal"><span class="stat-n">22</span><span class="stat-l">Files patched</span></div>
       <div class="stat-item stat-blue reveal"><span class="stat-n">317</span><span class="stat-l">Lines changed</span></div>
       <div class="stat-item stat-ok reveal"><span class="stat-n">0</span><span class="stat-l">Regressions</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">27,900</span><span class="stat-l">Lines audited</span></div>
+      <div class="stat-item stat-blue reveal"><span class="stat-n">16</span><span class="stat-l">MVC controllers</span></div>
     </div>
   </div>
 </div>
 
 <main>
+  <section>
+    <div class="container reveal">
+      <div class="section-label">Overview</div>
+      <h2>What is UEDF Sentinel?</h2>
+      <p><strong>UEDF (United Eswatini Defence Force) Sentinel v5.0</strong> is a military command-and-control platform for real-time drone fleet management. Built as a production PHP 8.3 monolith: <strong>27,900 lines, 16 MVC controllers, MySQL 8 database</strong>.</p>
+      <p>Architecture: PHP backend serving a RESTful JSON API plus server-rendered MVC views, a Node.js WebSocket shim for real-time telemetry, and <strong>NATS JetStream</strong> as the message bus. Every write operation feeds a <strong>blockchain-chained tamper-evident audit log</strong> (SHA-256 Merkle tree, each event hash-linked to the previous one). <strong>TOTP 2FA</strong> is enforced on all administrative accounts.</p>
+      <div class="method-grid">
+        <div class="method-card">
+          <h4>Fleet Command</h4>
+          <p>Real-time drone position tracking via WebSocket telemetry. Mission planning, waypoint assignment, fleet status dashboard. Live telemetry from MAVLink &rarr; NATS &rarr; WebSocket &rarr; browser.</p>
+        </div>
+        <div class="method-card">
+          <h4>Auth &amp; Access Control</h4>
+          <p>TOTP 2FA (Google Authenticator compatible) on all admin/commander accounts. RBAC with 4 roles enforced at controller level on every API route. JWT tokens (15-min TTL) + refresh token rotation.</p>
+        </div>
+        <div class="method-card">
+          <h4>Audit Trail</h4>
+          <p>Every write operation (mission create/update, drone assignment, user action) appended to a blockchain-chained audit log. SHA-256 hash of each event includes the previous event's hash &mdash; tampering any entry invalidates all subsequent entries.</p>
+        </div>
+        <div class="method-card">
+          <h4>Integration Layer</h4>
+          <p>NATS JetStream for pub/sub between PHP backend and Node.js telemetry relay. MAVLink 2 telemetry from drones &rarr; NATS &rarr; WebSocket broker &rarr; browser dashboard. PHPUnit integration tests for all API routes.</p>
+        </div>
+      </div>
+
+      <h3>Role-Based Access Control matrix</h3>
+      <table class="rbac-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Fleet Control</th>
+            <th>Mission Planning</th>
+            <th>Audit Log</th>
+            <th>User Mgmt</th>
+            <th>System Config</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="role-name">System Admin</td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+          </tr>
+          <tr>
+            <td class="role-name">Commander</td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+          </tr>
+          <tr>
+            <td class="role-name">Operator</td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+          </tr>
+          <tr>
+            <td class="role-name">Analyst</td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-tick">&#10003;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+            <td><span class="rbac-dash">&mdash;</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section>
     <div class="container reveal">
       <div class="section-label">Overview</div>
@@ -332,6 +417,22 @@
 <span class="c">// Credentials injected only via environment variables</span></pre>
       </div>
 
+      <h3>F-02 &mdash; Hardcoded secrets replaced with environment variables</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>api/config.php</span></div>
+        <pre>define(<span class="bad">'SENTINEL_API_KEY'</span>, <span class="bad">'uedf-sentinel-mobile-2026'</span>);
+define(<span class="bad">'DB_PASS'</span>,         <span class="bad">'sentinel_prod_pass'</span>);
+<span class="c">// Rotation requires a code push and deployment — key lives in git history</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>api/config.php</span></div>
+        <pre>define(<span class="good">'SENTINEL_API_KEY'</span>, $_ENV[<span class="good">'SENTINEL_API_KEY'</span>]
+    ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'SENTINEL_API_KEY not set'</span>));
+define(<span class="good">'DB_PASS'</span>, $_ENV[<span class="good">'DB_PASSWORD'</span>]
+    ?? <span class="kw">throw new</span> \RuntimeException(<span class="good">'DB_PASSWORD not set'</span>));
+<span class="c">// Rotation: update env var in deployment config, restart process. Zero code change.</span></pre>
+      </div>
+
       <h3>F-03 &mdash; CORS wildcard replaced with allowlist</h3>
       <div class="code-block">
         <div class="code-header"><span class="label-before">Before</span><span>api/auth.php</span></div>
@@ -348,6 +449,24 @@ $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
 }</pre>
       </div>
 
+      <h3>F-04 &mdash; Session fixation patched</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>src/Auth.php</span></div>
+        <pre>session_start();
+<span class="c">// ... validate username + password ...</span>
+<span class="bad">// Session ID never rotated — attacker who fixed the ID before login now owns the session</span>
+$_SESSION['user_id'] = $user->id;
+$_SESSION['role']    = $user->role;</pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>src/Auth.php</span></div>
+        <pre>session_start();
+<span class="c">// ... validate username + password ...</span>
+<span class="good">session_regenerate_id(true);  // destroys old session data, issues new SID</span>
+$_SESSION['user_id'] = $user->id;
+$_SESSION['role']    = $user->role;</pre>
+      </div>
+
       <h3>F-05 &mdash; Brute-force off-by-one corrected</h3>
       <div class="code-block">
         <div class="code-header"><span class="label-before">Before</span><span>api/auth.php</span></div>
@@ -358,6 +477,22 @@ $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
         <div class="code-header"><span class="label-after">After</span><span>api/auth.php</span></div>
         <pre><span class="kw">if</span> ($attempts <span class="good">&gt;</span> MAX_LOGIN_ATTEMPTS) { lockout(); }
 <span class="c">// MAX=5 &rarr; 6th attempt (&gt; 5) now correctly blocked</span></pre>
+      </div>
+
+      <h3>F-08 &mdash; Raw SQL replaced with prepared statements</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-before">Before</span><span>api/missions.php</span></div>
+        <pre><span class="c">// SQL built by string concatenation — classic injection surface</span>
+$id     = $_GET[<span class="bad">'id'</span>];
+$result = $db->query(<span class="bad">"SELECT * FROM missions WHERE id=" . $id</span>);
+<span class="c">// Payload: ?id=1 OR 1=1 — returns all missions regardless of RBAC</span></pre>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">After</span><span>api/missions.php</span></div>
+        <pre><span class="kw">$stmt</span> = $db->prepare(<span class="good">"SELECT * FROM missions WHERE id = ? AND user_id = ?"</span>);
+<span class="kw">$stmt</span>->execute([$_GET[<span class="good">'id'</span>], $_SESSION[<span class="good">'user_id'</span>]]);
+<span class="c">// Parameter binding prevents injection. user_id check enforces RBAC at query level.</span>
+$result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
       </div>
     </div>
   </section>
@@ -396,6 +531,47 @@ $origin  = $_SERVER['HTTP_ORIGIN'] ?? '';
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container reveal">
+      <div class="section-label">CI Gate</div>
+      <h2>Preventing Regressions</h2>
+      <p>A GitHub Actions workflow was added as part of the engagement. Every pull request to <code>main</code> must pass three automated checks before merge is allowed.</p>
+
+      <h3>Check 1 &mdash; No hardcoded secrets</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">.github/workflows/security.yml</span><span>grep gate</span></div>
+        <pre><span class="c"># .github/workflows/security.yml</span>
+- <span class="kw">name</span>: No hardcoded credentials
+  <span class="kw">run</span>: |
+    ! grep -rn \
+      <span class="good">"commander123\|uedf-sentinel-mobile\|sentinel_prod_pass"</span> \
+      --include=<span class="good">"*.php"</span> .</pre>
+      </div>
+
+      <h3>Check 2 &mdash; Auth enforced on all internal pages</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">.github/workflows/security.yml</span><span>auth gate</span></div>
+        <pre>- <span class="kw">name</span>: Auth check present on all controllers
+  <span class="kw">run</span>: |
+    <span class="kw">for</span> f <span class="kw">in</span> src/Controllers/*.php; <span class="kw">do</span>
+      grep -q <span class="good">"Auth::requireLogin\|session_start"</span> <span class="good">"$f"</span> || \
+        { echo <span class="good">"MISSING auth: $f"</span>; exit 1; }
+    <span class="kw">done</span></pre>
+      </div>
+
+      <h3>Check 3 &mdash; No raw SQL concatenation</h3>
+      <div class="code-block">
+        <div class="code-header"><span class="label-after">.github/workflows/security.yml</span><span>injection gate</span></div>
+        <pre>- <span class="kw">name</span>: No string-concatenated SQL
+  <span class="kw">run</span>: |
+    ! grep -rn <span class="good">'query(.*\$_GET\|query(.*\$_POST\|query(.*\$_REQUEST'</span> \
+      --include=<span class="good">"*.php"</span> .</pre>
+      </div>
+
+      <p>All three gates run on every push. A finding-class regression triggers a build failure and blocks the PR.</p>
     </div>
   </section>
 

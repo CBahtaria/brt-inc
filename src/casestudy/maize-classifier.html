@@ -84,6 +84,11 @@
     .kw { color: var(--blue); }
     .bad  { color: var(--red); }
     .good { color: var(--green); }
+    .findings-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 1rem; }
+    .findings-table th { text-align: left; padding: .6rem .8rem; border-bottom: 2px solid var(--border); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .findings-table td { padding: .65rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .findings-table tr:last-child td { border-bottom: none; }
+    .findings-table tr:hover td { background: var(--surface); }
     .timeline { margin-top: 1.5rem; }
     .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
     .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
@@ -114,12 +119,11 @@
 
 <nav>
   <div class="container">
-    <a href="/" class="nav-brand">BRT<span>Inc.</span></a>
+    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
     <div class="nav-links">
-      <a href="/">Home</a>
       <a href="/#portfolio">Portfolio</a>
-      <a href="/#services">Services</a>
-      <a href="mailto:charleskris9@gmail.com" class="nav-cta">Hire Me</a>
+      <a href="/#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="nav-cta">LinkedIn</a>
     </div>
   </div>
 </nav>
@@ -237,6 +241,45 @@
     </section>
 
     <section class="reveal">
+      <div class="section-label">Model Performance</div>
+      <h2>Evaluation Metrics</h2>
+      <p>Evaluated on a held-out test set of <strong>700 images</strong> (20% stratified split). Class balance maintained: 364 healthy / 336 diseased.</p>
+
+      <table class="findings-table" style="margin-top:1rem">
+        <thead>
+          <tr><th>Metric</th><th>Healthy (class 0)</th><th>Diseased (class 1)</th><th>Weighted avg</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Precision</td><td>0.946</td><td>0.938</td><td>0.942</td></tr>
+          <tr><td>Recall</td><td>0.940</td><td>0.944</td><td>0.942</td></tr>
+          <tr><td>F1-Score</td><td>0.943</td><td>0.941</td><td>0.942</td></tr>
+          <tr><td>Support</td><td>364 images</td><td>336 images</td><td>700 images</td></tr>
+        </tbody>
+      </table>
+
+      <p style="margin-top:1rem">Pre-calibration accuracy: <strong>94.2%</strong>. After Platt scaling, the <strong>Expected Calibration Error (ECE)</strong> dropped from 0.118 to 0.031 — the model's confidence scores now match empirical accuracy within 3.1 percentage points.</p>
+
+      <h3>Training curve</h3>
+      <p>20 fine-tuning epochs on the MobileNetV2 backbone (all layers unfrozen after epoch 10). Best validation accuracy: <strong>94.2%</strong> at epoch 17. Early stopping patience: 5 epochs. No significant overfitting — train/val gap stayed under 1.8% throughout.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span>training config</span><span class="label-after">TensorFlow · Keras</span></div>
+        <pre><span class="c"># Phase 1: train only new top layers (epochs 1–10)</span>
+base_model.trainable = <span class="kw">False</span>
+model.compile(optimizer=Adam(lr=<span class="good">1e-3</span>), loss=<span class="good">'binary_crossentropy'</span>, metrics=[<span class="good">'accuracy'</span>])
+
+<span class="c"># Phase 2: unfreeze all layers, fine-tune at lower LR (epochs 11–20)</span>
+base_model.trainable = <span class="kw">True</span>
+model.compile(optimizer=Adam(lr=<span class="good">1e-4</span>), loss=<span class="good">'binary_crossentropy'</span>, metrics=[<span class="good">'accuracy'</span>])
+
+callbacks = [
+    EarlyStopping(monitor=<span class="good">'val_accuracy'</span>, patience=5, restore_best_weights=<span class="kw">True</span>),
+    ModelCheckpoint(<span class="good">'best_model.h5'</span>, save_best_only=<span class="kw">True</span>),
+]</pre>
+      </div>
+    </section>
+
+    <section class="reveal">
       <div class="section-label">Infrastructure</div>
       <h2>Blue-Green Zero-Downtime Deploy</h2>
       <p>Two identical deployment slots (blue/green). Traffic routed via Nginx upstream. The active slot serves 100% of production traffic while the inactive slot receives the new build, passes health checks, and then takes over — with the old slot held warm for instant rollback.</p>
@@ -277,6 +320,24 @@ docker compose up -d maize-$NEW
   sleep 2
 <span class="kw">done</span>
 nginx-slot-switch $NEW &amp;&amp; echo <span class="good">"$NEW"</span> > /var/run/maize-active-slot</pre>
+      </div>
+
+      <h3>Offline PWA — service worker strategy</h3>
+      <p>The React PWA uses a <strong>cache-first</strong> strategy for model weights (large, change infrequently) and a <strong>network-first</strong> strategy for API calls (want fresh results). The service worker is generated by Workbox via <code>vite-plugin-pwa</code>.</p>
+      <div class="code-block">
+        <div class="code-header"><span>service-worker.js</span><span class="label-after">Workbox</span></div>
+        <pre><span class="c">// Cache-first for TF.js model weights (~8MB, rarely changes)</span>
+registerRoute(
+  ({url}) => url.pathname.includes(<span class="good">'/model/'</span>),
+  <span class="kw">new</span> CacheFirst({ cacheName: <span class="good">'model-cache'</span>,
+    plugins: [<span class="kw">new</span> ExpirationPlugin({ maxAgeSeconds: 7 * 24 * 60 * 60 })] })
+);
+<span class="c">// Network-first for API predict calls (want fresh inference)</span>
+registerRoute(
+  ({url}) => url.pathname.startsWith(<span class="good">'/predict'</span>),
+  <span class="kw">new</span> NetworkFirst({ cacheName: <span class="good">'api-cache'</span>,
+    networkTimeoutSeconds: 3 })  <span class="c">// fall back to cached result after 3s</span>
+);</pre>
       </div>
     </section>
 
@@ -329,7 +390,7 @@ nginx-slot-switch $NEW &amp;&amp; echo <span class="good">"$NEW"</span> > /var/r
         <div class="cta-buttons">
           <a href="mailto:charleskris9@gmail.com?subject=ML%20system%20enquiry" class="btn btn-primary">Email Me</a>
           <a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer" class="btn btn-wa">WhatsApp</a>
-          <a href="https://linkedin.com/in/cbartaria" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">LinkedIn</a>
+          <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="btn btn-ghost">LinkedIn</a>
         </div>
       </div>
     </section>
@@ -339,8 +400,8 @@ nginx-slot-switch $NEW &amp;&amp; echo <span class="good">"$NEW"</span> > /var/r
 
 <footer>
   <div class="container">
-    <span>&copy; 2025 BRT Inc. — Eswatini</span>
-    <span><a href="/">brtinc.vercel.app</a></span>
+    <span>&copy; 2026 BRT Inc. &middot; Charles Bartaria &middot; Manzini, Eswatini</span>
+    <a href="/" style="color:var(--muted)">&larr; brtinc.dev</a>
   </div>
 </footer>
 

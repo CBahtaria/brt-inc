@@ -80,6 +80,11 @@
     .c  { color: var(--muted); }
     .kw { color: var(--blue); }
     .good { color: var(--green); }
+    .findings-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 1rem; }
+    .findings-table th { text-align: left; padding: .6rem .8rem; border-bottom: 2px solid var(--border); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .findings-table td { padding: .65rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .findings-table tr:last-child td { border-bottom: none; }
+    .findings-table tr:hover td { background: var(--surface); }
     .timeline { margin-top: 1.5rem; }
     .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
     .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
@@ -268,6 +273,9 @@
         paths[:, t] = (sacu_shock - EXPENDITURE_MEAN) / (1 + gdp_shock)
     <span class="kw">return</span> paths  <span class="c"># percentile bands extracted for fan chart</span></pre>
       </div>
+
+      <h3>Impulse response analysis</h3>
+      <p>Beyond unconditional forecasts, the dashboard supports <strong>impulse response analysis</strong> for named shock scenarios. A canonical example: a <strong>20% SACU revenue shock</strong> — modelling what happens to the fiscal balance, reserves adequacy, and GDP trajectory if SACU transfers drop by a fifth (historically possible during South African recessions). The shock is applied as a one-period deviation in the Monte Carlo initial conditions; the resulting fan of recovery paths shows both the median recovery timeline and the tail risk of fiscal unsustainability. This analysis is surfaced in the "SACU sensitivity" panel in Plotly Dash.</p>
     </section>
 
     <!-- Section 4: Architecture -->
@@ -308,6 +316,22 @@
         </div>
       </div>
 
+      <h3>Docker Compose — 7 services</h3>
+      <table class="findings-table" style="margin-top:.8rem">
+        <thead>
+          <tr><th>Service</th><th>Image / Port</th><th>Role</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>api</code></td><td>custom · :8000</td><td>FastAPI — 11 endpoint groups, JWT auth, SQLAlchemy ORM</td></tr>
+          <tr><td><code>dash</code></td><td>custom · :8050</td><td>Plotly Dash — 8 interactive panels, callback-driven</td></tr>
+          <tr><td><code>db</code></td><td>postgres:16 · :5432</td><td>Time-series indicator storage, Alembic migrations</td></tr>
+          <tr><td><code>cache</code></td><td>redis:7 · :6379</td><td>ARIMA/Prophet result cache (TTL 24h — fits slow runs)</td></tr>
+          <tr><td><code>worker</code></td><td>custom · (internal)</td><td>Celery — async forecast jobs, auto-order ARIMA queued here</td></tr>
+          <tr><td><code>nginx</code></td><td>nginx:alpine · :80/:443</td><td>Reverse proxy, rate limiting, Let's Encrypt TLS</td></tr>
+          <tr><td><code>grafana</code></td><td>grafana/grafana · :3000</td><td>Prometheus metrics, API latency dashboards, alert rules</td></tr>
+        </tbody>
+      </table>
+
       <h3>JWT RBAC — 3-Tier Access Model</h3>
       <p><strong>Viewer</strong>: read-only dashboard access, no forecast triggers. <strong>Analyst</strong>: trigger new forecasts, upload data corrections, export reports. <strong>Admin</strong>: manage users, run Monte Carlo simulations, configure alert thresholds.</p>
     </section>
@@ -316,7 +340,7 @@
     <section class="reveal">
       <div class="section-label">Quality Assurance</div>
       <h2>Testing: 54 pytest Tests, 100% Pass Rate</h2>
-      <p>Full test suite covering unit, integration, schema validation, and statistical correctness. Tests are categorised and run in CI on every push.</p>
+      <p>Full test suite covering unit, integration, schema validation, and statistical correctness. Tests are categorised and run in CI on every push. <strong>54 tests across 6 categories</strong>: 12 unit (ARIMA selector), 8 unit (Monte Carlo statistics), 11 API contract (schema + auth), 8 ORM (CRUD + migrations), 7 Prophet output shape, 8 integration (full pipeline).</p>
       <div class="method-grid">
         <div class="method-card">
           <h4>12 — ARIMA Unit Tests</h4>

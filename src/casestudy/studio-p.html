@@ -84,6 +84,11 @@
     .kw { color: var(--blue); }
     .bad  { color: var(--red); }
     .good { color: var(--green); }
+    .findings-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 1rem; }
+    .findings-table th { text-align: left; padding: .6rem .8rem; border-bottom: 2px solid var(--border); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .findings-table td { padding: .65rem .8rem; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.5; }
+    .findings-table tr:last-child td { border-bottom: none; }
+    .findings-table tr:hover td { background: var(--surface); }
     .timeline { margin-top: 1.5rem; }
     .timeline-item { display: flex; gap: 1rem; padding-bottom: 1.4rem; position: relative; }
     .timeline-item:not(:last-child)::before { content: ''; position: absolute; left: 11px; top: 24px; bottom: 0; width: 1px; background: var(--border); }
@@ -114,12 +119,11 @@
 
 <nav>
   <div class="container">
-    <a href="/" class="nav-brand">BRT<span>Inc.</span></a>
+    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
     <div class="nav-links">
-      <a href="/">Home</a>
       <a href="/#portfolio">Portfolio</a>
-      <a href="/#services">Services</a>
-      <a href="mailto:charleskris9@gmail.com" class="nav-cta">Hire Me</a>
+      <a href="/#contact">Contact</a>
+      <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="nav-cta">LinkedIn</a>
     </div>
   </div>
 </nav>
@@ -263,6 +267,32 @@
       </div>
 
       <p>The <code>claim_slot_atomic</code> Postgres function uses <code>SELECT FOR UPDATE</code> to lock the row — prevents double-booking even under concurrent requests hitting the API simultaneously.</p>
+
+      <div class="code-block">
+        <div class="code-header"><span>supabase/migrations/claim_slot.sql</span><span class="label-after">PostgreSQL</span></div>
+        <pre><span class="c">-- Atomic slot claim — prevents double-booking under concurrent requests</span>
+CREATE OR REPLACE FUNCTION claim_slot_atomic(
+  p_slot_time  TIMESTAMPTZ,
+  p_barber_id  UUID,
+  p_customer_id UUID
+) RETURNS TABLE(id UUID) LANGUAGE plpgsql AS $$
+BEGIN
+  <span class="c">-- Lock the row — blocks concurrent calls for the same slot</span>
+  PERFORM 1 FROM time_slots
+    WHERE slot_time = p_slot_time AND barber_id = p_barber_id AND available = true
+    FOR UPDATE;            <span class="c">-- row-level lock, released on commit</span>
+
+  IF NOT FOUND THEN
+    RAISE EXCEPTION <span class="good">'slot_unavailable'</span>;
+  END IF;
+
+  UPDATE time_slots SET available = false WHERE slot_time = p_slot_time AND barber_id = p_barber_id;
+  INSERT INTO bookings(barber_id, customer_id, slot_time, status)
+    VALUES (p_barber_id, p_customer_id, p_slot_time, <span class="good">'confirmed'</span>)
+    RETURNING bookings.id;
+END;
+$$;</pre>
+      </div>
     </section>
 
     <section class="reveal">
@@ -292,6 +322,26 @@
   <span class="kw">FOR ALL USING</span> (
     (<span class="kw">SELECT</span> role <span class="kw">FROM</span> profiles <span class="kw">WHERE</span> id = auth.uid()) = <span class="good">'admin'</span>
   );</pre>
+      </div>
+
+      <h3>PBKDF2 password hashing via Web Crypto API</h3>
+      <div class="code-block">
+        <div class="code-header"><span>auth/crypto.ts</span><span class="label-after">TypeScript · Web Crypto</span></div>
+        <pre><span class="c">// Runs in browser — no server round-trip for hashing</span>
+<span class="kw">async function</span> hashPassword(password: string): Promise&lt;string&gt; {
+  <span class="kw">const</span> enc   = <span class="kw">new</span> TextEncoder();
+  <span class="kw">const</span> salt  = crypto.getRandomValues(<span class="kw">new</span> Uint8Array(16));
+  <span class="kw">const</span> key   = <span class="kw">await</span> crypto.subtle.importKey(
+    <span class="good">"raw"</span>, enc.encode(password), <span class="good">"PBKDF2"</span>, false, [<span class="good">"deriveBits"</span>]
+  );
+  <span class="kw">const</span> bits  = <span class="kw">await</span> crypto.subtle.deriveBits(
+    { name: <span class="good">"PBKDF2"</span>, salt, iterations: 310_000, hash: <span class="good">"SHA-256"</span> },
+    key, 256
+  );
+  <span class="c">// Store as "salt$hash" — both hex-encoded</span>
+  <span class="kw">return</span> bufToHex(salt) + <span class="good">'$'</span> + bufToHex(<span class="kw">new</span> Uint8Array(bits));
+}
+<span class="c">// NIST SP 800-132 recommends ≥ 310,000 iterations for PBKDF2-SHA-256 (2023)</span></pre>
       </div>
     </section>
 
@@ -388,8 +438,8 @@
 
 <footer>
   <div class="container">
-    <span>&copy; 2025 BRT Inc. — Eswatini</span>
-    <span><a href="/">brtinc.vercel.app</a></span>
+    <span>&copy; 2026 BRT Inc. &middot; Charles Bartaria &middot; Manzini, Eswatini</span>
+    <a href="/" style="color:var(--muted)">&larr; brtinc.dev</a>
   </div>
 </footer>
 

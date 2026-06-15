@@ -1,0 +1,3 @@
+Contact: mailto:charleskris9@gmail.com
+Preferred-Languages: en
+Policy: https://brtinc.vercel.app/terms#security

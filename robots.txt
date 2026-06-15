@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /src/crm/
+Disallow: /src/proposals/
+Disallow: /src/agreements/
+Disallow: /src/runbooks/
+Disallow: /src/sales/
+Disallow: /src/infra/
+Sitemap: https://brtinc.vercel.app/sitemap.xml

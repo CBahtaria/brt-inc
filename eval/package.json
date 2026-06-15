@@ -1,0 +1,11 @@
+{
+  "name": "brt-inc-eval",
+  "type": "module",
+  "scripts": {
+    "eval": "npx braintrust eval eval.js"
+  },
+  "dependencies": {
+    "braintrust": "latest",
+    "autoevals": "latest"
+  }
+}

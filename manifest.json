@@ -1,0 +1,12 @@
+{
+  "name": "BRT Inc.",
+  "short_name": "BRT",
+  "description": "Software engineering for defence and enterprise — SADC",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0B0B0C",
+  "background_color": "#0B0B0C",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "any", "type": "image/x-icon" }
+  ]
+}

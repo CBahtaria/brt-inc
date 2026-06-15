@@ -278,25 +278,18 @@
       <p class="section-sub">Five active repositories. Real deployments with live users, verified test suites, and documented security postures.</p>
     </div>
 
-    <div class="bento-grid reveal-group">
+    <div class="proj-grid reveal-group">
 
-      <!-- 1. Sentinel — feature (2×2) -->
-      <div class="proj-card proj-feature card-glow reveal">
-        <div class="proj-img-feature">
-          <img src="https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=1200&q=75"
-               alt="Security infrastructure" loading="lazy" width="1200" height="200">
-          <div class="proj-img-overlay">
-            <div class="proj-proto-tags">
-              <span>PROTO: PHP_8</span><span>SECURITY: DAL-A</span><span>STATUS: LIVE</span>
-            </div>
-          </div>
-        </div>
+      <!-- 1. Sentinel -->
+      <div class="proj-card card-glow reveal">
+        <div class="proj-img" role="img" aria-label="Security infrastructure"
+          style="background-image:url('https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=1200&q=75');background-size:cover;background-position:center"></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3>UEDF Sentinel v5.0</h3>
             <span class="proj-badge" style="background:rgba(239,68,68,.12);color:#f87171;border-color:rgba(239,68,68,.3)">Audited</span>
           </div>
-          <p class="proj-desc">Command-and-control platform for drone fleet management. 27,900 lines across 16 MVC controllers. RBAC with 4 roles, TOTP 2FA, Merkle audit log, WebSocket telemetry, NATS JetStream. 9/9 audit findings resolved.</p>
+          <p class="proj-desc">Command-and-control platform for drone fleet management. 27,900 lines, 16 MVC controllers, RBAC with 4 roles, TOTP 2FA, Merkle audit log, WebSocket telemetry. 9/9 findings resolved.</p>
           <div class="proj-tags">
             <span class="tag">PHP 8</span><span class="tag">MySQL</span><span class="tag">WebSocket</span><span class="tag">NATS</span><span class="tag">AES-GCM</span>
           </div>
@@ -309,16 +302,16 @@
         </div>
       </div>
 
-      <!-- 2. UAV Stack — wide (2×1) with telemetry panel -->
-      <div class="proj-card proj-wide card-glow reveal">
+      <!-- 2. UAV Stack -->
+      <div class="proj-card card-glow reveal">
         <div class="proj-img" role="img" aria-label="Drone in flight at dusk"
-          style="background-image:url('https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=800&q=70');height:120px;background-size:cover;background-position:center"></div>
+          style="background-image:url('https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3>Agentic UAV Stack</h3>
             <span class="proj-badge" style="background:rgba(250,204,21,.1);color:#fbbf24;border-color:rgba(250,204,21,.25)">Private</span>
           </div>
-          <p class="proj-desc">Autonomous UAV platform. Three-tier DAL-A safety architecture: reactive (PX4), executive (Zig governor), advisory (AI router). AES-GCM-256 per-packet auth, 13-state EKF, NATS JetStream.</p>
+          <p class="proj-desc">Autonomous drone platform. Three-tier DAL-A safety architecture: reactive (PX4), executive (Zig governor), advisory (AI router). AES-GCM-256 per-packet auth, 13-state EKF.</p>
           <div class="telem-panel">
             <div class="telem-row"><span class="telem-k">LANG</span><span class="telem-v">ZIG 0.14.0 / AARCH64</span></div>
             <div class="telem-row"><span class="telem-k">EKF</span><span class="telem-v">13-STATE IMU/GPS/BARO</span></div>
@@ -331,25 +324,29 @@
       <!-- 3. Maize Classifier -->
       <div class="proj-card card-glow reveal">
         <div class="proj-img" role="img" aria-label="Maize crop field"
-          style="background-image:url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=70');height:120px;background-size:cover;background-position:center"></div>
+          style="background-image:url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3>Maize Classifier</h3>
             <span class="proj-badge" style="background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)">AI/ML</span>
           </div>
-          <p class="proj-desc">Binary CNN for maize leaf disease. FastAPI + React PWA. Blue-green zero-downtime deploy.</p>
+          <p class="proj-desc">Binary CNN for maize leaf disease detection. FastAPI inference server, React PWA. Blue-green zero-downtime deploy. MobileNetV2 backbone, calibrated confidence scores.</p>
           <div class="proj-tags"><span class="tag">Python</span><span class="tag">MobileNetV2</span><span class="tag">FastAPI</span><span class="tag">PWA</span></div>
           <a href="https://github.com/CBahtaria/maize-leaf-classifier" target="_blank" rel="noopener noreferrer" class="proj-link">View on GitHub →</a>
         </div>
       </div>
 
-      <!-- 4. Eswatini Dashboard — wide (2×1) -->
-      <div class="proj-card proj-wide card-glow reveal">
+      <!-- 4. Eswatini Dashboard -->
+      <div class="proj-card card-glow reveal">
         <div class="proj-img" role="img" aria-label="Data analytics dashboard"
-          style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=70');height:120px;background-size:cover;background-position:center"></div>
+          style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
-          <div class="proj-header"><h3>Eswatini Macroeconomic Dashboard</h3></div>
-          <p class="proj-desc">National economic indicator forecasting. ARIMA/SARIMA/Prophet, Monte Carlo fiscal simulation, 11 FastAPI endpoint groups, Docker Compose (7 services).</p>
+          <div class="proj-header">
+            <h3>Eswatini Macro Dashboard</h3>
+            <span class="proj-badge" style="background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)">Dissertation</span>
+          </div>
+          <p class="proj-desc">National economic indicator forecasting. ARIMA/SARIMA/Prophet, Monte Carlo fiscal simulation (10k paths), 11 FastAPI endpoint groups, Docker Compose with 7 services.</p>
+          <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Prophet</span><span class="tag">Plotly Dash</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">54</span><span class="metric-l">pytest tests</span></div>
             <div class="metric"><span class="metric-n">100%</span><span class="metric-l">pass rate</span></div>
@@ -361,15 +358,15 @@
       <!-- 5. Studio P -->
       <div class="proj-card card-glow reveal">
         <div class="proj-img" role="img" aria-label="Developer writing code"
-          style="background-image:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=70');height:120px;background-size:cover;background-position:center"></div>
+          style="background-image:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3>Studio P Barbershop</h3>
-            <span class="proj-badge">Live</span>
+            <span class="proj-badge" style="background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)">Live</span>
           </div>
-          <p class="proj-desc">Production booking platform. Supabase RLS, 8 colour themes, React 19 + TypeScript.</p>
-          <div class="proj-tags"><span class="tag">React 19</span><span class="tag">TypeScript</span><span class="tag">Supabase</span></div>
-          <a href="https://github.com/CBahtaria/studio-p" target="_blank" rel="noopener noreferrer" class="proj-link">GitHub →</a>
+          <p class="proj-desc">Production booking platform for Studio P, Manzini. OS-aware UI, parallel booking validation, Supabase RLS row-level security, 8 colour themes, React 19 + TypeScript.</p>
+          <div class="proj-tags"><span class="tag">React 19</span><span class="tag">TypeScript</span><span class="tag">Supabase</span><span class="tag">Vercel</span></div>
+          <a href="https://github.com/CBahtaria/studio-p" target="_blank" rel="noopener noreferrer" class="proj-link">View on GitHub →</a>
         </div>
       </div>
 

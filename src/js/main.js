@@ -76,10 +76,6 @@ document.querySelectorAll('#mobile-menu a').forEach(link => {
 });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
 
-/* ─── THEME TOGGLE ─── */
-const themeBtn = document.getElementById('theme-toggle');
-if (themeBtn) themeBtn.addEventListener('click', () => window.__brtCycleTheme());
-
 /* ─── BACK TO TOP ─── */
 const backTop = document.getElementById('back-top');
 window.addEventListener('scroll', () => {

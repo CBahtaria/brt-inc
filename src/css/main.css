@@ -276,14 +276,6 @@
   .mobile-menu a { font-size: 1.8rem; font-weight: 700; color: var(--fg); letter-spacing: -.03em; }
   .mobile-menu a:hover { color: var(--accent); text-decoration: none; }
 
-  /* ── theme toggle ── */
-  .theme-btn {
-    background: none; border: 1px solid var(--border); border-radius: var(--radius-sm);
-    color: var(--muted); cursor: pointer; font-size: 1rem; padding: .28rem .52rem;
-    line-height: 1; transition: border-color .2s, color .2s; margin-left: .4rem;
-  }
-  .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
-
   /* ── hero ── */
   #hero {
     position: relative;

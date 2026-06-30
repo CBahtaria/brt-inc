@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="https://brtinc.dev/src/casestudy/uav-stack.html" />
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
   <style>
     :root {
@@ -149,7 +150,7 @@
   </div>
 </nav>
 
-<div class="case-hero">
+<header class="case-hero">
   <div class="container">
     <div class="case-badge">Systems Engineering · 2026</div>
     <h1>Agentic UAV Stack<br><span>Three-Tier DAL-A Autonomous Platform</span></h1>
@@ -166,7 +167,7 @@
       <span class="chip">SE(3)</span>
     </div>
   </div>
-</div>
+</header>
 
 <div class="stats-band">
   <div class="container">
@@ -625,15 +626,6 @@ SAFETY_PATHS = [<span class="st">"src/fusion/"</span>, <span class="st">"src/tel
   }, { threshold: 0.08 });
   document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
-  const barObs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.querySelectorAll('.sev-bar-fill').forEach(bar => { bar.style.width = bar.dataset.width; });
-        barObs.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.2 });
-  document.querySelectorAll('.sev-bars').forEach(el => barObs.observe(el));
 </script>
 </body>
 </html>

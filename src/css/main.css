@@ -1782,6 +1782,63 @@ footer::before {
   ) !important;
 }
 
+/* ── Light mode: section + component fixes ───────────────────────────
+   Overrides hardcoded dark colours in stats bar, impact, contact,
+   mobile menu, and contact form that were written for dark-only.
+   ─────────────────────────────────────────────────────────────────── */
+
+/* Stats bar text */
+[data-theme="light"] .stat-n { color: var(--accent-deep) !important; }
+[data-theme="light"] .stat-l { color: var(--muted) !important; }
+
+/* Impact strip */
+[data-theme="light"] #impact {
+  background: linear-gradient(135deg, #dce8f5 0%, #edf1ff 50%, #dce8f5 100%);
+}
+[data-theme="light"] .impact-header h2 { color: var(--fg); }
+[data-theme="light"] .impact-header p   { color: var(--muted); }
+[data-theme="light"] .impact-n          { color: var(--accent-deep); }
+[data-theme="light"] .impact-label      { color: var(--muted); }
+
+/* Contact section */
+[data-theme="light"] #contact {
+  background: linear-gradient(135deg, #dce8f5 0%, #edf1ff 50%, #dce8f5 100%);
+  animation: none;
+}
+[data-theme="light"] #contact h2          { color: var(--fg); }
+[data-theme="light"] #contact .section-sub { color: var(--muted); }
+[data-theme="light"] .contact-item {
+  background: rgba(0,82,136,.06);
+  border-color: rgba(0,82,136,.18);
+}
+[data-theme="light"] .contact-item:hover {
+  background: rgba(0,82,136,.11);
+  border-color: rgba(0,82,136,.35);
+}
+[data-theme="light"] .contact-label { color: var(--muted); }
+[data-theme="light"] .contact-value { color: var(--fg); }
+
+/* Contact form fields */
+[data-theme="light"] .cf-field label { color: var(--muted); }
+[data-theme="light"] .cf-field input,
+[data-theme="light"] .cf-field select,
+[data-theme="light"] .cf-field textarea {
+  background: rgba(255,255,255,.9);
+  border-color: var(--border);
+  color: var(--fg);
+}
+[data-theme="light"] .cf-field input::placeholder,
+[data-theme="light"] .cf-field textarea::placeholder { color: rgba(110,110,115,.45); }
+[data-theme="light"] .cf-field input:focus,
+[data-theme="light"] .cf-field select:focus,
+[data-theme="light"] .cf-field textarea:focus {
+  border-color: rgba(0,82,136,.5);
+  background: rgba(0,82,136,.04);
+}
+
+/* Mobile menu */
+[data-theme="light"] .mobile-menu { background: rgba(248,249,250,.97); }
+
 /* ── Who strip chips — accent coherence ── */
 .who-chip:focus-visible {
   outline: 2px solid var(--accent);

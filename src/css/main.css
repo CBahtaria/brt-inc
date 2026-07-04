@@ -1984,3 +1984,49 @@ footer::before {
   #pull-refresh { transition: none; }
   #pull-refresh.pr-complete { animation: none; }
 }
+
+/* ── Custom cursor ── */
+@media (hover: hover) and (pointer: fine) {
+  *, *::before, *::after { cursor: none !important; }
+  #cursor-dot {
+    position: fixed;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%, -50%);
+    transition: width .15s, height .15s, background .2s, opacity .2s;
+    mix-blend-mode: exclusion;
+  }
+  #cursor-ring {
+    position: fixed;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+    opacity: .5;
+    transition: width .25s var(--ease-out), height .25s var(--ease-out), opacity .2s, border-color .2s;
+  }
+  body.cursor-hover #cursor-dot  { width: 12px; height: 12px; background: var(--cyan); }
+  body.cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: .3; border-color: var(--cyan); }
+  body.cursor-click #cursor-dot  { width: 5px; height: 5px; }
+  body.cursor-click #cursor-ring { width: 28px; height: 28px; opacity: .8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #cursor-dot, #cursor-ring { display: none; }
+}
+
+/* ── 3D card tilt ── */
+@media (hover: hover) and (pointer: fine) {
+  .proj-card, .testi-card, .intent-card, .who-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform .08s ease, box-shadow .2s;
+  }
+  .proj-card:hover, .testi-card:hover, .intent-card:hover {
+    box-shadow: 0 24px 60px rgba(0,0,0,.35), 0 0 0 1px var(--border);
+  }
+}

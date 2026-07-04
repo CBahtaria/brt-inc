@@ -1867,28 +1867,70 @@ footer::before {
 }
 
 /* ── WhatsApp FAB ── */
+@keyframes wa-pulse {
+  0%   { transform: scale(1);   opacity: .5; }
+  70%  { transform: scale(1.7); opacity: 0;  }
+  100% { transform: scale(1.7); opacity: 0;  }
+}
 #wa-fab {
   position: fixed;
-  bottom: 88px;
-  right: 20px;
+  bottom: 28px;
+  right: 22px;
   z-index: 90;
-  width: 52px; height: 52px;
-  border-radius: 50%;
+  height: 52px;
+  padding: 0 18px;
+  border-radius: 26px;
   background: #25D366;
   color: #fff;
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 20px rgba(37,211,102,.35);
+  gap: 0;
+  box-shadow: 0 4px 24px rgba(37,211,102,.4);
   text-decoration: none;
-  transition: transform .2s var(--ease-spring), box-shadow .2s;
+  overflow: hidden;
+  transition: gap .25s ease, padding .25s ease, box-shadow .2s, transform .2s var(--ease-spring);
+}
+#wa-fab::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 26px;
+  background: #25D366;
+  animation: wa-pulse 2.8s ease-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+#wa-fab .wa-icon {
+  flex-shrink: 0;
+  display: block;
+}
+#wa-fab .wa-label {
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-width .28s ease, opacity .2s ease, margin-left .28s ease;
+  margin-left: 0;
 }
 #wa-fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 28px rgba(37,211,102,.5);
+  gap: 8px;
+  box-shadow: 0 6px 32px rgba(37,211,102,.55);
+  transform: translateY(-2px);
   text-decoration: none;
 }
-#wa-fab:active { transform: scale(.95); }
+#wa-fab:hover .wa-label {
+  max-width: 90px;
+  opacity: 1;
+  margin-left: 2px;
+}
+#wa-fab:active { transform: scale(.96); }
 @media (prefers-reduced-motion: reduce) {
-  #wa-fab { transition: none; }
+  #wa-fab, #wa-fab .wa-label { transition: none; }
+  #wa-fab::before { animation: none; }
+}
+@media (max-width: 480px) {
+  #wa-fab { bottom: 20px; right: 16px; height: 48px; padding: 0 16px; }
 }

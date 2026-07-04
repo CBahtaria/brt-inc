@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "api/contact.js": { "maxDuration": 10 }
+  },
   "headers": [
     {
       "source": "/(.*)",
@@ -41,6 +44,30 @@
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
+    },
+    {
+      "source": "/privacy",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" }
+      ]
+    },
+    {
+      "source": "/trust",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" }
+      ]
+    },
+    {
+      "source": "/accessibility",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" }
+      ]
+    },
+    {
+      "source": "/paths/soc2-readiness",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "index, follow" }
+      ]
     }
   ],
   "rewrites": [
@@ -56,6 +83,10 @@
     { "source": "/casestudy/studio-p", "destination": "/src/casestudy/studio-p.html" },
     { "source": "/casestudy/brt-platform", "destination": "/src/casestudy/brt-platform.html" },
     { "source": "/terms", "destination": "/src/legal/terms.html" },
+    { "source": "/privacy", "destination": "/src/legal/privacy.html" },
+    { "source": "/accessibility", "destination": "/src/legal/accessibility.html" },
+    { "source": "/trust", "destination": "/src/legal/trust.html" },
+    { "source": "/paths/soc2-readiness", "destination": "/src/paths/soc2-readiness.html" },
     { "source": "/agreements", "destination": "/src/agreements/service-agreement.html" },
     { "source": "/runbooks", "destination": "/src/runbooks/runbook-templates.html" },
     { "source": "/login", "destination": "/src/login/login.html" },

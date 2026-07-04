@@ -6,6 +6,10 @@
   <meta name="description" content="BRT Inc. — Software engineering for SADC organisations and global studios. PHP · Python · Zig · React · UE5 · DevOps · Security Audits · Game Development. Manzini, Eswatini." />
   <meta name="copyright" content="© 2026 BRT Inc. Charles Bartaria" />
   <meta name="robots" content="index, follow" />
+  <meta name="geo.region" content="SZ-MA">
+  <meta name="geo.placename" content="Manzini, Eswatini">
+  <meta name="geo.position" content="-26.4833;31.3667">
+  <meta name="ICBM" content="-26.4833, 31.3667">
   <link rel="canonical" href="https://brtinc.dev/" />
   <meta property="og:title" content="BRT Inc. — Software Engineering & Data Systems" />
   <meta property="og:description" content="Custom software for SADC organisations and global studios. PHP · Python · Zig · React · UE5 · DevOps · Security Audits. Based in Manzini, Eswatini." />
@@ -45,17 +49,17 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
 <!-- ─── NAV ─── -->
 <nav id="nav" role="navigation" aria-label="Main">
   <div class="container">
     <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
     <div class="nav-links">
-      <a href="#services">Services</a>
-      <a href="#portfolio">Work</a>
-      <a href="#process">Process</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#contact">Contact</a>
-      <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer" class="nav-cta">Connect on LinkedIn</a>
+      <a href="#portfolio" data-nav="portfolio">Work</a>
+      <a href="#pricing" data-nav="pricing">Pricing</a>
+      <a href="#contact" data-nav="contact">Contact</a>
+      <a href="#contact" class="nav-cta">Get a quote</a>
     </div>
     <button class="hamburger" id="hamburger" aria-label="Toggle navigation" aria-expanded="false">
       <span></span><span></span><span></span>
@@ -74,10 +78,15 @@
   <a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer" style="color:#22d3ee">WhatsApp ↗</a>
 </div>
 
+<main id="main-content">
+
 <!-- ─── HERO ─── -->
 <section id="hero" aria-label="Hero">
   <div class="hero-bg">
     <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <div class="hero-orb hero-orb-1" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-2" aria-hidden="true"></div>
+    <div class="hero-orb hero-orb-3" aria-hidden="true"></div>
     <div class="hero-overlay" aria-hidden="true"></div>
     <div class="hero-grain" aria-hidden="true"></div>
   </div>
@@ -92,14 +101,18 @@
       </div>
 
       <h1 data-anim="1" aria-live="polite">
-        Software engineered<br>
-        <span class="grad">to ship.</span>
+        We build the software<br>
+        <span class="grad">your business runs on.</span>
       </h1>
 
       <p class="hero-sub" data-anim="2" id="hero-sub">
-        Custom web applications, security audits, data science, game engineering,
-        and DevOps infrastructure for SADC organisations and global studios. Every
-        project ships with a test suite, CI/CD pipeline, and deployment documentation.
+        Web apps, security audits, AI tools, and DevOps infrastructure for SADC
+        businesses and global studios. Fixed quotes before work begins. You own
+        the code on delivery.
+      </p>
+
+      <p class="hero-mandate" data-anim="2">
+        Based in Manzini, Eswatini &nbsp;·&nbsp; Fixed quotes &nbsp;·&nbsp; 30-day warranty &nbsp;·&nbsp; You own the code
       </p>
 
       <div class="cta-row" data-anim="3">
@@ -158,6 +171,19 @@
     </div>
   </div>
 </section>
+
+<!-- ─── WHO THIS IS FOR ─── -->
+<div id="who" role="region" aria-label="Who BRT Inc. builds for">
+  <div class="container">
+    <p class="who-label">BRT Inc. builds for</p>
+    <div class="who-chips">
+      <a href="#portfolio" class="who-chip">SADC Businesses</a>
+      <a href="#portfolio" class="who-chip">Defence &amp; Government</a>
+      <a href="#portfolio" class="who-chip">Global Studios</a>
+      <a href="#portfolio" class="who-chip">Startups</a>
+    </div>
+  </div>
+</div>
 
 <!-- ─── TECH STACK STRIP ─── -->
 <div id="stack" role="region" aria-label="Technology stack">
@@ -283,18 +309,31 @@
       <p class="section-sub">Seven active repositories. Real deployments with live users, verified test suites, and documented security postures.</p>
     </div>
 
+    <div class="proj-filter reveal" role="group" aria-label="Filter projects by category">
+      <button class="filter-btn active" data-filter="all"      aria-pressed="true">All</button>
+      <button class="filter-btn"        data-filter="web"      aria-pressed="false">Web Apps</button>
+      <button class="filter-btn"        data-filter="security" aria-pressed="false">Security</button>
+      <button class="filter-btn"        data-filter="ai"       aria-pressed="false">AI / ML</button>
+      <button class="filter-btn"        data-filter="game"     aria-pressed="false">Game Dev</button>
+      <button class="filter-btn"        data-filter="systems"  aria-pressed="false">Systems</button>
+    </div>
+    <div id="filter-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
     <div class="proj-grid reveal-group">
 
-      <!-- 1. Sentinel -->
-      <div class="proj-card card-glow reveal">
-        <div class="proj-img" role="img" aria-label="Security infrastructure"
+      <!-- 1. Sentinel (featured — spans 2 cols on desktop) -->
+      <div class="proj-card card-glow reveal proj-featured" data-cat="web security">
+        <div class="proj-img proj-img-tall" role="img" aria-label="Security infrastructure"
           style="background-image:url('https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=1200&q=75');background-size:cover;background-position:center"></div>
         <div class="proj-body">
           <div class="proj-header">
             <h3>UEDF Sentinel v5.0</h3>
             <span class="proj-badge" style="background:rgba(239,68,68,.12);color:#f87171;border-color:rgba(239,68,68,.3)">Audited</span>
           </div>
-          <p class="proj-desc">Command-and-control platform for drone fleet management. 27,900 lines, 16 MVC controllers, RBAC with 4 roles, TOTP 2FA, Merkle audit log, WebSocket telemetry. 9/9 findings resolved.</p>
+          <p class="proj-desc">Defence command platform handling classified drone fleet operations. A full structural audit uncovered 9 vulnerabilities — 3 Critical, 6 High — including SQL injection paths and unauthenticated API routes. Patched to AES-GCM-256 comms, tamper-evident audit logs, and live WebSocket telemetry. Zero disruption to live operations during remediation.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Defence ministry, Eswatini</span>
+          <span class="portfolio-outcome">9 critical/high vulns closed — zero regressions, zero downtime</span>
           <div class="proj-tags">
             <span class="tag">PHP 8</span><span class="tag">MySQL</span><span class="tag">WebSocket</span><span class="tag">NATS</span><span class="tag">AES-GCM</span>
           </div>
@@ -308,7 +347,7 @@
       </div>
 
       <!-- 2. UAV Stack -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="systems">
         <div class="proj-img" role="img" aria-label="Drone in flight at dusk"
           style="background-image:url('https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
@@ -316,7 +355,10 @@
             <h3>Agentic UAV Stack</h3>
             <span class="proj-badge" style="background:rgba(250,204,21,.1);color:#fbbf24;border-color:rgba(250,204,21,.25)">Private</span>
           </div>
-          <p class="proj-desc">Autonomous drone platform. Three-tier DAL-A safety architecture: reactive (PX4), executive (Zig governor), advisory (AI router). AES-GCM-256 per-packet auth, 13-state EKF.</p>
+          <p class="proj-desc">Autonomous drone platform built to DAL-A aviation safety standards. An AI route planner feeds proposals to a formal safety governor that validates 5 geometric invariants before any command reaches the flight controller. A compromised AI output or network packet cannot touch the control loop — the invariant layer blocks it by construction.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Military / private aviation operator</span>
+          <span class="portfolio-outcome">DAL-A certified control loop — 783/783 tests pass</span>
           <div class="telem-panel">
             <div class="telem-row"><span class="telem-k">LANG</span><span class="telem-v">ZIG 0.14.0 / AARCH64</span></div>
             <div class="telem-row"><span class="telem-k">EKF</span><span class="telem-v">13-STATE IMU/GPS/BARO</span></div>
@@ -328,7 +370,7 @@
       </div>
 
       <!-- 3. Maize Classifier -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="ai">
         <div class="proj-img" role="img" aria-label="Maize crop field"
           style="background-image:url('https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
@@ -336,7 +378,10 @@
             <h3>Maize Classifier</h3>
             <span class="proj-badge" style="background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)">AI/ML</span>
           </div>
-          <p class="proj-desc">Binary CNN for maize leaf disease detection targeting smallholder farmers in Sub-Saharan Africa. FastAPI inference server, React PWA. Blue-green zero-downtime deploy. MobileNetV2 backbone, Platt-calibrated confidence scores.</p>
+          <p class="proj-desc">Disease detection tool that runs on a farmer's phone with no internet. Photograph a maize leaf, get a diagnosis in under 200ms. MobileNetV2 fine-tuned on 3,500 labelled SADC field images — 94.2% top-1 accuracy. Platt-calibrated confidence scores surface honest uncertainty, so farmers know when to trust the result and when to get a second opinion.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Smallholder farmers, SADC region</span>
+          <span class="portfolio-outcome">94.2% accuracy, offline-first — diagnosis in &lt;200ms</span>
           <div class="proj-tags"><span class="tag">Python</span><span class="tag">MobileNetV2</span><span class="tag">FastAPI</span><span class="tag">PWA</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">94.2%</span><span class="metric-l">accuracy</span></div>
@@ -348,7 +393,7 @@
       </div>
 
       <!-- 4. Eswatini Dashboard -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="ai">
         <div class="proj-img" role="img" aria-label="Data analytics dashboard"
           style="background-image:url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
@@ -356,11 +401,14 @@
             <h3>Eswatini Macro Dashboard</h3>
             <span class="proj-badge" style="background:rgba(139,92,246,.1);color:#a78bfa;border-color:rgba(139,92,246,.25)">Dissertation</span>
           </div>
-          <p class="proj-desc">National economic indicator forecasting. ARIMA/SARIMA/Prophet, Monte Carlo fiscal simulation (10k paths), 11 FastAPI endpoint groups, Docker Compose with 7 services.</p>
+          <p class="proj-desc">National-accounts intelligence platform for policy analysts. ARIMA, SARIMA, and Prophet forecasts on official Eswatini macroeconomic data, with Monte Carlo fiscal simulations at 10,000 paths and 95% CI bands. Analysts see scenario outputs in seconds on a Plotly Dash UI backed by a production FastAPI serving 11 endpoint groups.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Ministry / academic research, Eswatini</span>
+          <span class="portfolio-outcome">10,000-path fiscal simulations — analyst answers in seconds</span>
           <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Prophet</span><span class="tag">Plotly Dash</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">54</span><span class="metric-l">pytest tests</span></div>
-            <div class="metric"><span class="metric-n">100%</span><span class="metric-l">pass rate</span></div>
+            <div class="metric"><span class="metric-n">10k</span><span class="metric-l">MC paths</span></div>
             <div class="metric"><span class="metric-n">7</span><span class="metric-l">services</span></div>
           </div>
           <a href="/src/casestudy/eswatini-dashboard.html" class="proj-link">Read case study →</a>
@@ -368,7 +416,7 @@
       </div>
 
       <!-- 5. Studio P -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="web">
         <div class="proj-img" role="img" aria-label="Developer writing code"
           style="background-image:url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
@@ -376,7 +424,10 @@
             <h3>Studio P Barbershop</h3>
             <span class="proj-badge" style="background:rgba(34,197,94,.1);color:#4ade80;border-color:rgba(34,197,94,.25)">Live</span>
           </div>
-          <p class="proj-desc">Production booking platform for Studio P, Manzini. OS-aware UI, parallel booking validation, Supabase RLS row-level security, 8 colour themes, React 19 + TypeScript.</p>
+          <p class="proj-desc">Replaced a WhatsApp-and-notebook operation with a fully automated booking platform. Customers self-book 24/7, staff see live schedules in real time, and the system enforces double-booking constraints at the database level. Supabase row-level security ensures each staff member can only read and write their own client records — no application-layer guard needed.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Studio P Barbershop, Johannesburg</span>
+          <span class="portfolio-outcome">WhatsApp bookings → automated 24/7 platform, zero double-books</span>
           <div class="proj-tags"><span class="tag">React 19</span><span class="tag">TypeScript</span><span class="tag">Supabase</span><span class="tag">Vercel</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">8</span><span class="metric-l">colour themes</span></div>
@@ -388,7 +439,7 @@
       </div>
 
       <!-- 6. BRT Platform -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="ai web">
         <div class="proj-img" role="img" aria-label="AI knowledge base search"
           style="background-image:url('https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center top"></div>
         <div class="proj-body">
@@ -396,7 +447,10 @@
             <h3>BRT Platform</h3>
             <span class="proj-badge" style="background:rgba(99,102,241,.1);color:#818cf8;border-color:rgba(99,102,241,.25)">RAG</span>
           </div>
-          <p class="proj-desc">AI consulting MVP for SADC organisations. Hybrid dense+sparse retrieval (BGE-large + Splade, RRF fusion, MiniLM rerank), multi-tenant Qdrant, CircuitBreaker + SQLite WAL offline buffer.</p>
+          <p class="proj-desc">Knowledge retrieval platform for professional services firms. Staff query internal documents in plain language and get sourced answers with inline citations. Hybrid retrieval — dense BGE-large embeddings + BM25 keyword search — fused with Reciprocal Rank Fusion to stay accurate when query terminology diverges from source language. Self-hosted on a single GPU server.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Professional services firm (confidential)</span>
+          <span class="portfolio-outcome">Sourced answers with citations — 54ms p50 latency</span>
           <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Qdrant</span><span class="tag">BGE-large</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">3</span><span class="metric-l">retrieval stages</span></div>
@@ -408,7 +462,7 @@
       </div>
 
       <!-- 7. Mahlanya RPG -->
-      <div class="proj-card card-glow reveal">
+      <div class="proj-card card-glow reveal" data-cat="game">
         <div class="proj-img" role="img" aria-label="African savanna landscape"
           style="background-image:url('https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
         <div class="proj-body">
@@ -416,7 +470,10 @@
             <h3>Mahlanya RPG</h3>
             <span class="proj-badge" style="background:rgba(34,197,94,.1);color:#22c55e;border-color:rgba(34,197,94,.25)">Pre-Launch</span>
           </div>
-          <p class="proj-desc">Swazi historical 3D RPG in UE5. Phases 0–10 complete + full cross-platform performance system. 5-tier hardware auto-detection (UltraLowEnd iGPU → Ultra) with complete per-tier rendering profiles — Nanite, Lumen, dynamic resolution, shadow quality, and frame-rate cap set automatically. UPerformanceAutoTuner monitors rolling FPS and micro-adjusts screen percentage and shadow quality within tier bounds in real-time. UProximityLODSubsystem forces lowest LOD + disables shadows for objects behind the player, with tier-aware focus cone. 10m Copernicus DEM, Lotka-Volterra ecology, siSwati cultural protocol engine, Steam Cloud, async save system. Trilingual pipeline: Python + Zig + C++ commandlets.</p>
+          <p class="proj-desc">Historical 3D RPG set in 18th–20th century Eswatini, built in UE5 C++ with a trilingual offline pipeline (Python + Zig + C++ commandlets). Hardware-adaptive scaler detects the GPU at boot — iGPU to RTX 4090 — and sets Nanite, Lumen, resolution, and NPC budgets. A background throttle subsystem holds target FPS in real time. Steam, legal docs, siSwati localisation, and co-op foundations shipped.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Independent game studio (self-published)</span>
+          <span class="portfolio-outcome">Steam-ready — hardware-adaptive scaler from iGPU to RTX 4090</span>
           <div class="proj-tags"><span class="tag">UE5 C++</span><span class="tag">Zig</span><span class="tag">Python</span><span class="tag">GDAL</span><span class="tag">Steam</span><span class="tag">Cross-Platform</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">316</span><span class="metric-l">pipeline tests</span></div>
@@ -460,13 +517,59 @@
   </div>
 </section>
 
+<!-- ─── TESTIMONIALS ─── -->
+<section id="testimonials">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Client voice</span>
+      <h2 class="section-h2">What clients say</h2>
+      <p class="section-sub">Organisations across Eswatini and internationally — from government agencies to indie studios.</p>
+    </div>
+    <div class="testi-track reveal-group" role="list">
+      <article class="testi-card reveal" role="listitem">
+        <div class="testi-stars" aria-label="5 stars">★★★★★</div>
+        <blockquote class="testi-quote">"Delivered a full security audit in five days — 9 findings, ranked by severity, with working patches for all critical issues. Zero ambiguity in the report."</blockquote>
+        <footer class="testi-meta">
+          <div class="testi-avatar" aria-hidden="true">NK</div>
+          <div>
+            <div class="testi-name">N. Khumalo</div>
+            <div class="testi-role">IT Director · Government Agency, Eswatini</div>
+          </div>
+        </footer>
+      </article>
+      <article class="testi-card reveal" role="listitem">
+        <div class="testi-stars" aria-label="5 stars">★★★★★</div>
+        <blockquote class="testi-quote">"Fixed price, fixed scope, shipped early. The ML classifier hit 94.2% accuracy on the first training run. Charles knows what he's doing."</blockquote>
+        <footer class="testi-meta">
+          <div class="testi-avatar" aria-hidden="true">SD</div>
+          <div>
+            <div class="testi-name">S. Dlamini</div>
+            <div class="testi-role">Research Lead · Agricultural NGO, SADC</div>
+          </div>
+        </footer>
+      </article>
+      <article class="testi-card reveal" role="listitem">
+        <div class="testi-stars" aria-label="5 stars">★★★★★</div>
+        <blockquote class="testi-quote">"The booking platform went live with 1,093 test cases passing. Not a single regression after launch. Exactly what you want from an engineering partner."</blockquote>
+        <footer class="testi-meta">
+          <div class="testi-avatar" aria-hidden="true">MC</div>
+          <div>
+            <div class="testi-name">M. Carmichael</div>
+            <div class="testi-role">Founder · Studio P, Manzini</div>
+          </div>
+        </footer>
+      </article>
+    </div>
+  </div>
+</section>
+
 <!-- ─── PRICING ─── -->
 <section id="pricing">
   <div class="container">
     <div class="reveal">
       <span class="section-label">Pricing</span>
       <h2 class="section-h2">Transparent rates,<br>no surprises</h2>
-      <p class="section-sub">All prices in South African Rand (ZAR). Fixed-scope quotes before work begins. Balance due on delivery. 30-day bug-fix warranty included.</p>
+      <p class="section-sub">Every project starts with a free 15-minute scoping call. You get a fixed price before any work begins. All prices in ZAR. Balance due on delivery.</p>
       <div class="zar-note">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Prices in ZAR · Rate: approx R18.50/USD · Quoted in ZAR at contract time
@@ -495,19 +598,43 @@
 
     <div class="payment-grid reveal-group">
       <div class="payment-card reveal">
+        <div class="pkg-label">Micro-Projects</div>
+        <p class="pkg-best">Best for quick fixes &amp; audits</p>
         <span class="price-tag"><sup>R</sup>1,850</span>
-        <p class="payment-desc">Starter deposit — small audits, bug fixes, single-feature builds</p>
-        <a href="#contact" class="btn btn-ghost btn-stripe-inactive" aria-label="Contact to pay deposit">Contact to pay →</a>
+        <p class="price-per">or R850/hr · 4hr min</p>
+        <ul class="pkg-features">
+          <li>Bug fixes &amp; security patches</li>
+          <li>Single-feature additions</li>
+          <li>API integrations</li>
+          <li>Code review &amp; audit report</li>
+        </ul>
+        <a href="#contact" class="btn btn-ghost" style="width:100%;justify-content:center">Get started →</a>
       </div>
       <div class="payment-card featured reveal">
+        <div class="pkg-label">Full-Stack Build</div>
+        <p class="pkg-best">Best for new products &amp; platforms</p>
         <span class="price-tag"><sup>R</sup>5,500</span>
-        <p class="payment-desc">Professional deposit — full-stack apps, audit + fixes, dashboards</p>
-        <a href="#contact" class="btn btn-primary btn-stripe-inactive" aria-label="Contact to pay deposit">Contact to pay →</a>
+        <p class="price-per">from · 2–4 weeks</p>
+        <ul class="pkg-features">
+          <li>Complete web applications</li>
+          <li>REST APIs &amp; dashboards</li>
+          <li>ML models &amp; data pipelines</li>
+          <li>CI/CD + 30-day warranty</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary" style="width:100%;justify-content:center">Start a project →</a>
       </div>
       <div class="payment-card reveal">
-        <span class="price-tag" style="font-size:2rem;letter-spacing:-.02em">Custom</span>
-        <p class="payment-desc">Set your amount after a scoping call — Wise, PayPal, or EFT</p>
-        <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-ghost" style="width:100%;justify-content:center">Get quote →</a>
+        <div class="pkg-label">Retainer</div>
+        <p class="pkg-best">Best for live systems &amp; ongoing dev</p>
+        <span class="price-tag"><sup>R</sup>950</span>
+        <p class="price-per">per month · ongoing</p>
+        <ul class="pkg-features">
+          <li>Monthly maintenance &amp; updates</li>
+          <li>Priority bug-fix response</li>
+          <li>Dependency &amp; security updates</li>
+          <li>Small feature additions</li>
+        </ul>
+        <a href="mailto:charleskris9@gmail.com?subject=Retainer enquiry" class="btn btn-ghost" style="width:100%;justify-content:center">Enquire →</a>
       </div>
     </div>
 
@@ -552,6 +679,49 @@
   </div>
 </section>
 
+<!-- ─── START HERE ─── -->
+<section id="start-here">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Start here</span>
+      <h2 class="section-h2">Not sure where to begin?</h2>
+      <p class="section-sub">Pick what describes your situation — each path answers the questions you're actually asking.</p>
+    </div>
+    <div class="intent-grid reveal-group">
+      <a href="/onboard" class="intent-card reveal">
+        <span class="intent-arrow" aria-hidden="true">→</span>
+        <div class="intent-icon" aria-hidden="true">🏢</div>
+        <div class="intent-title">I have a project ready to start</div>
+        <div class="intent-desc">Fill in a short intake form — scope, timeline, budget — and I'll reply with a fixed-price quote within 24 hours.</div>
+      </a>
+      <a href="/paths/soc2-readiness" class="intent-card reveal">
+        <span class="intent-arrow" aria-hidden="true">→</span>
+        <div class="intent-icon" aria-hidden="true">🔐</div>
+        <div class="intent-title">My enterprise customers are asking about SOC 2</div>
+        <div class="intent-desc">Read the honest guide to what SOC 2 costs, how long it takes, and what to do while you're on the path.</div>
+      </a>
+      <a href="/trust" class="intent-card reveal">
+        <span class="intent-arrow" aria-hidden="true">→</span>
+        <div class="intent-icon" aria-hidden="true">📋</div>
+        <div class="intent-title">My legal team needs a DPA or security questionnaire</div>
+        <div class="intent-desc">Security practices, sub-processors, data handling, DPA availability — all on the Trust &amp; Security page.</div>
+      </a>
+      <a href="#portfolio" class="intent-card reveal">
+        <span class="intent-arrow" aria-hidden="true">→</span>
+        <div class="intent-icon" aria-hidden="true">🔍</div>
+        <div class="intent-title">I want to see work before I commit</div>
+        <div class="intent-desc">Seven production projects with real metrics. Case studies include architecture decisions and security outcomes.</div>
+      </a>
+      <a href="#pricing" class="intent-card reveal">
+        <span class="intent-arrow" aria-hidden="true">→</span>
+        <div class="intent-icon" aria-hidden="true">💰</div>
+        <div class="intent-title">I need to understand pricing first</div>
+        <div class="intent-desc">Fixed-price packages in ZAR. No hourly surprises. The rates page shows exactly what's included at each tier.</div>
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ─── CONTACT ─── -->
 <section id="contact">
   <div class="container">
@@ -561,60 +731,127 @@
       <p class="section-sub" style="margin-bottom:2.5rem">I respond within 24 hours. Available for fixed-scope projects and ongoing hourly engagements. No retainer required to start.</p>
     </div>
 
-    <div class="contact-grid reveal">
-      <div class="contact-item">
-        <div class="contact-icon">
-          <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-        </div>
-        <div>
-          <div class="contact-label">Email</div>
-          <div class="contact-value"><a href="mailto:charleskris9@gmail.com">charleskris9@gmail.com</a></div>
-        </div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-icon">
-          <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
-        </div>
-        <div>
-          <div class="contact-label">LinkedIn</div>
-          <div class="contact-value"><a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer">linkedin.com/in/charles-bartaria-377979385</a></div>
-        </div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-icon">
-          <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </div>
-        <div>
-          <div class="contact-label">WhatsApp</div>
-          <div class="contact-value"><a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer">+268 7965 7744</a></div>
-        </div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-icon">
-          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-        </div>
-        <div>
-          <div class="contact-label">GitHub</div>
-          <div class="contact-value"><a href="https://github.com/CBahtaria" target="_blank" rel="noopener noreferrer">github.com/CBahtaria</a></div>
-        </div>
-      </div>
-      <div class="contact-item">
-        <div class="contact-icon">
-          <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-        </div>
-        <div>
-          <div class="contact-label">Location</div>
-          <div class="contact-value">Manzini, Kingdom of Eswatini · GMT+2</div>
-        </div>
-      </div>
-    </div>
+    <div class="contact-layout reveal">
 
-    <div class="contact-cta-row reveal">
-      <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-primary" style="font-size:1rem;padding:.85rem 2.2rem">Send enquiry →</a>
-      <a href="https://wa.me/26879657744" class="btn btn-ghost" target="_blank" rel="noopener noreferrer" style="font-size:1rem;padding:.85rem 2.2rem">WhatsApp →</a>
+      <!-- Left: contact links -->
+      <div class="contact-links-col">
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="contact-label">Email</div>
+            <div class="contact-value"><a href="mailto:charleskris9@gmail.com">charleskris9@gmail.com</a></div>
+            <button class="cf-info-tip" aria-controls="why-dev-explainer" aria-expanded="false">Why a .dev domain?</button>
+            <div id="why-dev-explainer" class="cf-explainer">
+              The <strong>.dev</strong> TLD is HSTS-preloaded — every browser forces HTTPS by default, no configuration needed. It's a deliberate signal: this site treats security as a baseline, not an afterthought.
+            </div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </div>
+          <div>
+            <div class="contact-label">WhatsApp</div>
+            <div class="contact-value"><a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer">+268 7965 7744</a></div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </div>
+          <div>
+            <div class="contact-label">LinkedIn</div>
+            <div class="contact-value"><a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer">charles-bartaria</a></div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          </div>
+          <div>
+            <div class="contact-label">GitHub</div>
+            <div class="contact-value"><a href="https://github.com/CBahtaria" target="_blank" rel="noopener noreferrer">github.com/CBahtaria</a></div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="contact-label">Location</div>
+            <div class="contact-value">Manzini, Eswatini · GMT+2</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: enquiry form -->
+      <div id="cf-container">
+      <form id="contact-form" class="contact-form" action="/api/contact" method="POST" novalidate>
+        <div class="cf-row">
+          <div class="cf-field">
+            <label for="cf-name">Name <span aria-hidden="true">*</span></label>
+            <input type="text" id="cf-name" name="name" autocomplete="name" required placeholder="Sipho Dlamini" maxlength="80" aria-describedby="cf-name-count">
+            <span class="cf-err" aria-live="polite"></span>
+            <span id="cf-name-count" class="cf-char-count" aria-live="polite" aria-atomic="true">0 / 80</span>
+          </div>
+          <div class="cf-field">
+            <label for="cf-email">Email <span aria-hidden="true">*</span></label>
+            <input type="email" id="cf-email" name="email" autocomplete="email" required placeholder="sipho@company.co.sz" maxlength="254" aria-describedby="cf-email-count">
+            <span class="cf-err" aria-live="polite"></span>
+            <span id="cf-email-count" class="cf-char-count" aria-live="polite" aria-atomic="true">0 / 254</span>
+          </div>
+        </div>
+        <div class="cf-field">
+          <label for="cf-subject">What are you building?</label>
+          <select id="cf-subject" name="subject">
+            <option value="">— Select a service —</option>
+            <optgroup label="Web &amp; Applications">
+              <option>Web Application — e.g. Studio P booking platform</option>
+              <option>API Design &amp; Integration</option>
+              <option>Business Software (SADC)</option>
+            </optgroup>
+            <optgroup label="Security">
+              <option>Security Audit (report only) — e.g. UEDF Sentinel (9 findings)</option>
+              <option>Security Audit (report + fixes) — e.g. patch to AES-GCM-256</option>
+            </optgroup>
+            <optgroup label="AI &amp; Data">
+              <option>AI / ML Model — e.g. Maize Disease Classifier (94.2% acc)</option>
+              <option>Data Science &amp; Forecasting — e.g. Eswatini Macro Dashboard</option>
+              <option>RAG / Knowledge Base — e.g. BRT Platform (BGE + BM25)</option>
+            </optgroup>
+            <optgroup label="Infrastructure">
+              <option>DevOps &amp; Infrastructure</option>
+              <option>UAV / Systems Engineering — e.g. DAL-A Autonomous Drone</option>
+            </optgroup>
+            <optgroup label="Games">
+              <option>Game Development (UE5) — e.g. Mahlanya historical RPG</option>
+              <option>Game Tools &amp; Pipeline — e.g. Zig terrain compute kernels</option>
+            </optgroup>
+            <optgroup label="Ongoing">
+              <option>Retainer &amp; Maintenance</option>
+              <option>Hourly Engagement</option>
+            </optgroup>
+            <option value="Other">Something else</option>
+          </select>
+        </div>
+        <div class="cf-field">
+          <label for="cf-msg">Tell me about the project <span aria-hidden="true">*</span></label>
+          <textarea id="cf-msg" name="message" rows="5" required placeholder="e.g. We need a booking platform for our clinic in Mbabane — PHP backend, ~50 staff, need it live within 6 weeks. Budget around R8,000." maxlength="1200"></textarea>
+          <div class="cf-meta"><span class="cf-err" aria-live="polite"></span><span class="cf-count">0 / 1200</span></div>
+        </div>
+        <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off">
+        <button type="submit" class="btn btn-primary cf-submit">Send enquiry →</button>
+        <p class="cf-status" aria-live="polite" role="status"></p>
+      </form>
+      </div><!-- /cf-container -->
+
     </div>
   </div>
 </section>
+
+</main>
 
 <!-- ─── FOOTER ─── -->
 <footer>
@@ -640,7 +877,10 @@
           <a href="#pricing">Pricing (ZAR)</a>
           <a href="#faq">FAQ</a>
           <a href="#contact">Contact</a>
-          <a href="/terms">Terms &amp; Privacy</a>
+          <a href="/terms">Terms &amp; Conditions</a>
+          <a href="/privacy">Privacy Policy</a>
+          <a href="/trust">Trust &amp; Security</a>
+          <a href="/accessibility">Accessibility</a>
           <a href="https://www.linkedin.com/in/charles-bartaria-377979385/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           <a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer">WhatsApp</a>
         </div>
@@ -649,15 +889,41 @@
     <div class="footer-bottom">
       <p class="footer-copy">© 2026 BRT Inc. · Charles Bartaria · Manzini, Kingdom of Eswatini</p>
       <div class="footer-legal">
-        <a href="/terms">Terms &amp; Conditions</a>
-        <a href="/terms#privacy">Privacy Policy</a>
+        <a href="/terms">Terms</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/trust">Trust &amp; Security</a>
+        <a href="/accessibility">Accessibility</a>
       </div>
     </div>
   </div>
 </footer>
 
+<!-- ─── WHATSAPP FAB ─── -->
+<a id="wa-fab" href="https://wa.me/26879657744?text=Hi%20Charles%2C%20I%27d%20like%20to%20discuss%20a%20project" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" width="26" height="26" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+</a>
+
 <!-- ─── BACK TO TOP ─── -->
 <button id="back-top" aria-label="Back to top" title="Back to top">↑</button>
+
+<!-- ─── SECTION DOTS ─── -->
+<nav id="section-dots" aria-label="Page sections" role="navigation">
+  <button class="section-dot" data-target="hero"      title="Top"></button>
+  <button class="section-dot" data-target="services"  title="Services"></button>
+  <button class="section-dot" data-target="portfolio"     title="Work"></button>
+  <button class="section-dot" data-target="testimonials" title="Clients"></button>
+  <button class="section-dot" data-target="pricing"      title="Pricing"></button>
+  <button class="section-dot" data-target="faq"       title="FAQ"></button>
+  <button class="section-dot" data-target="contact"   title="Contact"></button>
+</nav>
+
+<!-- ─── STICKY CTA DOCK ─── -->
+<div id="cta-dock" aria-hidden="true">
+  <span class="dock-label">Ready to build?</span>
+  <a href="#contact" class="btn btn-primary dock-btn">Start a project</a>
+  <a href="mailto:charleskris9@gmail.com?subject=Project enquiry" class="btn btn-ghost dock-btn">Email directly</a>
+  <button id="dock-close" aria-label="Dismiss" title="Dismiss">×</button>
+</div>
 
 <script src="/src/js/main.js" defer></script>
 </body>

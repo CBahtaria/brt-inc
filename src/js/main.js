@@ -264,3 +264,256 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
     if (document.hidden) clearInterval(timer);
   });
 })();
+
+/* ════════════════════════════════════════════
+   PROJECT FILTER (keyboard + ARIA)
+════════════════════════════════════════════ */
+(function initProjectFilter() {
+  const group       = document.querySelector('.proj-filter[role="group"]');
+  const btns        = document.querySelectorAll('.filter-btn');
+  const cards       = document.querySelectorAll('.proj-grid .proj-card');
+  const announcer   = document.getElementById('filter-announcement');
+
+  function applyFilter(btn) {
+    btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-pressed', 'false'); });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+    const filter = btn.dataset.filter;
+    let count = 0;
+    cards.forEach(card => {
+      const cats = (card.dataset.cat || '').split(' ');
+      const hidden = filter !== 'all' && !cats.includes(filter);
+      card.classList.toggle('hidden', hidden);
+      if (!hidden) count++;
+    });
+    if (announcer) {
+      const label = btn.textContent.trim();
+      announcer.textContent = filter === 'all'
+        ? `Showing all ${count} projects`
+        : `Showing ${count} ${label} project${count !== 1 ? 's' : ''}`;
+    }
+  }
+
+  btns.forEach((btn, i) => {
+    btn.setAttribute('aria-pressed', btn.classList.contains('active') ? 'true' : 'false');
+    btn.addEventListener('click', () => applyFilter(btn));
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        btns[(i + 1) % btns.length].focus();
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        btns[(i - 1 + btns.length) % btns.length].focus();
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        btns[0].focus();
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        btns[btns.length - 1].focus();
+      }
+    });
+  });
+})();
+
+/* ════════════════════════════════════════════
+   CHARACTER COUNTS (name + email inputs)
+════════════════════════════════════════════ */
+(function initCharacterCounts() {
+  [['cf-name', 80], ['cf-email', 254]].forEach(([id, max]) => {
+    const input   = document.getElementById(id);
+    const counter = document.getElementById(id + '-count');
+    if (!input || !counter) return;
+    function update() {
+      const len = input.value.length;
+      counter.textContent = len + ' / ' + max;
+      counter.classList.toggle('near-limit', len >= Math.floor(max * 0.85) && len < max);
+      counter.classList.toggle('at-limit',   len >= max);
+    }
+    input.addEventListener('input', update);
+    update();
+  });
+})();
+
+/* ════════════════════════════════════════════
+   INFO TIPS ("Why .dev?")
+════════════════════════════════════════════ */
+(function initInfoTips() {
+  document.querySelectorAll('.cf-info-tip').forEach(btn => {
+    const targetId = btn.getAttribute('aria-controls');
+    const target   = targetId ? document.getElementById(targetId) : null;
+    if (!target) return;
+    btn.addEventListener('click', () => {
+      const open = target.classList.toggle('open');
+      btn.setAttribute('aria-expanded', String(open));
+    });
+    btn.setAttribute('aria-expanded', 'false');
+  });
+})();
+
+/* ════════════════════════════════════════════
+   STICKY CTA DOCK
+════════════════════════════════════════════ */
+(function initCtaDock() {
+  const dock      = document.getElementById('cta-dock');
+  const closeBtn  = document.getElementById('dock-close');
+  const btt       = document.getElementById('back-top');
+  if (!dock || !closeBtn) return;
+  let dismissed = false;
+  function updateDock() {
+    if (dismissed) return;
+    const show = window.scrollY > 450;
+    dock.classList.toggle('visible', show);
+    dock.setAttribute('aria-hidden', String(!show));
+    if (btt) btt.classList.toggle('dock-pushed', show);
+  }
+  window.addEventListener('scroll', updateDock, { passive: true });
+  closeBtn.addEventListener('click', () => {
+    dismissed = true;
+    dock.classList.remove('visible');
+    dock.setAttribute('aria-hidden', 'true');
+    if (btt) btt.classList.remove('dock-pushed');
+  });
+  dock.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    dock.classList.remove('visible');
+    if (btt) btt.classList.remove('dock-pushed');
+  }));
+})();
+
+/* ════════════════════════════════════════════
+   SCROLLSPY
+════════════════════════════════════════════ */
+(function initScrollspy() {
+  const ids = ['portfolio', 'pricing', 'contact'];
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const link = document.querySelector(`.nav-links a[data-nav="${e.target.id}"]`);
+      if (link) link.classList.toggle('nav-active', e.isIntersecting);
+    });
+  }, { threshold: 0.35 });
+  ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el); });
+})();
+
+/* ════════════════════════════════════════════
+   SECTION DOTS
+════════════════════════════════════════════ */
+(function initSectionDots() {
+  const dots = document.querySelectorAll('.section-dot');
+  const obs  = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      const dot = document.querySelector(`.section-dot[data-target="${e.target.id}"]`);
+      if (dot) dot.classList.toggle('active', e.isIntersecting);
+    });
+  }, { threshold: 0.4 });
+  dots.forEach(dot => {
+    const target = document.getElementById(dot.dataset.target);
+    if (target) obs.observe(target);
+    dot.addEventListener('click', () => {
+      if (target) target.scrollIntoView({ behavior: noMotion ? 'instant' : 'smooth' });
+    });
+  });
+})();
+
+/* ════════════════════════════════════════════
+   FULL CARD CLICKABILITY
+════════════════════════════════════════════ */
+(function initCardClickability() {
+  document.querySelectorAll('.proj-card').forEach(card => {
+    const link = card.querySelector('.proj-link');
+    if (!link) return;
+    card.setAttribute('data-clickable', '');
+    card.addEventListener('click', e => {
+      if (e.target.closest('a') || e.target.closest('button')) return;
+      link.click();
+    });
+  });
+})();
+
+/* ════════════════════════════════════════════
+   CONTACT FORM (Formspree)
+════════════════════════════════════════════ */
+(function initContactForm() {
+  const form    = document.getElementById('contact-form');
+  if (!form) return;
+  const status  = form.querySelector('.cf-status');
+  const submit  = form.querySelector('.cf-submit');
+  const msgArea = document.getElementById('cf-msg');
+  const counter = form.querySelector('.cf-count');
+
+  if (msgArea && counter) {
+    msgArea.addEventListener('input', () => {
+      counter.textContent = msgArea.value.length + ' / ' + msgArea.maxLength;
+    });
+  }
+
+  function validate() {
+    let ok = true;
+    form.querySelectorAll('[required]').forEach(el => {
+      const err = el.closest('.cf-field').querySelector('.cf-err');
+      const empty = !el.value.trim();
+      const badEmail = el.type === 'email' && !empty && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+      el.classList.toggle('invalid', empty || badEmail);
+      if (err) err.textContent = empty ? 'Required' : badEmail ? 'Enter a valid email' : '';
+      if (empty || badEmail) ok = false;
+    });
+    return ok;
+  }
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (!validate()) return;
+    submit.disabled = true;
+    submit.textContent = 'Sending…';
+    status.className = 'cf-status';
+    status.textContent = '';
+    try {
+      const payload = {
+        name:     (form.querySelector('#cf-name')    || {}).value || '',
+        email:    (form.querySelector('#cf-email')   || {}).value || '',
+        subject:  (form.querySelector('#cf-subject') || {}).value || '',
+        message:  (form.querySelector('#cf-msg')     || {}).value || '',
+        _gotcha:  (form.querySelector('[name="_gotcha"]') || {}).value || '',
+      };
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      });
+      if (res.ok) {
+        const container = document.getElementById('cf-container') || form.parentNode;
+        container.innerHTML = `
+          <div class="cf-success-msg" role="status" aria-live="polite">
+            <div class="cf-tick" aria-hidden="true">✓</div>
+            <h3>Message sent!</h3>
+            <p>I'll reply within 24 hours.<br>For urgent matters: <a href="https://wa.me/26879657744">WhatsApp →</a></p>
+          </div>`;
+      } else {
+        let msg = 'Send failed — email charleskris9@gmail.com directly.';
+        try { const d = await res.json(); if (d.error) msg = d.error; } catch {}
+        throw new Error(msg);
+      }
+    } catch (err) {
+      status.className = 'cf-status error';
+      status.textContent = err.message || 'Send failed — email charleskris9@gmail.com directly.';
+      submit.textContent = 'Send enquiry →';
+    } finally {
+      submit.disabled = false;
+    }
+  });
+
+  form.querySelectorAll('[required]').forEach(el => {
+    el.addEventListener('blur', () => {
+      const err = el.closest('.cf-field').querySelector('.cf-err');
+      const empty = !el.value.trim();
+      const badEmail = el.type === 'email' && !empty && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+      el.classList.toggle('invalid', empty || badEmail);
+      if (err) err.textContent = empty ? 'Required' : badEmail ? 'Enter a valid email' : '';
+    });
+    el.addEventListener('input', () => {
+      if (el.classList.contains('invalid') && el.value.trim()) {
+        el.classList.remove('invalid');
+        const err = el.closest('.cf-field').querySelector('.cf-err');
+        if (err) err.textContent = '';
+      }
+    });
+  });
+})();

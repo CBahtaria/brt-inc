@@ -6,4 +6,5 @@ Disallow: /src/agreements/
 Disallow: /src/runbooks/
 Disallow: /src/sales/
 Disallow: /src/infra/
-Sitemap: https://brtinc.vercel.app/sitemap.xml
+Disallow: /tools
+Sitemap: https://brtinc.dev/sitemap.xml

@@ -354,28 +354,33 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
    STICKY CTA DOCK
 ════════════════════════════════════════════ */
 (function initCtaDock() {
-  const dock      = document.getElementById('cta-dock');
-  const closeBtn  = document.getElementById('dock-close');
-  const btt       = document.getElementById('back-top');
+  const dock    = document.getElementById('cta-dock');
+  const closeBtn = document.getElementById('dock-close');
+  const btt     = document.getElementById('back-top');
+  const waFab   = document.getElementById('wa-fab');
   if (!dock || !closeBtn) return;
   let dismissed = false;
+  function setPushed(on) {
+    if (btt)   btt.classList.toggle('dock-pushed', on);
+    if (waFab) waFab.classList.toggle('dock-pushed', on);
+  }
   function updateDock() {
     if (dismissed) return;
     const show = window.scrollY > 450;
     dock.classList.toggle('visible', show);
     dock.setAttribute('aria-hidden', String(!show));
-    if (btt) btt.classList.toggle('dock-pushed', show);
+    setPushed(show);
   }
   window.addEventListener('scroll', updateDock, { passive: true });
   closeBtn.addEventListener('click', () => {
     dismissed = true;
     dock.classList.remove('visible');
     dock.setAttribute('aria-hidden', 'true');
-    if (btt) btt.classList.remove('dock-pushed');
+    setPushed(false);
   });
   dock.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
     dock.classList.remove('visible');
-    if (btt) btt.classList.remove('dock-pushed');
+    setPushed(false);
   }));
 })();
 

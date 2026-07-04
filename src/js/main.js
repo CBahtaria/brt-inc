@@ -522,3 +522,79 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
     });
   });
 })();
+
+/* ─── PULL-TO-REFRESH (Möbius strip) ─── */
+(function initPullRefresh() {
+  const el    = document.getElementById('pull-refresh');
+  const fill  = el?.querySelector('.mobius-fill');
+  const label = el?.querySelector('.pr-label');
+  if (!el || !fill) return;
+
+  const THRESHOLD = 90;
+  let totalLength = 0;
+  let pullDelta   = 0;
+  let decayTimer  = null;
+  let done        = false;
+
+  // Measure path length after fonts/layout settle
+  window.addEventListener('load', () => {
+    totalLength = fill.getTotalLength?.() || 180;
+    fill.style.strokeDasharray  = totalLength;
+    fill.style.strokeDashoffset = totalLength;
+  });
+
+  function setProgress(p) {
+    p = Math.max(0, Math.min(1, p));
+    el.style.opacity   = Math.min(1, p * 1.6);
+    // slide down proportionally: at p=0 fully hidden, at p=1 fully shown
+    el.style.transform = `translateX(-50%) translateY(${(p - 1) * 100}%)`;
+    if (totalLength) fill.style.strokeDashoffset = totalLength * (1 - p);
+    if (label) label.textContent = p >= 1 ? 'Release to refresh' : 'Pull to refresh';
+  }
+
+  function trigger() {
+    if (done) return;
+    done = true;
+    el.classList.add('pr-complete');
+    if (label) label.textContent = 'Refreshing…';
+    setTimeout(() => location.reload(), 420);
+  }
+
+  function reset() {
+    pullDelta = 0;
+    setProgress(0);
+  }
+
+  /* ── Touch (mobile) ── */
+  let touchStartY = 0;
+  document.addEventListener('touchstart', e => {
+    if (window.scrollY === 0) touchStartY = e.touches[0].clientY;
+    else touchStartY = 0;
+  }, { passive: true });
+
+  document.addEventListener('touchmove', e => {
+    if (!touchStartY || done) return;
+    const dy = e.touches[0].clientY - touchStartY;
+    if (dy > 0 && window.scrollY === 0) {
+      pullDelta = dy;
+      setProgress(pullDelta / THRESHOLD);
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', () => {
+    if (done) return;
+    if (pullDelta >= THRESHOLD) trigger();
+    else reset();
+    touchStartY = 0;
+  });
+
+  /* ── Wheel (desktop) ── */
+  document.addEventListener('wheel', e => {
+    if (done || window.scrollY > 0 || e.deltaY >= 0) return;
+    pullDelta = Math.min(pullDelta + Math.abs(e.deltaY) * 0.6, THRESHOLD * 1.4);
+    setProgress(pullDelta / THRESHOLD);
+    clearTimeout(decayTimer);
+    if (pullDelta >= THRESHOLD) { trigger(); return; }
+    decayTimer = setTimeout(reset, 180);
+  }, { passive: true });
+})();

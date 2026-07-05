@@ -526,17 +526,32 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
 /* ─── PULL-TO-REFRESH (Möbius strip) ─── */
 (function initPullRefresh() {
   const THRESHOLD = 90;
+  const HOLD_MS   = 2500;
   let delta      = 0;
   let decayTimer = null;
+  let holdTimer  = null;
   let triggered  = false;
 
   function trigger() {
     if (triggered) return;
     triggered = true;
-    setTimeout(() => location.reload(), 120);
+    location.reload();
   }
 
-  function reset() { delta = 0; }
+  function startHold() {
+    if (holdTimer) return;
+    holdTimer = setTimeout(trigger, HOLD_MS);
+  }
+
+  function cancelHold() {
+    clearTimeout(holdTimer);
+    holdTimer = null;
+  }
+
+  function reset() {
+    delta = 0;
+    cancelHold();
+  }
 
   let startY = 0;
   document.addEventListener('touchstart', e => {
@@ -545,10 +560,13 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
   document.addEventListener('touchmove', e => {
     if (!startY || triggered) return;
     const dy = e.touches[0].clientY - startY;
-    if (dy > 0 && window.scrollY === 0) delta = dy;
+    if (dy > 0 && window.scrollY === 0) {
+      delta = dy;
+      if (delta >= THRESHOLD) startHold(); else cancelHold();
+    }
   }, { passive: true });
   document.addEventListener('touchend', () => {
-    if (!triggered) { if (delta >= THRESHOLD) trigger(); else reset(); }
+    if (!triggered) { cancelHold(); reset(); }
     startY = 0;
   });
 
@@ -556,7 +574,7 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
     if (triggered || window.scrollY > 0 || e.deltaY >= 0) return;
     delta = Math.min(delta + Math.abs(e.deltaY) * 0.6, THRESHOLD * 1.4);
     clearTimeout(decayTimer);
-    if (delta >= THRESHOLD) { trigger(); return; }
+    if (delta >= THRESHOLD) startHold(); else cancelHold();
     decayTimer = setTimeout(reset, 180);
   }, { passive: true });
 })();

@@ -163,7 +163,7 @@
       return 'Payment via Stripe\nA payment link will be sent separately.';
     }
     // default: wise
-    return 'Payment via Wise (USD)\nAccount name: Charles Bartaria · BRT Inc.\nPlease request Wise USD details at charleskris9@gmail.com';
+    return 'Payment via Wise (ZAR/EFT)\nAccount name: Charles Bartaria · BRT Inc.\nPlease request banking/Wise details at charleskris9@gmail.com';
   }
 
   function updatePreviewOnly() {
@@ -208,14 +208,14 @@
       <table>
         <thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
         <tbody>
-          ${items.map(i => `<tr><td>${esc(i.desc)}</td><td>${i.qty}</td><td>$${(+i.rate).toLocaleString()}</td><td>$${(i.qty * i.rate).toLocaleString()}</td></tr>`).join('')}
+          ${items.map(i => `<tr><td>${esc(i.desc)}</td><td>${i.qty}</td><td>R${(+i.rate).toLocaleString()}</td><td>R${(i.qty * i.rate).toLocaleString()}</td></tr>`).join('')}
         </tbody>
       </table>
-      <div class="pre-total">Total Due: $${total.toLocaleString()} USD</div>
+      <div class="pre-total">Total Due: R${total.toLocaleString()} ZAR</div>
       <div class="pre-payment">${esc(payment)}</div>
       ${notes ? `<div class="pre-notes"><span style="color:#666;text-transform:uppercase;font-size:10px">Notes: </span>${esc(notes)}</div>` : ''}
       <div class="pre-footer">
-        Late payments: 2% per month after 7 days overdue. All amounts in USD. This invoice is issued by BRT Inc., Manzini, Kingdom of Eswatini.
+        Late payments: 2% per month after 7 days overdue. All amounts in ZAR. This invoice is issued by BRT Inc., Manzini, Kingdom of Eswatini.
         Governing law: Kingdom of Eswatini. Queries: charleskris9@gmail.com
         <br>Charles Bartaria · BRT Inc. · charleskris9@gmail.com · brtinc.dev
       </div>`;

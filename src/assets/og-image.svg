@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OG image — 1200×630 social preview for BRT Inc.
+  Palette: cream #FAF9F7 background, navy #0F1E2E ink, muted red #E60023 accent.
+  Composition:
+    - Survey-mark glyph left-center (192px height, matching brand)
+    - "BRT INC." wordmark to the right of glyph
+    - Subheadline: "Safety-critical software for SADC institutions."
+    - Fine rule + locale
+  Renders cleanly as a static preview in Facebook / X / LinkedIn / WhatsApp.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="BRT Inc. — Safety-critical software for SADC institutions">
+  <title>BRT Inc.</title>
+  <style>
+    .word { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 800; fill: #0F1E2E; letter-spacing: -6px; }
+    .sub  { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; fill: #0F1E2E; letter-spacing: 0px; }
+    .loc  { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; fill: #5A6472; letter-spacing: 2px; text-transform: uppercase; }
+    .caps { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; fill: #0F1E2E; letter-spacing: 3px; text-transform: uppercase; }
+  </style>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FAF9F7"/>
+
+  <!-- Subtle top rule (institutional) -->
+  <rect x="80" y="80" width="1040" height="2" fill="#0F1E2E"/>
+  <text class="caps" x="80" y="72" font-size="18">BRT Inc. · Manzini · Technology Park</text>
+
+  <!-- Survey-mark glyph, left of center -->
+  <g transform="translate(112 210)" fill="none" stroke="#0F1E2E" stroke-width="6" stroke-linejoin="miter" stroke-linecap="square">
+    <polygon points="96,6 186,186 6,186" />
+    <polygon points="96,156 45,63 147,63" />
+  </g>
+  <circle cx="208" cy="323" r="8" fill="#0F1E2E"/>
+
+  <!-- Wordmark -->
+  <text class="word" x="336" y="330" font-size="176">BRT</text>
+  <text class="sub"  x="336" y="404" font-size="42">Engineering practice for institutions</text>
+  <text class="sub"  x="336" y="452" font-size="42">that cannot afford silent failure.</text>
+
+  <!-- Bottom rule -->
+  <rect x="80" y="548" width="1040" height="2" fill="#0F1E2E"/>
+  <text class="caps" x="80" y="588" font-size="18">SAFETY-CRITICAL SOFTWARE · SADC INSTITUTIONS</text>
+  <text class="caps" x="1120" y="588" font-size="18" text-anchor="end">BRT-INC.VERCEL.APP</text>
+
+  <!-- Muted-red accent bar (very small, top-right corner) -->
+  <rect x="1088" y="80" width="32" height="2" fill="#E60023"/>
+</svg>

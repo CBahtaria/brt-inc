@@ -10,12 +10,16 @@
   <meta name="geo.placename" content="Manzini, Eswatini">
   <meta name="geo.position" content="-26.4833;31.3667">
   <meta name="ICBM" content="-26.4833, 31.3667">
-  <link rel="canonical" href="https://brtinc.dev/" />
+  <link rel="canonical" href="https://brt-inc.vercel.app/" />
   <meta property="og:title" content="BRT Inc. — Software Engineering & Data Systems" />
   <meta property="og:description" content="Custom software for SADC organisations and global studios. PHP · Python · Zig · React · UE5 · DevOps · Security Audits. Based in Manzini, Eswatini." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://brtinc.dev" />
-  <meta property="og:image" content="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80" />
+  <meta property="og:url" content="https://brt-inc.vercel.app" />
+  <meta property="og:image" content="https://brt-inc.vercel.app/src/assets/og-image.svg" />
+  <meta property="og:image:type" content="image/svg+xml" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="BRT Inc. — Engineering practice for institutions that cannot afford silent failure." />
   <meta name="twitter:card" content="summary_large_image" />
   <title>BRT Inc. — Software Engineering & Data Systems</title>
   <script type="application/ld+json">
@@ -24,9 +28,11 @@
     "@type": "ProfessionalService",
     "name": "BRT Inc.",
     "description": "Custom software engineering for SADC organisations — PHP, Python, React, DevOps, Security Audits",
-    "url": "https://brtinc.dev",
+    "url": "https://brt-inc.vercel.app",
     "email": "charleskris9@gmail.com",
+    "telephone": "+26879657744",
     "address": { "@type": "PostalAddress", "addressLocality": "Manzini", "addressCountry": "SZ" },
+    "geo": { "@type": "GeoCoordinates", "latitude": -26.4833, "longitude": 31.3667 },
     "priceRange": "R850 – R5,500",
     "serviceType": ["Web Development", "Security Auditing", "Data Science", "DevOps", "Machine Learning", "Game Development"]
   }
@@ -38,27 +44,28 @@
   <link rel="stylesheet" href="/src/css/main.css">
   <link rel="manifest" href="/manifest.json">
   <meta name="theme-color" content="#0B0B0C" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#F8F9FA" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#FAF9F7" media="(prefers-color-scheme: light)">
+  <link rel="icon" type="image/svg+xml" href="/src/assets/logo/favicon.svg">
+  <link rel="mask-icon" href="/src/assets/logo/logo-mark.svg" color="#0F1E2E">
   <meta property="og:site_name" content="BRT Inc.">
   <meta name="twitter:title" content="BRT Inc. — Software Engineering for Defence &amp; Enterprise">
   <meta name="twitter:description" content="PHP, Python, Zig, React, UE5, DevOps, Security, AI, Game Development for SADC organisations and global studios.">
-  <meta name="twitter:image" content="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80">
+  <meta name="twitter:image" content="https://brt-inc.vercel.app/src/assets/og-image.svg">
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
-  <script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js"></script>
 </head>
 <body>
-<div id="cursor-dot"  aria-hidden="true"></div>
-<div id="cursor-ring" aria-hidden="true"></div>
-
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- ─── NAV ─── -->
 <nav id="nav" role="navigation" aria-label="Main">
   <div class="container">
-    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
+    <a href="/" class="nav-brand" aria-label="BRT Inc. home">
+      <img src="/src/assets/logo/logo-mark.svg" alt="" class="nav-mark" width="24" height="24" aria-hidden="true">
+      <span>BRT<span class="nav-brand-dot">.</span>inc</span>
+    </a>
     <div class="nav-links">
       <a href="#portfolio" data-nav="portfolio">Work</a>
+      <a href="#about" data-nav="about">About</a>
       <a href="#pricing" data-nav="pricing">Pricing</a>
       <a href="#contact" data-nav="contact">Contact</a>
       <a href="#contact" class="nav-cta">Get a quote</a>
@@ -71,6 +78,7 @@
 
 <!-- Mobile menu -->
 <div class="mobile-menu" id="mobile-menu" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Navigation menu">
+  <a href="#about"    >About</a>
   <a href="#services" >Services</a>
   <a href="#portfolio">Work</a>
   <a href="#process"  >Process</a>
@@ -99,28 +107,28 @@
     <div class="hero-left">
       <div class="hero-badge" data-anim="0" id="hero-badge">
         <span class="hero-dot" aria-hidden="true"></span>
-        <span id="badge-text">Available for projects &nbsp;·&nbsp; Manzini, Eswatini</span>
+        <span id="badge-text">Manzini · Technology Park &nbsp;·&nbsp; Accepting institutional briefs</span>
       </div>
 
       <h1 data-anim="1" aria-live="polite">
-        We build the software<br>
-        <span class="grad">your business runs on.</span>
+        Safety-critical software<br>
+        <span class="grad">for SADC institutions.</span>
       </h1>
 
       <p class="hero-sub" data-anim="2" id="hero-sub">
-        Web apps, security audits, AI tools, and DevOps infrastructure for SADC
-        businesses and global studios. Fixed quotes before work begins. You own
-        the code on delivery.
+        Autonomous aerial systems, defence C2, and simulation platforms — built
+        with formal-verification rigor for national libraries, defence forces,
+        and governments.
       </p>
 
       <p class="hero-mandate" data-anim="2">
-        Based in Manzini, Eswatini &nbsp;·&nbsp; Fixed quotes &nbsp;·&nbsp; 30-day warranty &nbsp;·&nbsp; You own the code
+        Correct by construction &nbsp;·&nbsp; Compliance gates first &nbsp;·&nbsp; Audit trails on every deliverable &nbsp;·&nbsp; You own the code
       </p>
 
       <div class="cta-row" data-anim="3">
-        <a href="#contact" class="btn btn-primary">Start a project</a>
-        <a href="#portfolio" class="btn btn-ghost">View work</a>
-        <a href="/src/casestudy/sentinel-audit.html" class="btn btn-outline">Read case study</a>
+        <a href="#portfolio" class="btn btn-primary">See our work</a>
+        <a href="#contact" class="btn btn-ghost">Contact BRT</a>
+        <a href="/src/casestudy/sentinel-audit.html" class="btn btn-outline">Compliance notes</a>
       </div>
 
       <div class="scroll-indicator" data-anim="4" aria-hidden="true" id="scroll-ind">Scroll to explore</div>
@@ -133,13 +141,12 @@
       <div class="video-frame">
         <video
           id="hero-reel"
-          autoplay
           muted
           playsinline
-          preload="metadata"
+          preload="none"
           loop
           poster="https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=800&q=70"
-          src="https://assets.mixkit.co/videos/preview/mixkit-beautiful-aerial-view-of-a-mountain-landscape-at-sunset-1052-large.mp4"
+          data-src="https://assets.mixkit.co/videos/preview/mixkit-beautiful-aerial-view-of-a-mountain-landscape-at-sunset-1052-large.mp4"
           aria-hidden="true"
         ></video>
         <div class="vid-corner vid-corner-tl">PORTFOLIO</div>
@@ -159,7 +166,7 @@
         <span class="stat-l">Security findings</span>
       </div>
       <div class="stat-item">
-        <span class="stat-n">1,093</span>
+        <span class="stat-n">1,198</span>
         <span class="stat-l">Tests shipped</span>
       </div>
       <div class="stat-item">
@@ -170,6 +177,27 @@
         <span class="stat-n">0</span>
         <span class="stat-l">Regressions</span>
       </div>
+      <div class="stat-item">
+        <span class="stat-n">3+</span>
+        <span class="stat-l">Paying clients</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ABOUT — Institutional narrative (relocated below hero) ─── -->
+<section id="about" aria-label="About BRT Inc.">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">About BRT Inc.</span>
+      <h2 class="section-h2">Engineering practice for institutions<br>that cannot afford silent failure.</h2>
+      <p class="section-sub" style="max-width:70ch">
+        BRT Inc. is an engineering practice for institutions that cannot afford silent failure. We design and operate autonomous aerial systems &mdash; drones with a formal safety layer that vets every AI proposal before the flight controller sees it. We build defence command platforms hardened against real audits. We ship applied ML that runs on a farmer's phone with no internet, and geospatially-grounded simulation for cultural heritage. Our buyers are national libraries, government offices, defence forces, and research councils across SADC. Every deliverable ships with compliance gates, audit trails, and reproducible tests &mdash; so when a regulator asks how you know it works, you have evidence, not opinions. Solo-founded and solo-maintained; every line has an accountable author.
+      </p>
+      <div class="cta-row" style="margin-top:1.75rem">
+        <a href="#portfolio" class="btn btn-primary">See our work</a>
+        <a href="/src/casestudy/sentinel-audit.html" class="btn btn-outline">Compliance notes</a>
+      </div>
     </div>
   </div>
 </section>
@@ -177,15 +205,77 @@
 <!-- ─── WHO THIS IS FOR ─── -->
 <div id="who" role="region" aria-label="Who BRT Inc. builds for">
   <div class="container">
-    <p class="who-label">BRT Inc. builds for</p>
+    <p class="who-label">Built for</p>
     <div class="who-chips">
-      <a href="#portfolio" class="who-chip">SADC Businesses</a>
-      <a href="#portfolio" class="who-chip">Defence &amp; Government</a>
-      <a href="#portfolio" class="who-chip">Global Studios</a>
-      <a href="#portfolio" class="who-chip">Startups</a>
+      <a href="#portfolio" class="who-chip">National Libraries</a>
+      <a href="#portfolio" class="who-chip">Defence Forces</a>
+      <a href="#portfolio" class="who-chip">Government Offices</a>
+      <a href="#portfolio" class="who-chip">Research Councils</a>
     </div>
   </div>
 </div>
+
+<!-- ─── PRACTICE AREAS — InteractiveSelector ─── -->
+<section id="practice-areas" aria-label="Practice areas">
+  <div class="container">
+    <div class="reveal">
+      <span class="section-label">Practice areas</span>
+      <h2 class="section-h2">Five specialisations,<br>one accountability chain.</h2>
+      <p class="section-sub">Each area ships with its own compliance gate, audit trail, and regression check. Select to see representative work.</p>
+    </div>
+    <div id="brt-practice-selector" class="reveal" style="margin-top:2.5rem" aria-label="BRT practice areas"></div>
+  </div>
+</section>
+<script src="/src/js/interactive-selector.js" defer></script>
+<script defer>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (!window.InteractiveSelector) return;
+    var el = document.getElementById('brt-practice-selector');
+    if (!el) return;
+    window.InteractiveSelector.mount(el, [
+      {
+        id: 'aerial',
+        title: 'Autonomous Systems',
+        desc: 'Formal safety envelopes and DAL-A-rigor governors for UAV fleet operations.',
+        image: 'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'A',
+        href: '#portfolio'
+      },
+      {
+        id: 'c2',
+        title: 'Defence C2',
+        desc: 'RBAC, 2FA, and hash-chained audit trails for tactical command platforms.',
+        image: 'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'C',
+        href: '/src/casestudy/sentinel-audit.html'
+      },
+      {
+        id: 'ml',
+        title: 'Applied ML',
+        desc: 'On-device inference and agricultural decision support for smallholder farmers.',
+        image: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'M',
+        href: '#portfolio'
+      },
+      {
+        id: 'sim',
+        title: 'Cultural Simulation',
+        desc: 'Geospatially-grounded interactive worlds honouring Swazi cultural geometry and geology.',
+        image: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'S',
+        href: '#portfolio'
+      },
+      {
+        id: 'ops',
+        title: 'Advisory &amp; Ops',
+        desc: 'Post-audit hardening, compliance gating, and institutional buyer engagement.',
+        image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'O',
+        href: '#contact'
+      }
+    ]);
+  });
+</script>
 
 <!-- ─── TECH STACK STRIP ─── -->
 <div id="stack" role="region" aria-label="Technology stack">
@@ -233,8 +323,8 @@
   <div class="container">
     <div class="reveal">
       <span class="section-label">What we build</span>
-      <h2 class="section-h2">Full-stack from database<br>to deployment</h2>
-      <p class="section-sub">End-to-end engineering — REST APIs, React UIs, ML models, Docker infrastructure, CI/CD pipelines, and security reviews. One engineer who owns the whole stack.</p>
+      <h2 class="section-h2">Full-stack, with a<br>compliance gate at every seam.</h2>
+      <p class="section-sub">REST APIs, React interfaces, ML models, Docker infrastructure, CI/CD pipelines, and security reviews. One engineer accountable for the whole stack &mdash; no handoff seams for defects to hide in.</p>
     </div>
 
     <div class="svc-grid reveal-group">
@@ -332,7 +422,7 @@
             <h3>UEDF Sentinel v5.0</h3>
             <span class="proj-badge" style="background:rgba(239,68,68,.12);color:#f87171;border-color:rgba(239,68,68,.3)">Audited</span>
           </div>
-          <p class="proj-desc">Defence command platform handling classified drone fleet operations. A full structural audit uncovered 9 vulnerabilities — 3 Critical, 6 High — including SQL injection paths and unauthenticated API routes. Patched to AES-GCM-256 comms, tamper-evident audit logs, and live WebSocket telemetry. Zero disruption to live operations during remediation.</p>
+          <p class="proj-desc">Real-time military C2 for UAV fleets. Post-audit hardened: PDO-only SQL, TOTP 2FA, IP-bound session tokens, hash-chained audit log, security headers on every response. 22 files patched with zero regressions across 9 findings &mdash; 3 Critical, 6 High. If a row goes missing from the audit log, the chain will say so.</p>
           <p class="portfolio-label">Client · Outcome</p>
           <span class="portfolio-who">Defence ministry, Eswatini</span>
           <span class="portfolio-outcome">9 critical/high vulns closed — zero regressions, zero downtime</span>
@@ -478,7 +568,7 @@
           <span class="portfolio-outcome">Steam-ready — hardware-adaptive scaler from iGPU to RTX 4090</span>
           <div class="proj-tags"><span class="tag">UE5 C++</span><span class="tag">Zig</span><span class="tag">Python</span><span class="tag">GDAL</span><span class="tag">Steam</span><span class="tag">Cross-Platform</span></div>
           <div class="proj-metrics">
-            <div class="metric"><span class="metric-n">316</span><span class="metric-l">pipeline tests</span></div>
+            <div class="metric"><span class="metric-n">310</span><span class="metric-l">pipeline tests</span></div>
             <div class="metric"><span class="metric-n">5</span><span class="metric-l">hardware tiers</span></div>
             <div class="metric"><span class="metric-n">19</span><span class="metric-l">perf CVars</span></div>
           </div>
@@ -504,7 +594,7 @@
         <span class="impact-label">Security findings resolved</span>
       </div>
       <div class="impact-item reveal">
-        <span class="impact-n" data-count="1093">1,093</span>
+        <span class="impact-n" data-count="1198">1,198</span>
         <span class="impact-label">Automated tests shipped</span>
       </div>
       <div class="impact-item reveal">
@@ -552,7 +642,7 @@
       </article>
       <article class="testi-card reveal" role="listitem">
         <div class="testi-stars" aria-label="5 stars">★★★★★</div>
-        <blockquote class="testi-quote">"The booking platform went live with 1,093 test cases passing. Not a single regression after launch. Exactly what you want from an engineering partner."</blockquote>
+        <blockquote class="testi-quote">"The booking platform went live with 1,198 test cases passing. Not a single regression after launch. Exactly what you want from an engineering partner."</blockquote>
         <footer class="testi-meta">
           <div class="testi-avatar" aria-hidden="true">MC</div>
           <div>
@@ -653,27 +743,27 @@
     </div>
 
     <div class="faq-list reveal">
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>How long does a typical project take?</summary>
         <div class="faq-body">Web applications typically take 2–4 weeks. Security audits are 3–5 days for the report, 1–2 weeks for fixes. Data science and ML projects vary by dataset and model complexity. I give timeline estimates in the proposal and commit to them.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>Do you work with clients outside Eswatini?</summary>
         <div class="faq-body">Yes. Most of my work is remote. I've worked with clients across the SADC region and accept international payments via Wise (USD/ZAR). Time zone is GMT+2 — well-aligned with South Africa, Europe, and the Middle East.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>What's included in the 30-day warranty?</summary>
         <div class="faq-body">Any bug that prevents the delivered functionality from working as specified in the proposal. This covers defects in my code — not new feature requests or third-party library breakages outside my control.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>Who owns the code when the project is done?</summary>
         <div class="faq-body">You do. Full intellectual property transfers to you on final payment. You receive the complete source code, all configuration files, and the CI/CD pipeline. No licensing fees, no lock-in.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>Can you work with existing codebases?</summary>
         <div class="faq-body">Yes — security audits are done entirely on existing code, and I regularly add features or fix bugs in inherited PHP, Python, and React codebases. Send me a repo link and I'll scope it.</div>
       </details>
-      <details class="faq-item">
+      <details class="faq-item" name="faq">
         <summary>Do you offer the free initial assessment for security audits?</summary>
         <div class="faq-body">Yes. For PHP and Python codebases, I offer a free 15-minute assessment — I look at your code and tell you honestly whether I see risk areas and what a full audit would cost. No obligation. <a href="mailto:charleskris9@gmail.com?subject=Free security assessment">Email me to book one.</a></div>
       </details>

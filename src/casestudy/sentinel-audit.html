@@ -11,27 +11,12 @@
   <title>Sentinel Security Audit — BRT Inc.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet" />
-  <link rel="canonical" href="https://brtinc.dev/src/casestudy/sentinel-audit.html" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="canonical" href="https://brt-inc.vercel.app/src/casestudy/sentinel-audit.html" />
   <script defer src="https://va.vercel-scripts.com/v1/script.js"></script>
+  <script src="/src/js/theme.js"></script>
+  <link rel="stylesheet" href="/src/css/tokens.css">
   <style>
-    :root {
-      --bg: #05070e; --surface: #090d1a; --surface2: #0d1326;
-      --blue: #3b82f6; --blue-mid: #1d4ed8; --cyan: #22d3ee;
-      --red: #ef4444; --amber: #f59e0b; --green: #22c55e;
-      --fg: #f1f5ff; --muted: #94a3b8; --border: #1e2d45;
-      --font: 'Inter', system-ui, sans-serif;
-      --mono: 'Courier New', monospace;
-      --radius: .6rem;
-    }
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f8fafc; --surface: #fff; --surface2: #f1f5f9;
-        --blue: #2563eb; --cyan: #0891b2; --red: #dc2626;
-        --amber: #d97706; --green: #16a34a;
-        --fg: #0f172a; --muted: #475569; --border: #e2e8f0;
-      }
-    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 15px; line-height: 1.8; -webkit-font-smoothing: antialiased; }
@@ -53,7 +38,7 @@
     .case-hero { padding: 4rem 0 3rem; border-bottom: 1px solid var(--border); }
     .case-badge {
       display: inline-flex; align-items: center; gap: .45rem;
-      background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+      background: color-mix(in oklab, var(--red) 12%, transparent); border: 1px solid color-mix(in oklab, var(--red) 30%, transparent);
       color: var(--red); font-size: .78rem; font-weight: 600;
       padding: .3rem .8rem; border-radius: 2rem; margin-bottom: 1.4rem; letter-spacing: .04em;
     }
@@ -92,9 +77,9 @@
     .sev-bar-label { font-size: .78rem; font-weight: 600; display: flex; justify-content: space-between; margin-bottom: .35rem; color: var(--fg); }
     .sev-bar-track { background: var(--surface2); border-radius: 4px; height: 8px; overflow: hidden; }
     .sev-bar-fill { height: 100%; border-radius: 4px; width: 0; transition: width .9s cubic-bezier(.22,1,.36,1); }
-    .fill-critical { background: linear-gradient(90deg, var(--red), #ff6b6b); }
-    .fill-high     { background: linear-gradient(90deg, var(--amber), #fcd34d); }
-    .fill-resolved { background: linear-gradient(90deg, var(--green), #4ade80); }
+    .fill-critical { background: linear-gradient(90deg, var(--red), color-mix(in oklab, var(--red) 55%, white)); }
+    .fill-high     { background: linear-gradient(90deg, var(--amber), color-mix(in oklab, var(--amber) 55%, white)); }
+    .fill-resolved { background: linear-gradient(90deg, var(--green), color-mix(in oklab, var(--green) 55%, white)); }
 
     .findings-table { width: 100%; border-collapse: collapse; font-size: .875rem; margin-top: 1rem; }
     .findings-table th { text-align: left; padding: .6rem .8rem; border-bottom: 2px solid var(--border); font-size: .75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
@@ -102,9 +87,9 @@
     .findings-table tr:last-child td { border-bottom: none; }
     .findings-table tr:hover td { background: var(--surface); }
     .sev-badge { font-size: .72rem; font-weight: 700; padding: .2rem .55rem; border-radius: 2rem; white-space: nowrap; }
-    .sev-critical { background: rgba(239,68,68,.12); color: var(--red); border: 1px solid rgba(239,68,68,.25); }
-    .sev-high     { background: rgba(245,158,11,.12); color: var(--amber); border: 1px solid rgba(245,158,11,.25); }
-    .sev-resolved { background: rgba(34,197,94,.1); color: var(--green); border: 1px solid rgba(34,197,94,.2); }
+    .sev-critical { background: color-mix(in oklab, var(--red) 14%, transparent); color: var(--red); border: 1px solid color-mix(in oklab, var(--red) 30%, transparent); }
+    .sev-high     { background: color-mix(in oklab, var(--amber) 14%, transparent); color: var(--amber); border: 1px solid color-mix(in oklab, var(--amber) 30%, transparent); }
+    .sev-resolved { background: color-mix(in oklab, var(--green) 12%, transparent); color: var(--green); border: 1px solid color-mix(in oklab, var(--green) 24%, transparent); }
     .finding-id   { font-family: var(--mono); font-size: .78rem; color: var(--muted); }
 
     .rbac-table { width:100%; border-collapse:collapse; font-size:.875rem; margin-top:1rem; }
@@ -154,12 +139,37 @@
 
     .arch-diagram { margin: 1.8rem 0; overflow-x: auto; }
 
+    /* Anchor-jump section nav (sabrina.dev-inspired taxonomy discovery, adapted for a report). */
+    .section-jump { position: sticky; top: calc(var(--nav-h, 60px) + 8px); z-index: 40; background: color-mix(in oklab, var(--bg) 88%, transparent); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); padding: .75rem 0; }
+    .section-jump-track { display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none; }
+    .section-jump-track::-webkit-scrollbar { display: none; }
+    .section-jump a { flex-shrink: 0; font-size: .78rem; font-weight: 500; color: var(--muted); padding: .35rem .8rem; border: 1px solid var(--border); border-radius: 2rem; text-decoration: none; transition: background .18s, color .18s, border-color .18s; }
+    .section-jump a:hover { color: var(--fg); border-color: var(--blue); text-decoration: none; }
+    .section-jump a.is-active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+    /* Severity filter chips (filter the findings-table by severity). */
+    .sev-filter { display: flex; flex-wrap: wrap; gap: .45rem; margin: 1.2rem 0 .4rem; align-items: center; }
+    .sev-filter-label { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-right: .4rem; }
+    .sev-filter button { font-size: .78rem; font-weight: 600; padding: .32rem .8rem; border-radius: 2rem; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-family: var(--font); transition: background .18s, color .18s, border-color .18s; }
+    .sev-filter button:hover { color: var(--fg); border-color: var(--blue); }
+    .sev-filter button.is-active { background: var(--blue); color: #fff; border-color: var(--blue); }
+    .sev-filter button[data-sev="critical"].is-active { background: var(--red); border-color: var(--red); }
+    .sev-filter button[data-sev="high"].is-active { background: var(--amber); border-color: var(--amber); color: #111; }
+    .findings-table tr[data-sev].is-hidden { display: none; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+    /* Card hover polish on method + finding cards (subtle lift, consistent with main site). */
+    .method-card { transition: transform .18s, box-shadow .18s, border-color .18s; }
+    .method-card:hover { transform: translateY(-2px); border-color: var(--blue); box-shadow: 0 6px 24px color-mix(in oklab, var(--blue) 8%, transparent); }
+
     @media (max-width: 600px) {
       .sev-bars { flex-direction: column; }
       .cta-buttons { flex-direction: column; align-items: stretch; }
       .nav-links { display: none; }
       .findings-table { font-size: .78rem; }
       .findings-table th:nth-child(4), .findings-table td:nth-child(4) { display: none; }
+      .section-jump { padding: .5rem 0; }
+      .section-jump a { padding: .3rem .65rem; font-size: .74rem; }
     }
   </style>
 </head>
@@ -167,7 +177,10 @@
 
 <nav>
   <div class="container">
-    <a href="/" class="nav-brand">BRT<span>.</span>inc</a>
+    <a href="/" class="nav-brand" aria-label="BRT Inc. home" style="display:inline-flex;align-items:center;gap:.55rem">
+      <img src="/src/assets/logo/logo-mark.svg" alt="" width="22" height="22" aria-hidden="true">
+      <span>BRT<span style="color:var(--accent)">.</span>inc</span>
+    </a>
     <div class="nav-links">
       <a href="/#portfolio">Portfolio</a>
       <a href="/#contact">Contact</a>
@@ -207,8 +220,20 @@
   </div>
 </div>
 
+<nav class="section-jump" aria-label="Case study sections">
+  <div class="container section-jump-track">
+    <a href="#sec-overview">Overview</a>
+    <a href="#sec-scope">Scope &amp; method</a>
+    <a href="#sec-findings">Findings</a>
+    <a href="#sec-fixes">Before / after</a>
+    <a href="#sec-delivery">Delivery</a>
+    <a href="#sec-ci">CI gate</a>
+    <a href="#sec-contact">Contact</a>
+  </div>
+</nav>
+
 <main>
-  <section>
+  <section id="sec-overview">
     <div class="container reveal">
       <div class="section-label">Overview</div>
       <h2>What is UEDF Sentinel?</h2>
@@ -260,7 +285,7 @@
           <text x="266" y="44" text-anchor="middle" font-family="var(--mono)" font-size="7.5" fill="var(--muted)">NATS</text>
 
           <!-- PHP 8.3 Monolith (highlighted — audit target) -->
-          <rect x="290" y="18" width="105" height="64" rx="5" fill="rgba(59,130,246,.08)" stroke="var(--blue)" stroke-width="1.8"/>
+          <rect x="290" y="18" width="105" height="64" rx="5" fill="color-mix(in oklab, var(--blue) 10%, transparent)" stroke="var(--blue)" stroke-width="1.8"/>
           <text x="342" y="41" text-anchor="middle" font-family="var(--mono)" font-size="9.5" font-weight="700" fill="var(--blue)">PHP 8.3</text>
           <text x="342" y="57" text-anchor="middle" font-family="var(--mono)" font-size="8.5" fill="var(--muted)">27,900 lines</text>
           <text x="342" y="72" text-anchor="middle" font-family="var(--mono)" font-size="8" fill="var(--muted)">audit target</text>
@@ -338,7 +363,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="sec-scope">
     <div class="container reveal">
       <div class="section-label">Overview</div>
       <h2>Audit Scope &amp; Methodology</h2>
@@ -364,7 +389,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="sec-findings">
     <div class="container reveal">
       <div class="section-label">Severity Breakdown</div>
       <h2>What Was Found</h2>
@@ -383,68 +408,76 @@
         </div>
       </div>
 
+      <div class="sev-filter" role="group" aria-label="Filter findings by severity">
+        <span class="sev-filter-label">Filter</span>
+        <button type="button" class="is-active" data-sev="all" aria-pressed="true">All (9)</button>
+        <button type="button" data-sev="critical" aria-pressed="false">Critical (3)</button>
+        <button type="button" data-sev="high" aria-pressed="false">High (6)</button>
+        <span id="sev-filter-count" class="sr-only" aria-live="polite" aria-atomic="true">Showing 9 findings</span>
+      </div>
+
       <table class="findings-table">
         <thead>
           <tr><th>ID</th><th>Severity</th><th>Finding</th><th>File(s)</th><th>Status</th></tr>
         </thead>
         <tbody>
-          <tr>
+          <tr data-sev="critical">
             <td class="finding-id">F-01</td>
             <td><span class="sev-badge sev-critical">Critical</span></td>
             <td>Hardcoded credentials pre-filled into production login form (<code>commander / commander123</code>)</td>
             <td><code>modules/login.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="critical">
             <td class="finding-id">F-02</td>
             <td><span class="sev-badge sev-critical">Critical</span></td>
             <td>API key and DB password as source literals — credential rotation requires a code push</td>
             <td><code>api/config.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="critical">
             <td class="finding-id">F-03</td>
             <td><span class="sev-badge sev-critical">Critical</span></td>
             <td>CORS wildcard (<code>Access-Control-Allow-Origin: *</code>) on all Bearer token endpoints — any origin can read authenticated API responses</td>
             <td><code>api/auth.php</code>, <code>api/*.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-04</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td>Session ID not rotated on login — classic session fixation attack vector</td>
             <td><code>src/Auth.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-05</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td>Off-by-one error in brute-force lockout — 6th login attempt slipped past a 5-attempt gate</td>
             <td><code>api/auth.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-06</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td>Zero security headers on any API endpoint — missing CSP, HSTS, X-Frame-Options, X-Content-Type-Options</td>
             <td><code>api/*.php</code> (all)</td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-07</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td><code>display_errors: 1</code> in production config — stack traces and file paths exposed to users</td>
             <td><code>config/app.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-08</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td>Raw SQL string concatenation in mission and chat API routes — SQL injection surface</td>
             <td><code>api/missions.php</code>, <code>api/chat.php</code></td>
             <td><span class="sev-badge sev-resolved">&#10003; Resolved</span></td>
           </tr>
-          <tr>
+          <tr data-sev="high">
             <td class="finding-id">F-09</td>
             <td><span class="sev-badge sev-high">High</span></td>
             <td>DB password falls back silently to empty string when env var is absent on localhost</td>
@@ -456,7 +489,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="sec-fixes">
     <div class="container reveal">
       <div class="section-label">Selected Fixes</div>
       <h2>Before / After</h2>
@@ -614,7 +647,7 @@ $result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
     </div>
   </section>
 
-  <section>
+  <section id="sec-delivery">
     <div class="container reveal">
       <div class="section-label">Delivery</div>
       <h2>How It Was Delivered</h2>
@@ -651,7 +684,7 @@ $result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
     </div>
   </section>
 
-  <section>
+  <section id="sec-ci">
     <div class="container reveal">
       <div class="section-label">CI Gate</div>
       <h2>Preventing Regressions</h2>
@@ -692,7 +725,7 @@ $result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
     </div>
   </section>
 
-  <section>
+  <section id="sec-contact">
     <div class="container">
       <div class="cta-section reveal">
         <div class="section-label" style="display:flex;justify-content:center">Free Initial Assessment</div>
@@ -732,6 +765,46 @@ $result = <span class="kw">$stmt</span>->fetchAll(PDO::FETCH_ASSOC);</pre>
     });
   }, { threshold: 0.2 });
   document.querySelectorAll('.sev-bars').forEach(el => barObs.observe(el));
+
+  /* Severity filter — chips over findings table. */
+  (function initSevFilter() {
+    const buttons = document.querySelectorAll('.sev-filter button');
+    const rows    = document.querySelectorAll('.findings-table tbody tr[data-sev]');
+    const status  = document.getElementById('sev-filter-count');
+    if (!buttons.length || !rows.length) return;
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      const sev = btn.dataset.sev;
+      buttons.forEach(b => { b.classList.toggle('is-active', b === btn); b.setAttribute('aria-pressed', b === btn ? 'true' : 'false'); });
+      let shown = 0;
+      rows.forEach(r => {
+        const match = (sev === 'all') || (r.dataset.sev === sev);
+        r.classList.toggle('is-hidden', !match);
+        if (match) shown++;
+      });
+      if (status) status.textContent = 'Showing ' + shown + ' findings';
+    }));
+  })();
+
+  /* Section-jump scrollspy — highlight the active anchor as user scrolls. */
+  (function initSectionJump() {
+    const links = document.querySelectorAll('.section-jump a[href^="#"]');
+    if (!links.length) return;
+    const linkFor = new Map();
+    links.forEach(a => linkFor.set(a.getAttribute('href').slice(1), a));
+    const sections = Array.from(linkFor.keys()).map(id => document.getElementById(id)).filter(Boolean);
+    if (!sections.length) return;
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        const link = linkFor.get(e.target.id);
+        if (!link) return;
+        if (e.isIntersecting) {
+          links.forEach(l => l.classList.remove('is-active'));
+          link.classList.add('is-active');
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+    sections.forEach(s => spy.observe(s));
+  })();
 </script>
 </body>
 </html>

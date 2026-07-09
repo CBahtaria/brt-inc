@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BRT Inc. logo draft A — Pure wordmark, restrained institutional.
+     Palette: navy #0F1E2E. Typeface stack aims at Inter / IBM Plex Sans / system.
+     Renders at 24px height (mobile nav) and 500px+ (letterhead).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 160" role="img" aria-label="BRT Inc.">
+  <title>BRT Inc.</title>
+  <style>
+    .brt-word { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 800; font-size: 128px; fill: #0F1E2E; letter-spacing: -4px; }
+    .brt-sub  { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; font-size: 28px; fill: #0F1E2E; letter-spacing: 2px; text-transform: uppercase; }
+  </style>
+  <text class="brt-word" x="10" y="122">BRT</text>
+  <text class="brt-sub"  x="336" y="122">INC.</text>
+</svg>

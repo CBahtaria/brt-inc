@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BRT Inc. — reverse logo for dark backgrounds. Same lockup as logo.svg. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 160" role="img" aria-label="BRT Inc.">
+  <title>BRT Inc.</title>
+  <style>
+    .brt-word { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 800; font-size: 128px; fill: #FAF9F7; letter-spacing: -4px; }
+    .brt-sub  { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; font-size: 28px; fill: #FAF9F7; letter-spacing: 2px; text-transform: uppercase; }
+  </style>
+  <g transform="translate(20 10)" fill="none" stroke="#FAF9F7" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square">
+    <polygon points="64,4 124,124 4,124" />
+    <polygon points="64,104 30,42 98,42" />
+    <circle cx="64" cy="76" r="5" fill="#FAF9F7" stroke="none" />
+  </g>
+  <text class="brt-word" x="180" y="122">BRT</text>
+  <text class="brt-sub"  x="506" y="122">INC.</text>
+</svg>

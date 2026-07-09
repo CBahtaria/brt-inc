@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BRT Inc. logo draft B — Triangulated survey benchmark glyph + wordmark.
+     Glyph: triangle-within-triangle survey mark. Nods to geospatial/systems work.
+     Palette: navy #0F1E2E. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 160" role="img" aria-label="BRT Inc.">
+  <title>BRT Inc.</title>
+  <style>
+    .brt-word { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 800; font-size: 128px; fill: #0F1E2E; letter-spacing: -4px; }
+    .brt-sub  { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; font-size: 28px; fill: #0F1E2E; letter-spacing: 2px; text-transform: uppercase; }
+  </style>
+  <!-- Survey mark glyph: outer triangle, inner triangle (inverted), centered dot. -->
+  <g transform="translate(20 20)" fill="none" stroke="#0F1E2E" stroke-width="6" stroke-linejoin="miter">
+    <polygon points="60,4 116,110 4,110" />
+    <polygon points="60,90 34,44 86,44" fill="#0F1E2E" stroke="none" />
+    <circle cx="60" cy="66" r="6" fill="#FAF9F7" />
+  </g>
+  <text class="brt-word" x="150" y="122">BRT</text>
+  <text class="brt-sub"  x="476" y="122">INC.</text>
+</svg>

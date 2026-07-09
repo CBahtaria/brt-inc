@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BRT Inc. logo draft C — Wordmark with heavy underline rule + subscript locale.
+     Institutional gravitas via typographic rule; nods to legal-document conventions.
+     Palette: navy #0F1E2E. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 180" role="img" aria-label="BRT Inc. — Manzini">
+  <title>BRT Inc.</title>
+  <style>
+    .brt-word { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 800; font-size: 128px; fill: #0F1E2E; letter-spacing: -4px; }
+    .brt-locale { font-family: "Inter", "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif; font-weight: 500; font-size: 20px; fill: #0F1E2E; letter-spacing: 3px; text-transform: uppercase; }
+  </style>
+  <text class="brt-word" x="10" y="122">BRT</text>
+  <rect x="10" y="132" width="336" height="6" fill="#0F1E2E" />
+  <text class="brt-locale" x="10" y="164">Inc. — Manzini</text>
+</svg>

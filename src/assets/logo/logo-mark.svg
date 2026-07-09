@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BRT Inc. — standalone mark (glyph only).
+  Use: favicon, app-icon, social avatar, small-space contexts (≤ 48px).
+  Aspect: 1:1 square with equilateral triangle inscribed on a 128×128 grid.
+  Stroke scales from 4px (at 128px) → 2px (at 64px) → 1px (at 32px) via CSS
+  vector-effect: non-scaling-stroke if desired; SVG stroke is proportional by default.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="BRT Inc. mark">
+  <title>BRT Inc.</title>
+  <g fill="none" stroke="#0F1E2E" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square">
+    <polygon points="64,4 124,124 4,124" />
+    <polygon points="64,104 30,42 98,42" />
+  </g>
+  <circle cx="64" cy="76" r="5" fill="#0F1E2E" />
+</svg>

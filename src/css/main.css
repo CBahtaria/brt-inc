@@ -22,22 +22,31 @@
   }
 
   [data-theme="light"] {
-    --bg:          #F8F9FA;
+    /* Institutional-Scientific palette (Council for Geoscience reference).
+       Warm cream background reads as institutional, not sterile.
+       Navy primary text carries authority; muted red used only on primary CTAs. */
+    --bg:          #FAF9F7;
     --surface:     #FFFFFF;
-    --surface2:    #F1F3F5;
-    --border:      #E0E0E5;
-    --fg:          #0A0A0B;
-    --muted:       #6E6E73;
-    --accent:      #005288;
-    --accent-deep: #003D6B;
-    --cyan:        #0284C7;
-    --green:       #15803D;
-    --red:         #DC2626;
-    --amber:       #D97706;
+    --surface2:    #F3F1EE;
+    --border:      #D8D4CE;
+    --fg:          #0F1E2E;
+    --muted:       #5A6472;
+    --accent:      #0F1E2E;
+    --accent-deep: #0A1420;
+    --cyan:        #1E3A5F;
+    --green:       #166534;
+    --red:         #B91C1C;
+    --amber:       #B45309;
     --card-bg:     #FFFFFF;
-    --nav-blur-bg: rgba(248,249,250,.92);
-    --glow-blue:   rgba(0,82,136,.12);
-    --glow-cyan:   rgba(2,132,199,.08);
+    --nav-blur-bg: rgba(250,249,247,.94);
+    --glow-blue:   rgba(15,30,46,.08);
+    --glow-cyan:   rgba(30,58,95,.06);
+    /* Consumer-Discovery add-ons: shadow tokens for cards + accent for CTAs. */
+    --card-shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+    --card-shadow-md: 0 1px 2px rgba(0,0,0,.04), 0 4px 12px rgba(0,0,0,.06);
+    --card-shadow-lg: 0 4px 20px rgba(0,0,0,.08), 0 10px 40px rgba(0,0,0,.08);
+    --cta-red:       #E60023;
+    --cta-red-hover: #C50020;
   }
 
   [data-theme="midnight"] {
@@ -425,10 +434,23 @@
   #hero h1 { transition: opacity .35s ease, transform .35s ease; }
 
   #hero h1 .grad {
-    background: linear-gradient(90deg, var(--accent) 0%, var(--cyan) 100%);
+    background: linear-gradient(
+      135deg,
+      #6366f1 0%, #8b5cf6 25%, #06b6d4 50%, #8b5cf6 75%, #6366f1 100%
+    );
+    background-size: 300% 300%;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    animation: grad-shift 6s ease infinite;
+  }
+  @keyframes grad-shift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #hero h1 .grad { animation: none; }
   }
   .hero-badge {
     display: inline-flex;
@@ -668,6 +690,9 @@
     gap: 1.25rem;
   }
   .proj-card {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
     border-radius: var(--radius);
     overflow: hidden;
     border: 1px solid var(--border);
@@ -677,6 +702,21 @@
     transition: transform .3s, border-color .3s;
   }
   .proj-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+  .proj-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(600px circle at var(--mx) var(--my),
+      rgba(99,102,241,0.12) 0%,
+      rgba(99,102,241,0.04) 40%,
+      transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 2;
+  }
+  .proj-card:hover::after { opacity: 1; }
 
   /* ── card hover: shimmer sweep + accent glow ── */
   .card-glow {
@@ -1837,7 +1877,7 @@ footer::before {
 }
 
 /* Mobile menu */
-[data-theme="light"] .mobile-menu { background: rgba(248,249,250,.97); }
+[data-theme="light"] .mobile-menu { background: rgba(250,249,247,.97); }
 
 /* ── Who strip chips — accent coherence ── */
 .who-chip:focus-visible {
@@ -1845,10 +1885,20 @@ footer::before {
   outline-offset: 2px;
 }
 
-/* ── Nav brand dot — accent colour ── */
-.nav-brand span {
-  color: var(--accent);
+/* ── Nav brand: mark + wordmark ── */
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
 }
+.nav-mark {
+  display: block;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.nav-brand > span { color: var(--fg); }
+.nav-brand-dot { color: var(--accent); }
 
 /* ── Testimonials ── */
 #testimonials {
@@ -2042,40 +2092,6 @@ footer::before {
   #pull-refresh.pr-complete { animation: none; }
 }
 
-/* ── Custom cursor ── */
-@media (hover: hover) and (pointer: fine) {
-  *, *::before, *::after { cursor: none !important; }
-  #cursor-dot {
-    position: fixed;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    pointer-events: none;
-    z-index: 9999;
-    transform: translate(-50%, -50%);
-    transition: width .15s, height .15s, background .2s, opacity .2s;
-    mix-blend-mode: exclusion;
-  }
-  #cursor-ring {
-    position: fixed;
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    border: 1.5px solid var(--accent);
-    pointer-events: none;
-    z-index: 9998;
-    transform: translate(-50%, -50%);
-    opacity: .5;
-    transition: width .25s var(--ease-out), height .25s var(--ease-out), opacity .2s, border-color .2s;
-  }
-  body.cursor-hover #cursor-dot  { width: 12px; height: 12px; background: var(--cyan); }
-  body.cursor-hover #cursor-ring { width: 56px; height: 56px; opacity: .3; border-color: var(--cyan); }
-  body.cursor-click #cursor-dot  { width: 5px; height: 5px; }
-  body.cursor-click #cursor-ring { width: 28px; height: 28px; opacity: .8; }
-}
-@media (prefers-reduced-motion: reduce) {
-  #cursor-dot, #cursor-ring { display: none; }
-}
-
 /* ── 3D card tilt ── */
 @media (hover: hover) and (pointer: fine) {
   .proj-card, .testi-card, .intent-card, .who-card {
@@ -2086,4 +2102,30 @@ footer::before {
   .proj-card:hover, .testi-card:hover, .intent-card:hover {
     box-shadow: 0 24px 60px rgba(0,0,0,.35), 0 0 0 1px var(--border);
   }
+}
+
+/* ── A11y polish (Phase 6) ── */
+/* Focus-visible: clear keyboard indicator on nav + interactive controls. */
+.nav-links a:focus-visible,
+.mobile-menu a:focus-visible,
+.filter-btn:focus-visible,
+#hamburger:focus-visible,
+.hero-badge:focus-visible,
+.who-chip:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Global prefers-reduced-motion: suppress the ambient / decorative loops.
+   Individual per-component blocks (grad shift, hero-orb, marquee, dockBounce)
+   are already covered elsewhere; this is the safety net. */
+@media (prefers-reduced-motion: reduce) {
+  .stack-inner,
+  .hero-orb-1, .hero-orb-2, .hero-orb-3,
+  .hero-grain,
+  #hero h1 .grad,
+  .hero-dot { animation: none !important; }
+  #hero-reel { display: none; }
+  html { scroll-behavior: auto; }
 }

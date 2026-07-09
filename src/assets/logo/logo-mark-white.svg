@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BRT Inc. — standalone mark, reverse (for dark backgrounds / dark-mode favicon). -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="BRT Inc. mark">
+  <title>BRT Inc.</title>
+  <g fill="none" stroke="#FAF9F7" stroke-width="4" stroke-linejoin="miter" stroke-linecap="square">
+    <polygon points="64,4 124,124 4,124" />
+    <polygon points="64,104 30,42 98,42" />
+  </g>
+  <circle cx="64" cy="76" r="5" fill="#FAF9F7" />
+</svg>

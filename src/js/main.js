@@ -91,12 +91,38 @@ if (scrollInd) {
   }, { passive: true });
 }
 
-/* ─── VIDEO PRELOAD FIX ─── */
-const heroReel = document.getElementById('hero-reel');
-if (heroReel) heroReel.preload = 'metadata';
-
-/* ─── LUCIDE ICONS ─── */
-if (typeof lucide !== 'undefined') lucide.createIcons();
+/* ─── HERO VIDEO: lazy load, viewport + connection gated ─── */
+/* Poster loads immediately; the mp4 only downloads when: (1) motion is OK,
+   (2) not on save-data / 2g / slow-2g connection, (3) the reel enters the viewport.
+   Prevents wasting ~5 MB on mobile SADC connections during first paint. */
+(function initHeroReel() {
+  const reel = document.getElementById('hero-reel');
+  if (!reel) return;
+  if (noMotion) return; /* CSS also hides #hero-reel under prefers-reduced-motion */
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (conn) {
+    if (conn.saveData) return;
+    if (/^(slow-)?2g$/.test(conn.effectiveType || '')) return;
+  }
+  const src = reel.getAttribute('data-src');
+  if (!src) return;
+  const load = () => {
+    if (reel.src) return;
+    reel.src = src;
+    reel.load();
+    const tryPlay = () => reel.play().catch(() => { /* autoplay may be denied; poster remains */ });
+    if (reel.readyState >= 2) tryPlay();
+    else reel.addEventListener('loadeddata', tryPlay, { once: true });
+  };
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { load(); io.disconnect(); return; }
+    }, { rootMargin: '200px' });
+    io.observe(reel);
+  } else {
+    load();
+  }
+})();
 
 /* ════════════════════════════════════════════
    PARTICLE CANVAS
@@ -579,43 +605,11 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
   }, { passive: true });
 })();
 
-/* ─── CUSTOM CURSOR ─── */
-(function initCursor() {
-  if (noMotion || !window.matchMedia('(hover:hover) and (pointer:fine)').matches) return;
-  const dot  = document.getElementById('cursor-dot');
-  const ring = document.getElementById('cursor-ring');
-  if (!dot || !ring) return;
-  let mx = -200, my = -200, rx = -200, ry = -200;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  document.addEventListener('mousedown', () => document.body.classList.add('cursor-click'));
-  document.addEventListener('mouseup',   () => document.body.classList.remove('cursor-click'));
-  const interactives = 'a,button,[role=button],input,select,textarea,.testi-card,.proj-card,.intent-card';
-  document.addEventListener('mouseover', e => {
-    if (e.target.closest(interactives)) document.body.classList.add('cursor-hover');
-  });
-  document.addEventListener('mouseout', e => {
-    if (e.target.closest(interactives)) document.body.classList.remove('cursor-hover');
-  });
-  let raf;
-  function loop() {
-    dot.style.left = mx + 'px';
-    dot.style.top  = my + 'px';
-    rx += (mx - rx) * 0.12;
-    ry += (my - ry) * 0.12;
-    ring.style.left = rx + 'px';
-    ring.style.top  = ry + 'px';
-    raf = requestAnimationFrame(loop);
-  }
-  raf = requestAnimationFrame(loop);
-  document.addEventListener('mouseleave', () => { dot.style.opacity='0'; ring.style.opacity='0'; });
-  document.addEventListener('mouseenter', () => { dot.style.opacity=''; ring.style.opacity=''; });
-})();
-
 /* ─── MAGNETIC BUTTONS ─── */
 (function initMagnetic() {
   if (noMotion || !window.matchMedia('(hover:hover)').matches) return;
   const STRENGTH = 0.35;
-  document.querySelectorAll('.btn-primary, .btn-ghost, .nav-cta').forEach(btn => {
+  document.querySelectorAll('.btn-primary, .btn-ghost, .btn-outline, .nav-cta').forEach(btn => {
     btn.addEventListener('mousemove', e => {
       const r   = btn.getBoundingClientRect();
       const cx  = r.left + r.width  / 2;
@@ -630,6 +624,17 @@ if (typeof lucide !== 'undefined') lucide.createIcons();
       setTimeout(() => btn.style.transition = '', 400);
     });
     btn.addEventListener('mouseenter', () => { btn.style.transition = 'transform .1s ease'; });
+  });
+})();
+
+/* ─── CARD SPOTLIGHT (cursor-following glow) ─── */
+(function initCardSpotlight() {
+  document.querySelectorAll('.proj-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - r.left}px`);
+      card.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
   });
 })();
 

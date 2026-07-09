@@ -34,7 +34,7 @@
     "address": { "@type": "PostalAddress", "addressLocality": "Manzini", "addressCountry": "SZ" },
     "geo": { "@type": "GeoCoordinates", "latitude": -26.4833, "longitude": 31.3667 },
     "priceRange": "R850 – R5,500",
-    "serviceType": ["Web Development", "Security Auditing", "Data Science", "DevOps", "Machine Learning", "Game Development"]
+    "serviceType": ["Web Development", "Security Auditing", "Data Science", "DevOps", "Machine Learning", "Game Development", "Institutional Platforms", "Civic Infrastructure", "Defence C2", "Biometric Systems"]
   }
   </script>
   <script src="/src/js/theme.js"></script>
@@ -116,9 +116,9 @@
       </h1>
 
       <p class="hero-sub" data-anim="2" id="hero-sub">
-        Autonomous aerial systems, defence C2, and simulation platforms — built
-        with formal-verification rigor for national libraries, defence forces,
-        and governments.
+        Autonomous aerial systems, defence C2, civic infrastructure, and simulation
+        platforms — built with formal-verification rigor for national libraries,
+        defence forces, and governments.
       </p>
 
       <p class="hero-mandate" data-anim="2">
@@ -170,8 +170,8 @@
         <span class="stat-l">Tests shipped</span>
       </div>
       <div class="stat-item">
-        <span class="stat-n">7</span>
-        <span class="stat-l">Live projects</span>
+        <span class="stat-n">11</span>
+        <span class="stat-l">Active projects</span>
       </div>
       <div class="stat-item">
         <span class="stat-n">0</span>
@@ -192,7 +192,7 @@
       <span class="section-label">About BRT Inc.</span>
       <h2 class="section-h2">Engineering practice for institutions<br>that cannot afford silent failure.</h2>
       <p class="section-sub" style="max-width:70ch">
-        BRT Inc. is an engineering practice for institutions that cannot afford silent failure. We design and operate autonomous aerial systems &mdash; drones with a formal safety layer that vets every AI proposal before the flight controller sees it. We build defence command platforms hardened against real audits. We ship applied ML that runs on a farmer's phone with no internet, and geospatially-grounded simulation for cultural heritage. Our buyers are national libraries, government offices, defence forces, and research councils across SADC. Every deliverable ships with compliance gates, audit trails, and reproducible tests &mdash; so when a regulator asks how you know it works, you have evidence, not opinions. Solo-founded and solo-maintained; every line has an accountable author.
+        BRT Inc. is an engineering practice for institutions that cannot afford silent failure. We design and operate autonomous aerial systems &mdash; drones with a formal safety layer that vets every AI proposal before the flight controller sees it. We build defence command platforms hardened against real audits. We build national institutional platforms: library systems, civic infrastructure grids, and biometric tools for government agencies. We ship applied ML that runs on a farmer's phone with no internet, and geospatially-grounded simulation for cultural heritage. Our buyers are national libraries, government offices, defence forces, and research councils across SADC. Every deliverable ships with compliance gates, audit trails, and reproducible tests &mdash; so when a regulator asks how you know it works, you have evidence, not opinions. Solo-founded and solo-maintained; every line has an accountable author.
       </p>
       <div class="cta-row" style="margin-top:1.75rem">
         <a href="#portfolio" class="btn btn-primary">See our work</a>
@@ -263,6 +263,14 @@
         desc: 'Geospatially-grounded interactive worlds honouring Swazi cultural geometry and geology.',
         image: 'https://images.unsplash.com/photo-1547036967-23d11aacaee0?auto=format&fit=crop&w=1400&q=75',
         iconHTML: 'S',
+        href: '#portfolio'
+      },
+      {
+        id: 'institutional',
+        title: 'Institutional Platforms',
+        desc: 'Library systems, civic infrastructure grids, biometric attendance, and government portals for SADC public institutions.',
+        image: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1400&q=75',
+        iconHTML: 'I',
         href: '#portfolio'
       },
       {
@@ -398,7 +406,7 @@
     <div class="reveal">
       <span class="section-label">Selected work</span>
       <h2 class="section-h2">Projects built and<br>shipped in production</h2>
-      <p class="section-sub">Seven active repositories. Real deployments with live users, verified test suites, and documented security postures.</p>
+      <p class="section-sub">Eleven active repositories across defence, institutional, AI, and systems clusters. Verified test suites and documented security postures on every project.</p>
     </div>
 
     <div class="proj-filter reveal" role="group" aria-label="Filter projects by category">
@@ -408,6 +416,7 @@
       <button class="filter-btn"        data-filter="ai"       aria-pressed="false">AI / ML</button>
       <button class="filter-btn"        data-filter="game"     aria-pressed="false">Game Dev</button>
       <button class="filter-btn"        data-filter="systems"  aria-pressed="false">Systems</button>
+      <button class="filter-btn"        data-filter="institutional" aria-pressed="false">Institutional</button>
     </div>
     <div id="filter-announcement" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 
@@ -456,6 +465,7 @@
             <div class="telem-row"><span class="telem-k">EKF</span><span class="telem-v">13-STATE IMU/GPS/BARO</span></div>
             <div class="telem-row"><span class="telem-k">CRYPTO</span><span class="telem-v">AES-GCM-256 PER-PACKET</span></div>
             <div class="telem-row"><span class="telem-k">TESTS</span><span class="telem-v">783 / 783 PASS</span></div>
+            <div class="telem-row"><span class="telem-k">SRL</span><span class="telem-v">SRL-3 HIL ACTIVE · SRL-5 HARNESSES LIVE</span></div>
           </div>
           <a href="/src/casestudy/uav-stack.html" class="proj-link">Read case study →</a>
         </div>
@@ -474,7 +484,7 @@
           <p class="portfolio-label">Client · Outcome</p>
           <span class="portfolio-who">Smallholder farmers, SADC region</span>
           <span class="portfolio-outcome">94.2% accuracy, offline-first — diagnosis in &lt;200ms</span>
-          <div class="proj-tags"><span class="tag">Python</span><span class="tag">MobileNetV2</span><span class="tag">FastAPI</span><span class="tag">PWA</span></div>
+          <div class="proj-tags"><span class="tag">Python</span><span class="tag">MobileNetV2</span><span class="tag">TFLite</span><span class="tag">FastAPI</span><span class="tag">React</span><span class="tag">PWA</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">94.2%</span><span class="metric-l">accuracy</span></div>
             <div class="metric"><span class="metric-n">&lt;200ms</span><span class="metric-l">inference</span></div>
@@ -497,7 +507,7 @@
           <p class="portfolio-label">Client · Outcome</p>
           <span class="portfolio-who">Ministry / academic research, Eswatini</span>
           <span class="portfolio-outcome">10,000-path fiscal simulations — analyst answers in seconds</span>
-          <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Prophet</span><span class="tag">Plotly Dash</span></div>
+          <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Prophet</span><span class="tag">Plotly Dash</span><span class="tag">Docker</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">54</span><span class="metric-l">pytest tests</span></div>
             <div class="metric"><span class="metric-n">10k</span><span class="metric-l">MC paths</span></div>
@@ -539,11 +549,11 @@
             <h3>BRT Platform</h3>
             <span class="proj-badge" style="background:rgba(99,102,241,.1);color:#818cf8;border-color:rgba(99,102,241,.25)">RAG</span>
           </div>
-          <p class="proj-desc">Knowledge retrieval platform for professional services firms. Staff query internal documents in plain language and get sourced answers with inline citations. Hybrid retrieval — dense BGE-large embeddings + BM25 keyword search — fused with Reciprocal Rank Fusion to stay accurate when query terminology diverges from source language. Self-hosted on a single GPU server.</p>
+          <p class="proj-desc">Knowledge retrieval platform for professional services firms. Staff query internal documents in plain language and get sourced answers with inline citations. Hybrid retrieval — dense BGE-large embeddings + Splade sparse retrieval — fused with Reciprocal Rank Fusion, then reranked with MiniLM cross-encoder. Self-hosted on a single GPU server.</p>
           <p class="portfolio-label">Client · Outcome</p>
           <span class="portfolio-who">Professional services firm (confidential)</span>
           <span class="portfolio-outcome">Sourced answers with citations — 54ms p50 latency</span>
-          <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Qdrant</span><span class="tag">BGE-large</span></div>
+          <div class="proj-tags"><span class="tag">Python</span><span class="tag">FastAPI</span><span class="tag">Qdrant</span><span class="tag">BGE-large</span><span class="tag">Splade</span><span class="tag">MiniLM</span></div>
           <div class="proj-metrics">
             <div class="metric"><span class="metric-n">3</span><span class="metric-l">retrieval stages</span></div>
             <div class="metric"><span class="metric-n">RRF</span><span class="metric-l">fusion ranking</span></div>
@@ -576,6 +586,106 @@
         </div>
       </div>
 
+      <!-- 8. BEDF C2 System -->
+      <div class="proj-card card-glow reveal" data-cat="web security systems">
+        <div class="proj-img" role="img" aria-label="Military command and control dashboard"
+          style="background-image:url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3>BEDF C2 System v5.0</h3>
+            <span class="proj-badge" style="background:rgba(250,204,21,.1);color:#fbbf24;border-color:rgba(250,204,21,.25)">Active</span>
+          </div>
+          <p class="proj-desc">Command and control platform for the Bartaria Eswatini Defence Force. PHP 8.2 MVC backend with MFA (TOTP), CSRF protection, per-endpoint rate limiting, and a blockchain-anchored audit log. An Expo React Native field app pushes live telemetry over AES-encrypted WebSockets. Sister system to UEDF Sentinel — both share the same NATS namespace and RBAC model.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Bartaria Eswatini Defence Force</span>
+          <span class="portfolio-outcome">Web dashboard + Expo field app + WebSocket telemetry — single NATS namespace</span>
+          <div class="proj-tags">
+            <span class="tag">PHP 8.2</span><span class="tag">Expo</span><span class="tag">Node.js</span><span class="tag">WebSocket</span><span class="tag">Blockchain</span><span class="tag">NATS</span>
+          </div>
+          <div class="proj-metrics">
+            <div class="metric"><span class="metric-n">TOTP</span><span class="metric-l">2FA enforced</span></div>
+            <div class="metric"><span class="metric-n">4</span><span class="metric-l">RBAC roles</span></div>
+            <div class="metric"><span class="metric-n">AES-GCM</span><span class="metric-l">encrypted telemetry</span></div>
+          </div>
+          <a href="#contact" class="proj-link">Discuss this project →</a>
+        </div>
+      </div>
+
+      <!-- 9. CivisGrid -->
+      <div class="proj-card card-glow reveal" data-cat="web institutional">
+        <div class="proj-img" role="img" aria-label="Aerial view of national infrastructure"
+          style="background-image:url('https://images.unsplash.com/photo-1449034446853-66c86144b0ad?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3>CivisGrid Resilience v4.0</h3>
+            <span class="proj-badge" style="background:rgba(59,130,246,.1);color:#60a5fa;border-color:rgba(59,130,246,.3)">Active</span>
+          </div>
+          <p class="proj-desc">National civilian infrastructure command platform for Eswatini resilience agencies. Tracks assets, regions, and districts across a 6NF-normalised schema covering all four administrative regions of Eswatini. PHP 8 backend with PDO prepared statements on all queries. REST API feeds real-time asset status to government dashboards.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">Eswatini Government — resilience agencies</span>
+          <span class="portfolio-outcome">National asset grid — 6NF schema, all four regions, real-time REST API</span>
+          <div class="proj-tags">
+            <span class="tag">PHP 8</span><span class="tag">PDO</span><span class="tag">MySQL</span><span class="tag">6NF Schema</span><span class="tag">REST API</span>
+          </div>
+          <div class="proj-metrics">
+            <div class="metric"><span class="metric-n">6NF</span><span class="metric-l">normalised schema</span></div>
+            <div class="metric"><span class="metric-n">4</span><span class="metric-l">admin regions</span></div>
+            <div class="metric"><span class="metric-n">v4.0</span><span class="metric-l">current release</span></div>
+          </div>
+          <a href="#contact" class="proj-link">Discuss this project →</a>
+        </div>
+      </div>
+
+      <!-- 10. Eswatini Readers -->
+      <div class="proj-card card-glow reveal" data-cat="web institutional">
+        <div class="proj-img" role="img" aria-label="Library shelves with books"
+          style="background-image:url('https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3>Eswatini Readers</h3>
+            <span class="proj-badge" style="background:rgba(20,184,166,.1);color:#2dd4bf;border-color:rgba(20,184,166,.25)">Active</span>
+          </div>
+          <p class="proj-desc">National digital library platform for Eswatini. Readers browse by genre, read by chapter, and track reading history. Authors publish through a managed submission workflow. Authentication, reader profiles, and a full book-management system — built for the National Library of Eswatini audience. PHP 8 + MariaDB.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">National Library of Eswatini</span>
+          <span class="portfolio-outcome">Digital library — multi-role auth, chapter-by-chapter reading, author publishing workflow</span>
+          <div class="proj-tags">
+            <span class="tag">PHP 8</span><span class="tag">MySQLi</span><span class="tag">MariaDB</span><span class="tag">Auth</span><span class="tag">Multi-Role</span>
+          </div>
+          <div class="proj-metrics">
+            <div class="metric"><span class="metric-n">3</span><span class="metric-l">user roles</span></div>
+            <div class="metric"><span class="metric-n">Chapter</span><span class="metric-l">by-chapter reader</span></div>
+            <div class="metric"><span class="metric-n">Pub</span><span class="metric-l">author workflow</span></div>
+          </div>
+          <a href="#contact" class="proj-link">Discuss this project →</a>
+        </div>
+      </div>
+
+      <!-- 11. Class Attendance System -->
+      <div class="proj-card card-glow reveal" data-cat="web ai institutional">
+        <div class="proj-img" role="img" aria-label="Educational technology — biometric scanning"
+          style="background-image:url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&q=70');background-size:cover;background-position:center"></div>
+        <div class="proj-body">
+          <div class="proj-header">
+            <h3>Biometric Attendance System</h3>
+            <span class="proj-badge" style="background:rgba(168,85,247,.1);color:#c084fc;border-color:rgba(168,85,247,.25)">Active</span>
+          </div>
+          <p class="proj-desc">Dual-biometric attendance platform for SADC educational institutions. Students register a face embedding and receive a per-session QR code — either method marks attendance. TensorFlow.js face detection runs entirely in the browser; no biometric data leaves the institution's server. Node.js / TypeScript backend with Mongoose and JWT auth.</p>
+          <p class="portfolio-label">Client · Outcome</p>
+          <span class="portfolio-who">SADC educational institutions</span>
+          <span class="portfolio-outcome">In-browser face detection + single-use QR — no biometric data leaves the institution</span>
+          <div class="proj-tags">
+            <span class="tag">TypeScript</span><span class="tag">Node.js</span><span class="tag">face-api.js</span><span class="tag">QR Code</span><span class="tag">Express</span>
+          </div>
+          <div class="proj-metrics">
+            <div class="metric"><span class="metric-n">2</span><span class="metric-l">biometric modes</span></div>
+            <div class="metric"><span class="metric-n">On-device</span><span class="metric-l">face detection</span></div>
+            <div class="metric"><span class="metric-n">0</span><span class="metric-l">data egress</span></div>
+          </div>
+          <a href="#contact" class="proj-link">Discuss this project →</a>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -598,8 +708,8 @@
         <span class="impact-label">Automated tests shipped</span>
       </div>
       <div class="impact-item reveal">
-        <span class="impact-n" data-count="7">7</span>
-        <span class="impact-label">Projects in production</span>
+        <span class="impact-n" data-count="11">11</span>
+        <span class="impact-label">Active projects</span>
       </div>
       <div class="impact-item reveal">
         <span class="impact-n" data-count="0">0</span>
@@ -802,7 +912,7 @@
         <span class="intent-arrow" aria-hidden="true">→</span>
         <div class="intent-icon" aria-hidden="true">🔍</div>
         <div class="intent-title">I want to see work before I commit</div>
-        <div class="intent-desc">Seven production projects with real metrics. Case studies include architecture decisions and security outcomes.</div>
+        <div class="intent-desc">Eleven active projects with real metrics — defence C2, civic infrastructure, AI, and systems. Case studies include architecture decisions and security outcomes.</div>
       </a>
       <a href="#pricing" class="intent-card reveal">
         <span class="intent-arrow" aria-hidden="true">→</span>
@@ -911,7 +1021,13 @@
             <optgroup label="AI &amp; Data">
               <option>AI / ML Model — e.g. Maize Disease Classifier (94.2% acc)</option>
               <option>Data Science &amp; Forecasting — e.g. Eswatini Macro Dashboard</option>
-              <option>RAG / Knowledge Base — e.g. BRT Platform (BGE + BM25)</option>
+              <option>RAG / Knowledge Base — e.g. BRT Platform (BGE + Splade + MiniLM)</option>
+            </optgroup>
+            <optgroup label="Institutional Platforms">
+              <option>National Library / Reading Platform — e.g. Eswatini Readers</option>
+              <option>Civic Infrastructure Grid — e.g. CivisGrid national asset tracking</option>
+              <option>Biometric Attendance / Government Portal</option>
+              <option>Defence C2 Platform — e.g. BEDF / UEDF Sentinel</option>
             </optgroup>
             <optgroup label="Infrastructure">
               <option>DevOps &amp; Infrastructure</option>

@@ -18,9 +18,9 @@
 | | |
 |---|---|
 | **Branch** | `main` |
-| **Commits** | 91 |
-| **Last commit** | `6bbf2f1` — docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook |
-| **Commit date** | 2026-07-10 20:11:23 +0200 |
+| **Commits** | 93 |
+| **Last commit** | `40eb21c` — test: verify post-commit hook recursion guard |
+| **Commit date** | 2026-07-10 20:11:39 +0200 |
 | **Next.js** | 16.2.10 |
 | **React** | 19.2.4 |
 
@@ -47,6 +47,8 @@
 
 ## Recent Changes
 
+- 40eb21c test: verify post-commit hook recursion guard
+- 687c3fd docs(auto): update STATUS.md
 - 6bbf2f1 docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook
 - 4b1ba64 chore: remove legacy vercel.json (rewrites shadowing Next.js routes)
 - 4b2ea46 feat(portal): Higgsfield AI asset generator — native REST integration
@@ -55,8 +57,6 @@
 - e7fcdcd fix(deploy): legacy-peer-deps for @react-three/drei React 19 peer conflict
 - c70b56f fix(routing): portal routes at /crm /dashboard not /portal/*, remove bad redirects, fix sidebar links
 - 232861e feat(marketing): assemble full landing page — all 14 sections
-- b0c0840 feat(portal): PortalShell, Sidebar, CRMTable (TanStack), OnboardingForm, RunbookList, StatusGrid (30s poll)
-- 62a09f5 feat(api): /api/contact (rate-limited, honeypot), /api/send-email (Supabase auth), /api/stripe-webhook stub
 
 ## Portal Pages
 

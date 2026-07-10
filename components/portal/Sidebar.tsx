@@ -11,6 +11,7 @@ const NAV = [
   { href: '/invoices',  label: 'Invoices',  icon: '◇' },
   { href: '/runbooks',  label: 'Runbooks',  icon: '◫' },
   { href: '/status',    label: 'Status',    icon: '◎' },
+  { href: '/assets',    label: 'Assets',    icon: '◐' },
 ]
 
 export function Sidebar() {

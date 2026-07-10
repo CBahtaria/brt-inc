@@ -19,8 +19,8 @@
 |---|---|
 | **Branch** | `main` |
 | **Commits** | 91 |
-| **Last commit** | `aea9819` — docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook |
-| **Commit date** | 2026-07-10 20:11:21 +0200 |
+| **Last commit** | `6bbf2f1` — docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook |
+| **Commit date** | 2026-07-10 20:11:23 +0200 |
 | **Next.js** | 16.2.10 |
 | **React** | 19.2.4 |
 
@@ -47,7 +47,7 @@
 
 ## Recent Changes
 
-- aea9819 docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook
+- 6bbf2f1 docs: add STACK.md, ENVIRONMENT.md, STATUS.md + auto-update hook
 - 4b1ba64 chore: remove legacy vercel.json (rewrites shadowing Next.js routes)
 - 4b2ea46 feat(portal): Higgsfield AI asset generator — native REST integration
 - 7121fe8 fix(deps): upgrade next-mdx-remote ^4.4.1→^6.0.0 (Vercel security gate)

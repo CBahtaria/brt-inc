@@ -5,12 +5,12 @@ import { createClient } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
 
 const NAV = [
-  { href: '/portal/dashboard', label: 'Overview',  icon: '⬡' },
-  { href: '/portal/crm',       label: 'CRM',       icon: '◉' },
-  { href: '/portal/proposals', label: 'Proposals', icon: '◈' },
-  { href: '/portal/invoices',  label: 'Invoices',  icon: '◇' },
-  { href: '/portal/runbooks',  label: 'Runbooks',  icon: '◫' },
-  { href: '/portal/status',    label: 'Status',    icon: '◎' },
+  { href: '/dashboard', label: 'Overview',  icon: '⬡' },
+  { href: '/crm',       label: 'CRM',       icon: '◉' },
+  { href: '/proposals', label: 'Proposals', icon: '◈' },
+  { href: '/invoices',  label: 'Invoices',  icon: '◇' },
+  { href: '/runbooks',  label: 'Runbooks',  icon: '◫' },
+  { href: '/status',    label: 'Status',    icon: '◎' },
 ]
 
 export function Sidebar() {
@@ -38,7 +38,7 @@ export function Sidebar() {
 
       <nav className="flex-1 py-4 space-y-1 px-2">
         {NAV.map(n => {
-          const isActive = pathname === n.href || (n.href !== '/portal/dashboard' && pathname.startsWith(n.href))
+          const isActive = pathname === n.href || (n.href !== '/dashboard' && pathname.startsWith(n.href))
           return (
             <Link
               key={n.href}

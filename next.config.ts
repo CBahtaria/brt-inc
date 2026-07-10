@@ -16,12 +16,8 @@ const config: NextConfig = {
       { source: '/src/casestudy/studio-p.html', destination: '/casestudy/studio-p', permanent: true },
       { source: '/src/casestudy/brt-platform.html', destination: '/casestudy/brt-platform', permanent: true },
       { source: '/onboard', destination: '/onboarding', permanent: true },
-      { source: '/crm', destination: '/portal/crm', permanent: false },
-      { source: '/proposals', destination: '/portal/proposals', permanent: false },
-      { source: '/invoice', destination: '/portal/invoices', permanent: false },
-      { source: '/status', destination: '/portal/status', permanent: false },
-      { source: '/runbooks', destination: '/portal/runbooks', permanent: false },
-      { source: '/tools', destination: '/portal', permanent: false },
+      { source: '/invoice', destination: '/invoices', permanent: true },
+      { source: '/tools', destination: '/dashboard', permanent: false },
     ]
   },
   async headers() {
@@ -50,7 +46,7 @@ const config: NextConfig = {
         ],
       },
       {
-        source: '/portal/(.*)',
+        source: '/(dashboard|crm|proposals|invoices|runbooks|status)(.*)',
         headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
       },
     ]

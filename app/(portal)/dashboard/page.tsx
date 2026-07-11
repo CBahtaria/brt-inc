@@ -1,8 +1,12 @@
-export default function PortalDashboardPage() {
+import { PortalShell } from '@/components/portal/PortalShell'
+import { DashboardOverview } from '@/components/portal/DashboardOverview'
+
+export const metadata = { title: 'Dashboard — BRT Inc.' }
+
+export default function DashboardPage() {
   return (
-    <main className="p-8">
-      <h1 className="text-xl font-bold">Portal Dashboard</h1>
-      <p className="text-text-muted text-sm mt-2">Coming in Phase 5.</p>
-    </main>
+    <PortalShell title="Overview">
+      <DashboardOverview />
+    </PortalShell>
   )
 }

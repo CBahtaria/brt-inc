@@ -1,9 +1,12 @@
 import { PortalShell } from '@/components/portal/PortalShell'
+import { ProposalEditor } from '@/components/portal/ProposalEditor'
+
+export const metadata = { title: 'Proposals — BRT Inc.' }
 
 export default function ProposalsPage() {
   return (
     <PortalShell title="Proposals">
-      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Proposal editor coming soon.</p>
+      <ProposalEditor />
     </PortalShell>
   )
 }

@@ -9,6 +9,8 @@ jobs:
   secrets:
     name: Secret scanning
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,6 +24,8 @@ jobs:
   check-auth-gate:
     name: Verify internal tools include auth gate
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -50,6 +54,8 @@ jobs:
   check-no-secrets-in-source:
     name: Verify no hardcoded secrets pattern
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -69,3 +75,13 @@ jobs:
             FAILED=1
           fi
           exit $FAILED
+
+  lint-actions:
+    name: Lint GitHub Actions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: actionlint
+        uses: raven-actions/actionlint@v2

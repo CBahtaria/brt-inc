@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>BRT Inc. CRM</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/js/supabase-client.js"></script>
+  <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; line-height:1.6; padding:1.5rem; }
+    header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:.5rem; }
+    header h1 { color:var(--accent); font-size:1rem; }
+    .tabs { display:flex; gap:.5rem; }
+    .tab { background:none; border:1px solid var(--border); color:var(--muted); padding:.3rem .8rem; font-family:var(--font); font-size:.8rem; cursor:pointer; }
+    .tab.active { border-color:var(--accent); color:var(--accent); }
+    button.add-btn { background:var(--accent); color:var(--bg); border:none; padding:.3rem .9rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
+
+    /* Kanban */
+    #kanban { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1px; border:1px solid var(--border); }
+    .col { background:var(--card); padding:1rem; min-height:300px; }
+    .col-header { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:.8rem; display:flex; justify-content:space-between; }
+    .col-count { color:var(--accent); }
+    .card { background:var(--bg); border:1px solid var(--border); padding:.7rem; margin-bottom:.5rem; cursor:pointer; }
+    .card:hover { border-color:var(--muted); }
+    .card-name { color:var(--fg); font-size:.85rem; }
+    .card-value { color:var(--accent); font-size:.75rem; }
+    .card-meta { color:var(--muted); font-size:.7rem; margin-top:.2rem; }
+
+    /* Table */
+    #table-view { display:none; overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:.85rem; }
+    th { text-align:left; color:var(--muted); padding:.5rem .8rem; border-bottom:1px solid var(--border); font-weight:normal; font-size:.75rem; text-transform:uppercase; cursor:pointer; }
+    th:hover { color:var(--fg); }
+    td { padding:.5rem .8rem; border-bottom:1px solid var(--border); }
+    tr:hover td { background:var(--card); }
+    td:nth-child(4) { color:var(--accent); }
+
+    /* Modal */
+    .modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,.8); z-index:100; align-items:center; justify-content:center; }
+    .modal-bg.open { display:flex; }
+    .modal { background:var(--card); border:1px solid var(--border); padding:1.5rem; width:100%; max-width:440px; }
+    .modal h2 { color:var(--accent); font-size:.9rem; margin-bottom:1rem; }
+    label { display:block; color:var(--muted); font-size:.75rem; margin-bottom:.2rem; margin-top:.7rem; }
+    input, select, textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--fg); padding:.5rem .7rem; font-family:var(--font); font-size:.85rem; outline:none; }
+    input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+    select option { background:var(--bg); }
+    textarea { resize:vertical; min-height:60px; }
+    .modal-actions { display:flex; justify-content:space-between; margin-top:1.2rem; }
+    .btn-del { background:none; border:1px solid #333; color:#ff4444; padding:.4rem .9rem; font-family:var(--font); font-size:.8rem; cursor:pointer; }
+    .btn-save { background:var(--accent); color:var(--bg); border:none; padding:.4rem 1.2rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
+    .btn-cancel { background:none; border:1px solid var(--border); color:var(--muted); padding:.4rem .9rem; font-family:var(--font); font-size:.8rem; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>BRT Inc. // CRM</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="showView('kanban', event)">Kanban</button>
+    <button class="tab" onclick="showView('table', event)">Table</button>
+  </div>
+  <button class="add-btn" onclick="openModal(null)">+ Add Client</button>
+</header>
+
+<div id="kanban"></div>
+<div id="table-view">
+  <table id="client-table">
+    <thead>
+      <tr>
+        <th onclick="sortTable('name')">Name</th>
+        <th onclick="sortTable('stage')">Stage</th>
+        <th onclick="sortTable('service')">Service</th>
+        <th onclick="sortTable('value')">Value</th>
+        <th onclick="sortTable('created_at')">Date</th>
+        <th>Notes</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+</div>
+
+<div class="modal-bg" id="modal-bg" onclick="handleModalBgClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="modal-title">Add Client</h2>
+    <input type="hidden" id="edit-id" />
+    <label>Name / Company</label>
+    <input type="text" id="f-name" placeholder="Studio P Barbershop" />
+    <label>Stage</label>
+    <select id="f-stage">
+      <option value="Lead">Lead</option>
+      <option value="Contacted">Contacted</option>
+      <option value="Proposal Sent">Proposal Sent</option>
+      <option value="Active">Active</option>
+      <option value="Completed">Completed</option>
+    </select>
+    <label>Service</label>
+    <input type="text" id="f-service" placeholder="Web App, Security Audit..." />
+    <label>Value (ZAR)</label>
+    <input type="number" id="f-value" placeholder="5500" min="0" />
+    <label>Contact email</label>
+    <input type="email" id="f-email" placeholder="client@example.com" />
+    <label>Notes</label>
+    <textarea id="f-notes" placeholder="Key details, follow-up actions..."></textarea>
+    <div class="modal-actions">
+      <div>
+        <button class="btn-del" id="del-btn" style="display:none">Delete</button>
+        <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+      </div>
+      <button class="btn-save">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const STAGES = ['Lead', 'Contacted', 'Proposal Sent', 'Active', 'Completed'];
+
+  let clients = [];
+  let sortKey = 'created_at', sortAsc = false;
+
+  function renderKanban() {
+    const board = document.getElementById('kanban');
+    board.innerHTML = '';
+    for (const stage of STAGES) {
+      const cards = clients.filter(c => c.stage === stage);
+      const col = document.createElement('div');
+      col.className = 'col';
+      col.innerHTML = `<div class="col-header"><span>${esc(stage)}</span><span class="col-count">${cards.length}</span></div>`;
+      for (const c of cards) {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<div class="card-name">${esc(c.name)}</div>
+          <div class="card-value">${c.value ? 'R' + Number(c.value).toLocaleString() : '—'}</div>
+          <div class="card-meta">${esc(c.service || '')}${c.email ? ' · ' + esc(c.email) : ''}</div>`;
+        card.onclick = () => openModal(c.id);
+        col.appendChild(card);
+      }
+      board.appendChild(col);
+    }
+  }
+
+  function renderTable() {
+    const sorted = [...clients].sort((a, b) => {
+      const av = a[sortKey] || '', bv = b[sortKey] || '';
+      return sortAsc ? av > bv ? 1 : -1 : av < bv ? 1 : -1;
+    });
+    document.getElementById('table-body').innerHTML = sorted.map(c => `
+      <tr data-id="${esc(c.id)}" style="cursor:pointer">
+        <td>${esc(c.name)}</td><td>${esc(c.stage)}</td><td>${esc(c.service || '—')}</td>
+        <td>${c.value ? 'R' + Number(c.value).toLocaleString() : '—'}</td>
+        <td>${c.created_at ? c.created_at.slice(0,10) : '—'}</td>
+        <td style="color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(c.notes || '')}</td>
+      </tr>`).join('');
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  function render() { renderKanban(); renderTable(); }
+
+  function showView(v, event) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('kanban').style.display = v === 'kanban' ? 'grid' : 'none';
+    document.getElementById('table-view').style.display = v === 'table' ? 'block' : 'none';
+  }
+
+  function sortTable(key) {
+    if (sortKey === key) sortAsc = !sortAsc; else { sortKey = key; sortAsc = true; }
+    renderTable();
+  }
+
+  function handleModalBgClick(e) {
+    if (e.target === document.getElementById('modal-bg')) closeModal();
+  }
+
+  function openModal(id) {
+    const c = id ? clients.find(x => x.id === id) : null;
+    document.getElementById('modal-title').textContent = c ? 'Edit Client' : 'Add Client';
+    document.getElementById('edit-id').value = c?.id || '';
+    document.getElementById('f-name').value = c?.name || '';
+    document.getElementById('f-stage').value = c?.stage || 'Lead';
+    document.getElementById('f-service').value = c?.service || '';
+    document.getElementById('f-value').value = c?.value || '';
+    document.getElementById('f-email').value = c?.email || '';
+    document.getElementById('f-notes').value = c?.notes || '';
+    document.getElementById('del-btn').style.display = c ? 'inline-block' : 'none';
+    document.getElementById('modal-bg').classList.add('open');
+    document.getElementById('f-name').focus();
+  }
+
+  function closeModal() { document.getElementById('modal-bg').classList.remove('open'); }
+
+  async function saveClient() {
+    const id = document.getElementById('edit-id').value;
+    const entry = {
+      name: document.getElementById('f-name').value.trim(),
+      stage: document.getElementById('f-stage').value,
+      service: document.getElementById('f-service').value.trim(),
+      value: document.getElementById('f-value').value,
+      email: document.getElementById('f-email').value.trim(),
+      notes: document.getElementById('f-notes').value.trim(),
+    };
+    if (id) entry.id = id;
+    if (!entry.name) { alert('Name is required.'); return; }
+    const btn = document.querySelector('.btn-save');
+    btn.disabled = true;
+    try {
+      await window.db.upsertClient(entry);
+      clients = await window.db.getClients();
+      render(); closeModal();
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function deleteClient() {
+    const id = document.getElementById('edit-id').value;
+    if (!id) return;
+    if (!confirm('Delete this client record?')) return;
+    try {
+      await window.db.deleteClient(id);
+      clients = await window.db.getClients();
+      render(); closeModal();
+    } catch (err) {
+      alert('Delete failed: ' + err.message);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+    document.getElementById('del-btn').addEventListener('click', () => deleteClient());
+    document.querySelector('.btn-save').addEventListener('click', () => saveClient());
+    clients = await window.db.getClients();
+    render();
+    document.getElementById('client-table').addEventListener('click', e => {
+      const row = e.target.closest('tr[data-id]');
+      if (row) openModal(row.dataset.id);
+    });
+  });
+</script>
+</body>
+</html>

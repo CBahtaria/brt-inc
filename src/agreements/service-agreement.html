@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>BRT Inc. // Service Agreement Generator</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/js/supabase-client.js"></script>
+  <script src="/src/js/auth.js"></script>
+  <script src="/src/js/db.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; padding:1.5rem; }
+    .workspace { display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; max-width:1200px; margin:0 auto; }
+    @media(max-width:768px) { .workspace { grid-template-columns:1fr; } }
+    h1 { color:var(--accent); font-size:1rem; margin-bottom:1.5rem; }
+    .panel { background:var(--card); border:1px solid var(--border); padding:1.5rem; }
+    .panel h2 { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:1rem; }
+    label { display:block; color:var(--muted); font-size:.75rem; margin-bottom:.2rem; margin-top:.7rem; }
+    input, select, textarea { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--fg); padding:.5rem .7rem; font-family:var(--font); font-size:.85rem; outline:none; }
+    input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+    textarea { resize:vertical; }
+    .actions { display:flex; gap:.5rem; margin-top:1rem; flex-wrap:wrap; }
+    .btn { border:none; padding:.4rem 1rem; font-family:var(--font); font-size:.85rem; cursor:pointer; }
+    .btn-print { background:var(--accent); color:var(--bg); }
+    .btn-clear { background:none; border:1px solid var(--border); color:var(--muted); }
+    .btn-save-agr { background:none; border:1px solid var(--accent); color:var(--accent); }
+    .btn-send-agr { background:#1a1a2e; border:1px solid #4444ff; color:#8888ff; }
+    .payment-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.5rem; }
+    .toggle-row { display:flex; align-items:center; gap:.5rem; margin-top:.7rem; }
+    .toggle-row input[type="checkbox"] { width:auto; }
+
+    /* Preview — renders as it will print */
+    #preview { background:#fff; color:#111; padding:2rem; font-family:'Courier New',monospace; font-size:12px; line-height:1.6; min-height:400px; }
+    #preview .pre-brand { color:#000; font-size:14px; font-weight:bold; margin-bottom:.2rem; }
+    #preview .pre-tagline { color:#666; font-size:10px; margin-bottom:1.5rem; border-bottom:1px solid #ccc; padding-bottom:.8rem; }
+    #preview .pre-to { margin-bottom:1.5rem; }
+    #preview .pre-label { color:#666; font-size:10px; text-transform:uppercase; }
+    #preview h2 { font-size:13px; margin:1rem 0 .3rem; color:#000; }
+    #preview p { margin-bottom:.5rem; color:#333; }
+    #preview table { width:100%; border-collapse:collapse; margin:1rem 0; font-size:11px; }
+    #preview th { text-align:left; border-bottom:1px solid #ccc; padding:.3rem .5rem; color:#666; font-weight:normal; }
+    #preview td { padding:.3rem .5rem; border-bottom:1px solid #eee; }
+    #preview td:last-child { text-align:right; }
+    #preview .pre-total { text-align:right; font-weight:bold; margin-top:.5rem; }
+    #preview .pre-footer { margin-top:2rem; padding-top:1rem; border-top:1px solid #ccc; color:#666; font-size:9px; }
+
+    @media print {
+      body > * { display:none !important; }
+      #print-area { display:block !important; }
+      #preview { padding:0; box-shadow:none; }
+    }
+  </style>
+</head>
+<body>
+
+<h1>BRT Inc. // Service Agreement Generator</h1>
+
+<div id="agreements-bar" style="margin-bottom:1rem;display:flex;align-items:center;gap:.5rem">
+  <span style="color:var(--muted);font-size:.75rem">Load agreement:</span>
+  <select id="agreements-select" style="background:var(--card);border:1px solid var(--border);color:var(--fg);padding:.3rem .5rem;font-family:var(--font);font-size:.8rem;max-width:300px">
+    <option value="">-- select saved agreement --</option>
+  </select>
+</div>
+
+<div class="workspace">
+  <div class="panel">
+    <h2>Agreement Details</h2>
+
+    <label>Client</label>
+    <select id="a-client" onchange="update()">
+      <option value="">— select client —</option>
+    </select>
+
+    <label>Project title</label>
+    <input type="text" id="a-title" required oninput="update()" />
+
+    <label>Scope of work</label>
+    <textarea id="a-scope" rows="4" oninput="update()"></textarea>
+
+    <label>Deliverables</label>
+    <textarea id="a-deliverables" rows="4" placeholder="One per line" oninput="update()"></textarea>
+
+    <label>Start date</label>
+    <input type="date" id="a-start-date" oninput="update()" />
+
+    <label>Total project price</label>
+    <input type="number" id="a-price" placeholder="5500" min="0" oninput="update()" />
+
+    <label>Payment schedule</label>
+    <div class="payment-row">
+      <div>
+        <label style="margin-top:0">Deposit %</label>
+        <input type="number" id="a-deposit" value="50" min="0" max="100" oninput="update()" />
+      </div>
+      <div>
+        <label style="margin-top:0">Milestone %</label>
+        <input type="number" id="a-milestone" value="0" min="0" max="100" oninput="update()" />
+      </div>
+      <div>
+        <label style="margin-top:0">Final %</label>
+        <input type="number" id="a-final" value="50" min="0" max="100" oninput="update()" />
+      </div>
+    </div>
+
+    <div class="toggle-row">
+      <input type="checkbox" id="a-ip-transfer" checked onchange="update()" />
+      <label for="a-ip-transfer" style="margin:0;font-size:.8rem;color:var(--fg)">IP transfers to client on full payment</label>
+    </div>
+
+    <div class="toggle-row">
+      <input type="checkbox" id="a-warranty" checked onchange="update()" />
+      <label for="a-warranty" style="margin:0;font-size:.8rem;color:var(--fg)">30-day bug-fix warranty included</label>
+    </div>
+
+    <label>Status</label>
+    <select id="a-status" onchange="update()">
+      <option value="Draft">Draft</option>
+      <option value="Sent">Sent</option>
+      <option value="Countersigned">Countersigned</option>
+    </select>
+
+    <div class="actions">
+      <button class="btn btn-print" onclick="window.print()">Print / Save PDF</button>
+      <button class="btn btn-save-agr" id="btn-save-agr">Save Agreement</button>
+      <button class="btn btn-send-agr" id="btn-send-agr">Send to Client</button>
+      <button class="btn btn-clear" onclick="clearForm()">Clear</button>
+    </div>
+  </div>
+
+  <div class="panel" id="print-area">
+    <h2>Preview</h2>
+    <div id="preview"></div>
+  </div>
+</div>
+
+<script>
+  let clients = [];
+  let agreements = [];
+
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function getSelectedClient() {
+    const clientId = document.getElementById('a-client').value;
+    return clients.find(c => c.id === clientId) || null;
+  }
+
+  function update() {
+    const client = getSelectedClient();
+    const clientName = client ? esc(client.name) : '[Client Name]';
+    const projectTitle = document.getElementById('a-title').value || '[Project Title]';
+    const scope = esc(document.getElementById('a-scope').value || '').replace(/\n/g, '<br>');
+    const delivs = document.getElementById('a-deliverables').value.split('\n').filter(Boolean);
+    const startDate = document.getElementById('a-start-date').value || new Date().toISOString().slice(0, 10);
+    const price = parseFloat(document.getElementById('a-price').value) || 0;
+    const deposit = parseFloat(document.getElementById('a-deposit').value) || 0;
+    const milestone = parseFloat(document.getElementById('a-milestone').value) || 0;
+    const final = parseFloat(document.getElementById('a-final').value) || 0;
+    const ipTransfer = document.getElementById('a-ip-transfer').checked;
+    const warranty = document.getElementById('a-warranty').checked;
+    const agreementDate = new Date().toISOString().slice(0, 10);
+
+    const depositAmt = (price * deposit / 100).toFixed(2);
+    const milestoneAmt = (price * milestone / 100).toFixed(2);
+    const finalAmt = (price * final / 100).toFixed(2);
+
+    const formatZAR = n => 'R ' + parseFloat(n).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    document.getElementById('preview').innerHTML = `
+      <div style="color:#000;font-size:14px;font-weight:bold;margin-bottom:.2rem">BRT Inc.</div>
+      <div style="color:#666;font-size:10px;margin-bottom:1.5rem;border-bottom:1px solid #ccc;padding-bottom:.8rem">Software Engineering &amp; Data Systems · charleskris9@gmail.com · brtinc.dev · Manzini, Eswatini</div>
+
+      <div style="text-align:center;margin:1rem 0 1.5rem">
+        <div style="font-size:15px;font-weight:bold;letter-spacing:.15em;color:#000">SERVICE AGREEMENT</div>
+      </div>
+
+      <div style="margin-bottom:1.5rem">
+        <div><strong>Between:</strong> BRT Inc. (Service Provider) and ${clientName} (Client)</div>
+        <div style="color:#666;font-size:10px;text-transform:uppercase;margin-top:.5rem">Agreement date</div>
+        <div>${esc(agreementDate)}</div>
+      </div>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">1. Project Scope</h2>
+      <p style="margin-bottom:.5rem;color:#333">${scope || '—'}</p>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">2. Deliverables</h2>
+      <p style="margin-bottom:.5rem;color:#333">${delivs.map(d => '→ ' + esc(d)).join('<br>') || '—'}</p>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">3. Timeline</h2>
+      <p style="margin-bottom:.5rem;color:#333">Work commences on <strong>${esc(startDate)}</strong>. Specific milestones and deadlines will be agreed in writing between both parties.</p>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">4. Payment Schedule</h2>
+      <table style="width:100%;border-collapse:collapse;margin:1rem 0;font-size:11px">
+        <thead>
+          <tr><th style="text-align:left;border-bottom:1px solid #ccc;padding:.3rem .5rem;color:#666;font-weight:normal">Payment</th><th style="text-align:left;border-bottom:1px solid #ccc;padding:.3rem .5rem;color:#666;font-weight:normal">%</th><th style="text-align:left;border-bottom:1px solid #ccc;padding:.3rem .5rem;color:#666;font-weight:normal">Amount (ZAR)</th><th style="text-align:left;border-bottom:1px solid #ccc;padding:.3rem .5rem;color:#666;font-weight:normal">Due</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">Deposit</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">${deposit}%</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee;text-align:right">${formatZAR(depositAmt)}</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">Before work begins</td></tr>
+          ${milestone > 0 ? `<tr><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">Milestone</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">${milestone}%</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee;text-align:right">${formatZAR(milestoneAmt)}</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">On milestone delivery</td></tr>` : ''}
+          <tr><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">Final</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">${final}%</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee;text-align:right">${formatZAR(finalAmt)}</td><td style="padding:.3rem .5rem;border-bottom:1px solid #eee">On final delivery</td></tr>
+        </tbody>
+      </table>
+      <div style="text-align:right;font-weight:bold;margin-top:.5rem">Total: ${formatZAR(price)}</div>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">5. IP &amp; Ownership</h2>
+      <p style="margin-bottom:.5rem;color:#333">${ipTransfer
+        ? 'All intellectual property, including source code, designs, and related materials produced under this agreement, transfers to the Client upon receipt of full and final payment.'
+        : 'BRT Inc. retains all intellectual property rights. The Client receives a non-exclusive licence to use the deliverables for their intended purpose.'
+      }</p>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">6. Warranty</h2>
+      <p style="margin-bottom:.5rem;color:#333">${warranty
+        ? 'BRT Inc. provides a 30-day bug-fix warranty commencing from the date of final delivery. Warranty covers defects in the agreed scope; changes in requirements are out of scope.'
+        : 'No warranty is provided under this agreement. Maintenance and support are available under a separate retainer.'
+      }</p>
+
+      <h2 style="font-size:13px;margin:1rem 0 .3rem;color:#000;font-weight:bold">7. Governing Law</h2>
+      <p style="margin-bottom:.5rem;color:#333">This agreement is governed by the laws of the Kingdom of Eswatini. Any disputes shall be resolved in the competent courts of Eswatini.</p>
+
+      <div style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ccc;color:#666;font-size:9px">
+        This agreement is binding once signed by both parties.<br>
+        Charles Bartaria · BRT Inc. · charleskris9@gmail.com · github.com/CBahtaria · Manzini, Eswatini
+        <br><br>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:1rem">
+          <div>
+            <div style="border-top:1px solid #999;padding-top:.3rem">Service Provider Signature &amp; Date</div>
+            <div style="color:#444">BRT Inc. — Charles Bartaria</div>
+          </div>
+          <div>
+            <div style="border-top:1px solid #999;padding-top:.3rem">Client Signature &amp; Date</div>
+            <div style="color:#444">${clientName}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function clearForm() {
+    document.getElementById('a-client').value = '';
+    document.getElementById('a-title').value = '';
+    document.getElementById('a-scope').value = '';
+    document.getElementById('a-deliverables').value = '';
+    document.getElementById('a-start-date').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('a-price').value = '';
+    document.getElementById('a-deposit').value = '50';
+    document.getElementById('a-milestone').value = '0';
+    document.getElementById('a-final').value = '50';
+    document.getElementById('a-ip-transfer').checked = true;
+    document.getElementById('a-warranty').checked = true;
+    document.getElementById('a-status').value = 'Draft';
+    document.getElementById('agreements-select').value = '';
+    delete document.getElementById('btn-save-agr').dataset.agreementId;
+    update();
+  }
+
+  async function loadAgreements() {
+    try {
+      agreements = await window.db.getServiceAgreements();
+      const sel = document.getElementById('agreements-select');
+      sel.innerHTML = '<option value="">-- select saved agreement --</option>' +
+        agreements.map(a => `<option value="${esc(a.id)}">${esc(a.project_title || 'Untitled')} (${a.created_at ? a.created_at.slice(0, 10) : ''})</option>`).join('');
+    } catch (err) {
+      // non-fatal: agreements bar stays empty
+    }
+  }
+
+  async function populateClients(clientList) {
+    clients = clientList;
+    const sel = document.getElementById('a-client');
+    sel.innerHTML = '<option value="">— select client —</option>' +
+      clients.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+  }
+
+  async function saveAgreement() {
+    const pctSum = (parseFloat(document.getElementById('a-deposit').value) || 0) +
+                   (parseFloat(document.getElementById('a-milestone').value) || 0) +
+                   (parseFloat(document.getElementById('a-final').value) || 0);
+    if (Math.round(pctSum) !== 100) {
+      alert('Payment percentages must sum to 100%. Current total: ' + pctSum + '%.');
+      return;
+    }
+
+    const btn = document.getElementById('btn-save-agr');
+    btn.disabled = true;
+    try {
+      const clientId = document.getElementById('a-client').value || null;
+      const data = {
+        client_id: clientId,
+        project_title: document.getElementById('a-title').value.trim() || 'Untitled Agreement',
+        scope: document.getElementById('a-scope').value.trim(),
+        deliverables: document.getElementById('a-deliverables').value.trim(),
+        total_price: parseFloat(document.getElementById('a-price').value) || 0,
+        payment_terms: {
+          deposit: parseFloat(document.getElementById('a-deposit').value) || 0,
+          milestone: parseFloat(document.getElementById('a-milestone').value) || 0,
+          final: parseFloat(document.getElementById('a-final').value) || 0,
+        },
+        ip_transfer: document.getElementById('a-ip-transfer').checked,
+        warranty_days: document.getElementById('a-warranty').checked ? 30 : 0,
+        status: document.getElementById('a-status').value,
+        start_date: document.getElementById('a-start-date').value || null,
+      };
+      const agreementId = btn.dataset.agreementId;
+      if (agreementId) data.id = agreementId;
+      const saved = await window.db.upsertServiceAgreement(data);
+      if (saved && saved[0]?.id) {
+        btn.dataset.agreementId = saved[0].id;
+      }
+      await loadAgreements();
+      alert('Agreement saved.');
+    } catch (err) {
+      alert('Save failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  async function sendToClient() {
+    const client = getSelectedClient();
+    if (!client) { alert('Please select a client first.'); return; }
+    const clientEmail = client.email;
+    if (!clientEmail) { alert('Selected client has no email address on record.'); return; }
+
+    const btn = document.getElementById('btn-send-agr');
+    btn.disabled = true;
+
+    const projectTitle = document.getElementById('a-title').value.trim() || 'BRT Inc.';
+    const subject = 'Service Agreement — BRT Inc. x ' + projectTitle;
+    const html = document.getElementById('preview').innerHTML;
+
+    try {
+      const session = await window.supabaseClient.auth.getSession();
+      const token = session.data.session?.access_token;
+      if (!token) throw new Error('Session expired — please reload and try again.');
+
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ to: clientEmail, subject, html, type: 'agreement' }),
+      });
+      if (!res.ok) throw new Error((await res.json()).error || res.statusText);
+
+      // Update status to Sent in DB
+      const btn2 = document.getElementById('btn-save-agr');
+      const agreementId = btn2.dataset.agreementId;
+      if (agreementId) {
+        try {
+          await window.db.upsertServiceAgreement({ id: agreementId, status: 'Sent' });
+          document.getElementById('a-status').value = 'Sent';
+          await loadAgreements();
+        } catch (_) {
+          // Status update failure is non-fatal; email was still sent
+        }
+      }
+
+      alert('Agreement sent to ' + clientEmail);
+    } catch (err) {
+      alert('Send failed: ' + err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', async () => {
+    await requireAuth();
+
+    // Load clients for dropdown
+    try {
+      const clientList = await window.db.getClients();
+      await populateClients(clientList);
+    } catch (err) {
+      // non-fatal: client dropdown stays empty
+    }
+
+    // Load existing agreements
+    await loadAgreements();
+
+    // Set default start date to today
+    document.getElementById('a-start-date').value = new Date().toISOString().slice(0, 10);
+
+    // Wire action buttons
+    document.getElementById('btn-save-agr').addEventListener('click', saveAgreement);
+    document.getElementById('btn-send-agr').addEventListener('click', sendToClient);
+
+    // Load agreement when selected from dropdown
+    document.getElementById('agreements-select').addEventListener('change', function () {
+      const id = this.value;
+      if (!id) return;
+      const a = agreements.find(x => x.id === id);
+      if (!a) return;
+
+      document.getElementById('a-client').value = a.client_id || '';
+      document.getElementById('a-title').value = a.project_title || '';
+      document.getElementById('a-scope').value = a.scope || '';
+      document.getElementById('a-deliverables').value = a.deliverables || '';
+      document.getElementById('a-start-date').value = a.start_date ? a.start_date.slice(0, 10) : new Date().toISOString().slice(0, 10);
+      document.getElementById('a-price').value = a.total_price != null ? a.total_price : '';
+
+      const pt = a.payment_terms || {};
+      document.getElementById('a-deposit').value = pt.deposit != null ? pt.deposit : 50;
+      document.getElementById('a-milestone').value = pt.milestone != null ? pt.milestone : 0;
+      document.getElementById('a-final').value = pt.final != null ? pt.final : 50;
+
+      document.getElementById('a-ip-transfer').checked = !!a.ip_transfer;
+      document.getElementById('a-warranty').checked = a.warranty_days > 0;
+      document.getElementById('a-status').value = a.status || 'Draft';
+
+      // Store id for save-as-update
+      document.getElementById('btn-save-agr').dataset.agreementId = a.id;
+
+      update();
+    });
+
+    // Render initial preview
+    update();
+  });
+</script>
+</body>
+</html>

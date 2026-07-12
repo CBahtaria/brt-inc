@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BRT Inc. Launch Status</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/src/js/supabase-client.js"></script>
+  <script src="/src/js/auth.js"></script>
+  <style>
+    :root { --bg:#0a0a0a; --fg:#e8e6e1; --accent:#00ff88; --muted:#6b6b6b; --border:#1e1e1e; --card:#111; --font:'Courier New',monospace; }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { background:var(--bg); color:var(--fg); font-family:var(--font); font-size:14px; padding:1.5rem; max-width:800px; margin:0 auto; }
+    h1 { color:var(--accent); font-size:1rem; margin-bottom:.3rem; }
+    .progress-bar { background:var(--border); height:4px; border-radius:2px; margin:1rem 0 .3rem; }
+    .progress-fill { background:var(--accent); height:100%; border-radius:2px; transition:.3s; }
+    .progress-label { color:var(--muted); font-size:.8rem; margin-bottom:2rem; }
+    h2 { color:var(--muted); font-size:.75rem; text-transform:uppercase; letter-spacing:.1em; margin:1.5rem 0 .5rem; }
+    h2::before { content:'// '; color:var(--accent); }
+    .task { display:flex; align-items:flex-start; gap:.7rem; padding:.5rem 0; border-bottom:1px solid var(--border); }
+    .task:last-child { border-bottom:none; }
+    .task input[type=checkbox] { margin-top:.2rem; accent-color:var(--accent); cursor:pointer; flex-shrink:0; }
+    .task label { cursor:pointer; color:var(--fg); }
+    .task label.done { color:var(--muted); text-decoration:line-through; }
+    .reset-btn { margin-top:2rem; background:none; border:1px solid var(--border); color:var(--muted); padding:.3rem .8rem; font-family:var(--font); font-size:.8rem; cursor:pointer; }
+    .reset-btn:hover { border-color:#ff4444; color:#ff4444; }
+  </style>
+</head>
+<body>
+
+<h1>BRT Inc. // Launch Status</h1>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+<div class="progress-label" id="progress-label">Loading...</div>
+
+<div id="checklist"></div>
+<button class="reset-btn" id="reset-btn">Reset all tasks</button>
+
+<script>
+  const STORE_KEY = 'brt_launch_status_v1';
+  const SECTIONS = [
+    {
+      title: 'GitHub & Code',
+      tasks: [
+        'GitHub profile README live at github.com/CBahtaria',
+        'Sentinel 9/9 security fixes committed, CI gate installed',
+        'BRT Inc. website deployed to Vercel',
+        'brtinc.dev domain registered and DNS configured',
+      ]
+    },
+    {
+      title: 'LinkedIn & Direct Outreach',
+      tasks: [
+        'LinkedIn profile photo, headline, and about section updated',
+        'LinkedIn featured section — add brtinc.dev and sentinel case study',
+        'LinkedIn skills (15+) added and endorsed',
+        'LinkedIn connection requests sent to 10 SADC contacts',
+        'Wise added as payment method',
+        'Rate card prepared (R850/hr, R5,500 web app, R3,700 audit)',
+        'Submitted 3 direct proposals via LinkedIn / email',
+      ]
+    },
+    {
+      title: 'Email & Infrastructure',
+      tasks: [
+        'Zoho Mail account created, charleskris9@gmail.com active',
+        'MX records, SPF, DKIM configured in Namecheap',
+        'HTML email signature added to Zoho',
+        'Studio P maintenance retainer email sent',
+        'One SADC outreach email sent',
+      ]
+    },
+    {
+      title: 'Payments',
+      tasks: [
+        'Stripe account created and verified',
+        '3 Stripe payment links created and added to index.html',
+        'Wise Business account created with USD receiving details',
+        'Wise USD account added to Stripe payout settings',
+      ]
+    },
+    {
+      title: 'Marketing',
+      tasks: [
+        'LinkedIn case study post published',
+        'T&Cs attached to first client proposal',
+      ]
+    }
+  ];
+
+  function loadState() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch { return {}; }
+  }
+
+  function saveState(state) { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+
+  function taskKey(sectionTitle, taskIndex) { return sectionTitle + ':' + taskIndex; }
+
+  function render() {
+    const state = loadState();
+    let total = 0, done = 0;
+    let html = '';
+
+    for (const section of SECTIONS) {
+      html += `<h2>${section.title}</h2>`;
+      section.tasks.forEach((task, i) => {
+        const key = taskKey(section.title, i);
+        const checked = !!state[key];
+        total++;
+        if (checked) done++;
+        const id = 'task-' + key.replace(/[^a-z0-9]/gi, '-');
+        html += `<div class="task">
+          <input type="checkbox" id="${id}" data-key="${key}" ${checked ? 'checked' : ''} />
+          <label for="${id}" class="${checked ? 'done' : ''}">${task}</label>
+        </div>`;
+      });
+    }
+
+    document.getElementById('checklist').innerHTML = html;
+
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `${done} / ${total} tasks complete (${pct}%)`;
+  }
+
+  function handleCheckboxChange(e) {
+    if (e.target.type !== 'checkbox' || !e.target.dataset.key) return;
+    const state = loadState();
+    state[e.target.dataset.key] = e.target.checked;
+    saveState(state);
+    render();
+  }
+
+  document.getElementById('checklist').addEventListener('change', handleCheckboxChange);
+
+  document.getElementById('reset-btn').addEventListener('click', () => {
+    if (!confirm('Reset all tasks to incomplete?')) return;
+    localStorage.removeItem(STORE_KEY);
+    render();
+  });
+
+  document.addEventListener('DOMContentLoaded', () => { requireAuth(); render(); });
+</script>
+</body>
+</html>

@@ -7,6 +7,7 @@ const AREAS = [
   { title: 'Civic Infrastructure', desc: 'National dashboards, asset management, resilience tracking for government.' },
   { title: 'Applied AI / ML', desc: 'On-device inference, RAG pipelines, macro forecasting, time-series models.' },
   { title: 'Game Development', desc: 'UE5 C++ historical RPG with hardware-adaptive scaler and Steam integration.' },
+  { title: 'Platform Engineering', desc: 'Multilayered social and marketplace platforms. Edge compression, NLP, escrow payments, ML-based moderation, adaptive config.' },
   { title: 'Operator Tooling', desc: 'CRM, proposals, invoicing, runbooks — internal ops tools for high-trust teams.' },
 ]
 

@@ -18,6 +18,10 @@ const SERVICES = [
     desc: 'DAL-A compliant autopilots with formal safety governors. AI feeds a validator that checks geometric invariants before flight control.',
   },
   {
+    title: 'Social & Marketplace Platforms',
+    desc: 'Full-stack platforms with edge compression, RAG-backed search, escrow payments, anti-spam ML, and adaptive self-improving pipelines.',
+  },
+  {
     title: 'Institutional Platforms',
     desc: 'National-scale infrastructure for libraries, resilience agencies, and civic institutions across southern Africa.',
   },

@@ -1,9 +1,10 @@
 import { ScrollScene } from './ScrollScene'
 
 const STACK = [
-  'PHP 8', 'TypeScript', 'Python', 'Zig', 'React 19', 'Next.js', 'Supabase',
-  'UE5 C++', 'FastAPI', 'Docker', 'Vercel', 'GSAP', 'Three.js', 'PostgreSQL',
-  'NATS', 'AES-GCM', 'TFLite', 'Qdrant', 'Steam', 'WebSocket',
+  'PHP 8', 'TypeScript', 'Python', 'Zig', 'React 19', 'Next.js', 'NestJS 11',
+  'Expo 54', 'UE5 C++', 'FastAPI', 'Docker', 'Vercel', 'GSAP', 'Three.js',
+  'PostgreSQL', 'PostGIS', 'Redis', 'NATS JetStream', 'AES-GCM', 'TFLite',
+  'ONNX', 'Qdrant', 'Supabase', 'zstd', 'Steam', 'OpenXR',
 ]
 
 export function StackStrip() {

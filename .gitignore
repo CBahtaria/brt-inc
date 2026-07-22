@@ -6,3 +6,8 @@ node_modules/
 *.DS_Store
 .thumbs.db
 .vercel
+*.tsbuildinfo
+.agents/
+.claude/
+.mcp.json
+skills-lock.json

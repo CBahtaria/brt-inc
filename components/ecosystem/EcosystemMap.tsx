@@ -18,7 +18,7 @@ const T = {
 }
 
 // Cluster colours — map UAV to accent2, platform to accent, intelligence to emerald, etc.
-const CLUSTER_COLOR: Record<string, string> = {
+export const CLUSTER_COLOR: Record<string, string> = {
   uav:           T.accent2,       // teal
   platform:      T.accent,        // indigo
   intelligence:  '#10b981',       // emerald
@@ -30,7 +30,7 @@ const CLUSTER_COLOR: Record<string, string> = {
 }
 
 // ── Node / edge definitions ───────────────────────────────────────────────────
-interface NodeDef {
+export interface NodeDef {
   id: string; label: string; cluster: string; r: number;
   short: string; stack: string; desc: string;
   metrics: Record<string, string>;
@@ -41,7 +41,7 @@ interface LinkDef {
   source: string; target: string; type: string; label: string;
 }
 
-const NODES: NodeDef[] = [
+export const NODES: NodeDef[] = [
   {
     id: 'agentic-uav', label: 'Agentic UAV Stack', cluster: 'uav', r: 28,
     short: 'SRL-6 · 1,128 tests · DAL-A',

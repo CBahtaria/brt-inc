@@ -38,6 +38,11 @@ const STATUS_COLOR: Record<string, string> = {
   CLEAR: '#10b981',
 }
 
+// ASCILINE default ASCII palette + block chars for noise
+const NOISE_CHARS = "`.-':+!rc*z@$█▓▒░▸◆|><#%"
+// Settle duration per line (ms) — matches ASCILINE's ~350ms frame decode window
+const SETTLE_MS = 380
+
 function colorizeStatus(text: string) {
   return text.replace(/\[(.*?)\]/, (_, status) => {
     const c = STATUS_COLOR[status] ?? '#a1a1aa'
@@ -45,37 +50,73 @@ function colorizeStatus(text: string) {
   })
 }
 
+// ASCILINE-inspired noise-to-signal decoder.
+// Each character settles left-to-right as `elapsed / SETTLE_MS` → 1.
+// Spaces and ━ dividers never scramble (structural anchors).
+function decodeText(text: string, addedAt: number): string {
+  const progress = Math.min((performance.now() - addedAt) / SETTLE_MS, 1)
+  if (progress >= 1) return text
+  return text
+    .split('')
+    .map((char, i) => {
+      if (char === ' ' || char === '━') return char
+      if ((i + 1) / text.length <= progress) return char
+      return NOISE_CHARS[Math.floor(Math.random() * NOISE_CHARS.length)]
+    })
+    .join('')
+}
+
 export function TerminalBoot() {
   const [visible, setVisible] = useState<number[]>([])
-  const [done, setDone] = useState(false)
-  const [cursor, setCursor] = useState(true)
-  const ref = useRef<HTMLDivElement>(null)
-  const triggered = useRef(false)
+  const [done, setDone]       = useState(false)
+  const [cursor, setCursor]   = useState(true)
+  // tick drives rAF-paced re-renders so decodeText sees fresh performance.now()
+  const [, setTick] = useState(0)
 
+  const sectionRef  = useRef<HTMLDivElement>(null)
+  const triggered   = useRef(false)
+  const addedAt     = useRef<Record<number, number>>({})
+  const rafRef      = useRef<number>(0)
+
+  // Boot sequence trigger
   useEffect(() => {
     const pref = window.matchMedia('(prefers-reduced-motion: reduce)')
     const obs = new IntersectionObserver(([e]) => {
-      if (e.isIntersecting && !triggered.current) {
-        triggered.current = true
+      if (!e.isIntersecting || triggered.current) return
+      triggered.current = true
 
-        if (pref.matches) {
-          setVisible(LINES.map((_, i) => i))
-          setDone(true)
-          return
-        }
-
-        LINES.forEach((l, i) => {
-          setTimeout(() => {
-            setVisible(prev => [...prev, i])
-            if (i === LINES.length - 1) setTimeout(() => setDone(true), 200)
-          }, l.delay)
-        })
+      if (pref.matches) {
+        setVisible(LINES.map((_, i) => i))
+        setDone(true)
+        return
       }
+
+      LINES.forEach((l, i) => {
+        setTimeout(() => {
+          addedAt.current[i] = performance.now()
+          setVisible(prev => [...prev, i])
+          if (i === LINES.length - 1) {
+            // wait for the last line to finish settling before marking done
+            setTimeout(() => setDone(true), SETTLE_MS + 200)
+          }
+        }, l.delay)
+      })
     }, { threshold: 0.3 })
 
-    if (ref.current) obs.observe(ref.current)
+    if (sectionRef.current) obs.observe(sectionRef.current)
     return () => obs.disconnect()
   }, [])
+
+  // RAF render loop — drives decodeText re-draws at ~60 fps while settling
+  useEffect(() => {
+    if (done) return
+    const loop = () => {
+      setTick(t => t + 1)
+      rafRef.current = requestAnimationFrame(loop)
+    }
+    rafRef.current = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [done])
 
   // Blinking cursor
   useEffect(() => {
@@ -86,7 +127,7 @@ export function TerminalBoot() {
 
   return (
     <section
-      ref={ref}
+      ref={sectionRef}
       className="py-24 px-4 md:px-6"
       style={{ background: 'var(--background)' }}
     >
@@ -114,24 +155,30 @@ export function TerminalBoot() {
 
           {/* Output lines */}
           <div className="space-y-1 text-xs md:text-sm leading-relaxed min-h-[280px]">
-            {LINES.map((line, i) => (
+            {LINES.map((line, i) =>
               visible.includes(i) ? (
                 <div
                   key={i}
                   className="flex items-baseline gap-2 whitespace-pre"
-                  style={{ opacity: 1, color: TYPE_COLOR[line.type] ?? '#a1a1aa' }}
+                  style={{ color: TYPE_COLOR[line.type] ?? '#a1a1aa' }}
                 >
                   {line.type !== 'divider' && line.type !== 'header' && line.type !== 'final' && (
                     <span style={{ color: '#52525b' }}>$</span>
                   )}
                   <span
-                    dangerouslySetInnerHTML={{ __html: colorizeStatus(line.text) }}
+                    dangerouslySetInnerHTML={{
+                      __html: colorizeStatus(
+                        done || addedAt.current[i] === undefined
+                          ? line.text
+                          : decodeText(line.text, addedAt.current[i])
+                      ),
+                    }}
                   />
                 </div>
               ) : null
-            ))}
+            )}
 
-            {/* Cursor */}
+            {/* Active cursor */}
             {!done && (
               <div className="flex items-center gap-2">
                 <span style={{ color: '#52525b' }}>$</span>
@@ -146,7 +193,7 @@ export function TerminalBoot() {
               </div>
             )}
 
-            {/* Final line after done */}
+            {/* Settled prompt */}
             {done && (
               <div className="mt-4 flex items-center gap-2">
                 <span style={{ color: '#52525b' }}>$</span>

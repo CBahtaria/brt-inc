@@ -11,15 +11,16 @@ export function Footer() {
         </p>
         <nav className="flex gap-6">
           {[
-            { href: '/privacy', label: 'Privacy' },
-            { href: '/terms',   label: 'Terms' },
-            { href: '/trust',   label: 'Trust' },
+            { href: '/ecosystem', label: 'Ecosystem', accent: true },
+            { href: '/privacy',   label: 'Privacy' },
+            { href: '/terms',     label: 'Terms' },
+            { href: '/trust',     label: 'Trust' },
           ].map(l => (
             <a
               key={l.href}
               href={l.href}
               className="font-mono text-xs hover:text-text transition-colors"
-              style={{ color: 'var(--text-subtle)' }}
+              style={{ color: (l as any).accent ? 'var(--accent-2)' : 'var(--text-subtle)' }}
             >
               {l.label}
             </a>

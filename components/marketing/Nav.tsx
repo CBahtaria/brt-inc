@@ -4,11 +4,12 @@ import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const LINKS = [
-  { href: '#about',    label: 'About' },
-  { href: '#services', label: 'Services' },
-  { href: '#portfolio',label: 'Work' },
-  { href: '#pricing',  label: 'Pricing' },
-  { href: '#contact',  label: 'Contact' },
+  { href: '#about',     label: 'About' },
+  { href: '#services',  label: 'Services' },
+  { href: '#portfolio', label: 'Work' },
+  { href: '#pricing',   label: 'Pricing' },
+  { href: '#contact',   label: 'Contact' },
+  { href: '/ecosystem', label: 'Ecosystem', isPage: true },
 ]
 
 export function Nav() {
@@ -36,21 +37,31 @@ export function Nav() {
         <ul className="hidden md:flex items-center gap-8">
           {LINKS.map(l => (
             <li key={l.href}>
-              <motion.a
-                href={l.href}
-                className="relative text-sm hover:text-text transition-colors"
-                style={{ color: 'var(--text-muted)' }}
-                whileHover="hover"
-              >
-                {l.label}
-                <motion.span
-                  className="absolute -bottom-0.5 left-0 h-px w-full origin-left"
-                  style={{ background: 'var(--accent)' }}
-                  variants={{ hover: { scaleX: 1 }, initial: { scaleX: 0 } }}
-                  initial="initial"
-                  transition={{ duration: 0.2, ease: 'easeOut' }}
-                />
-              </motion.a>
+              {l.isPage ? (
+                <Link
+                  href={l.href}
+                  className="relative text-sm font-mono text-xs uppercase tracking-widest transition-colors hover:text-text"
+                  style={{ color: 'var(--accent-2)' }}
+                >
+                  {l.label}
+                </Link>
+              ) : (
+                <motion.a
+                  href={l.href}
+                  className="relative text-sm hover:text-text transition-colors"
+                  style={{ color: 'var(--text-muted)' }}
+                  whileHover="hover"
+                >
+                  {l.label}
+                  <motion.span
+                    className="absolute -bottom-0.5 left-0 h-px w-full origin-left"
+                    style={{ background: 'var(--accent)' }}
+                    variants={{ hover: { scaleX: 1 }, initial: { scaleX: 0 } }}
+                    initial="initial"
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
+                  />
+                </motion.a>
+              )}
             </li>
           ))}
         </ul>

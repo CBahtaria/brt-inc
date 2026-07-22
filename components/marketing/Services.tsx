@@ -1,4 +1,7 @@
+'use client'
+import { motion } from 'framer-motion'
 import { ScrollScene } from './ScrollScene'
+import { staggerContainer, fadeUp, slideIn } from '@/lib/motion'
 
 const SERVICES = [
   {
@@ -35,20 +38,38 @@ export function Services() {
   return (
     <ScrollScene>
       <section id="services" className="py-32 max-w-7xl mx-auto px-6">
-        <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>Services</p>
-        <h2 className="text-4xl lg:text-5xl font-semibold mb-12">What I build.</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <motion.div
+          variants={slideIn('left', 0, 0.5)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+        >
+          <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>Services</p>
+          <h2 className="text-4xl lg:text-5xl font-semibold mb-12">What I build.</h2>
+        </motion.div>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={staggerContainer(0.07, 0.2)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-60px' }}
+        >
           {SERVICES.map(s => (
-            <div
+            <motion.div
               key={s.title}
-              className="p-6 rounded-xl border"
+              variants={fadeUp}
+              className="group p-6 rounded-xl border transition-colors duration-300"
               style={{ border: '1px solid var(--border)', background: 'var(--surface-1)' }}
+              whileHover={{ borderColor: 'rgba(99,102,241,0.3)', transition: { duration: 0.2 } }}
             >
-              <h3 className="font-semibold mb-3">{s.title}</h3>
+              <h3 className="font-semibold mb-3 transition-colors group-hover:text-white" style={{ color: 'var(--text)' }}>
+                {s.title}
+              </h3>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{s.desc}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
     </ScrollScene>
   )

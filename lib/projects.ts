@@ -1,4 +1,4 @@
-export type FilterCategory = 'web' | 'security' | 'ai' | 'systems' | 'game' | 'institutional'
+export type FilterCategory = 'web' | 'security' | 'ai' | 'systems' | 'game' | 'institutional' | 'platform'
 
 export interface Project {
   slug: string
@@ -26,10 +26,10 @@ export const PROJECTS: Project[] = [
   {
     slug: 'uav-stack',
     title: 'Agentic UAV Stack',
-    description: 'Autonomous drone platform built to DAL-A aviation safety. AI route planner feeds formal safety governor validating 5 geometric invariants before flight control. Invariant layer blocks compromised AI/network by construction.',
-    tags: ['Zig 0.14.0', 'EKF 13-state', 'AES-GCM-256'],
-    categories: ['systems'],
-    metrics: ['783/783 tests pass', 'SRL-3 HIL harness', 'SRL-5 formal'],
+    description: 'Autonomous drone platform built to DAL-A aviation safety. MRAC altitude-adaptive flight control (σ-modification, 400 Hz), radiation/fog/piezo energy harvesting, 9-persona vulnerability scanner, hash-chained audit log, and Raft-consensus swarm coordination. AI is advisory; the formal safety governor has final say.',
+    tags: ['Python', 'Zig 0.14', 'NATS JetStream', 'EKF 13-state', 'AES-GCM-256'],
+    categories: ['systems', 'ai', 'security'],
+    metrics: ['1,128 tests — SRL-6', 'DAL-A formal shield', 'AAFCS 0–5000 m'],
     variant: 'standard',
   },
   {
@@ -72,11 +72,30 @@ export const PROJECTS: Project[] = [
   {
     slug: 'mahlanya-rpg',
     title: 'MahlanyaRPG',
-    description: 'Historical 3D RPG (18th–20th century Eswatini) in UE5 C++. Hardware-adaptive scaler sets Nanite/Lumen/resolution/NPC budgets from iGPU to RTX 4090. Steam, siSwati localisation, and co-op foundations shipped.',
-    tags: ['UE5 C++', 'Zig', 'Python', 'GDAL', 'Steam'],
+    description: 'Historical 3D RPG (18th–20th century Eswatini) in UE5 C++. 13 C++ simulation plugins — fault-line deformation, Darcy-law groundwater, mineral vein generation, Lotka-Volterra ecology. Zig SIMD erosion sim on real Copernicus 10m DEM. Next.js 14 PWA world viewer. VR/OpenXR (Meta Quest 3 + SteamVR).',
+    tags: ['UE5 C++', 'Zig SIMD', 'Python', 'Three.js', 'OpenXR'],
     categories: ['game'],
-    metrics: ['310 pipeline tests', '5 hardware tiers', '19 perf CVars'],
+    metrics: ['338 pipeline tests', '13 C++ plugins', 'VR + PWA layer'],
     variant: 'gaming',
+  },
+  {
+    slug: 'lets-connect-eswatini',
+    title: 'Lets Connect Eswatini',
+    description: 'Multilayered social platform for Eswatini — Telegram-style messaging, GitHub-style project explorer, Instagram-style feed. Clustered Mitochondria edge nodes compress + semantically embed data before it reaches the server. 5-layer security envelope: phone OTP + proof-of-work, ClamAV + YARA scan, GBT spam classifier, async LLM semantic check. Self-improving adaptive engine tightens thresholds weekly without a code deploy.',
+    tags: ['NestJS 11', 'NATS JetStream', 'zstd', 'ONNX', 'Redis'],
+    categories: ['web', 'ai', 'platform'],
+    metrics: ['37 tests passing', 'Clustered Mitochondria', '5-layer security'],
+    variant: 'standard',
+    wide: true,
+  },
+  {
+    slug: 'likhona-lami',
+    title: 'Likhona Lami',
+    description: 'Skills marketplace for Eswatini gig workers — escrow-protected MTN MoMo payouts, legal compliance engine enforcing Wages Order 2022 minimums per skill category, siSwati morphological tokenizer with NLLB-200 translation, and PostGIS-powered spatial job matching. Expo 54 mobile + Next.js 14 web + NestJS 11 API.',
+    tags: ['NestJS 11', 'Expo 54', 'Next.js 14', 'PostGIS', 'MTN MoMo'],
+    categories: ['web', 'ai', 'institutional', 'platform'],
+    metrics: ['siSwati NLP', 'Wages Order 2022', 'MTN MoMo escrow'],
+    variant: 'standard',
   },
   {
     slug: 'bedf-c2',

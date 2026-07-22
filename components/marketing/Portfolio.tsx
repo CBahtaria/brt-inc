@@ -10,6 +10,7 @@ import { ScrollScene } from './ScrollScene'
 const FILTERS: { label: string; value: FilterCategory | 'all' }[] = [
   { label: 'All', value: 'all' },
   { label: 'Web', value: 'web' },
+  { label: 'Platform', value: 'platform' },
   { label: 'Security', value: 'security' },
   { label: 'AI/ML', value: 'ai' },
   { label: 'Systems', value: 'systems' },

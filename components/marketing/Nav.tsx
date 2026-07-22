@@ -1,5 +1,6 @@
 'use client'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
@@ -31,8 +32,18 @@ export function Nav() {
       }}
     >
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="font-mono text-sm font-semibold tracking-tight">
-          BRT <span style={{ color: 'var(--accent)' }}>INC.</span>
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <Image
+            src="/logo.svg"
+            alt="BRT Inc."
+            width={36}
+            height={36}
+            className="transition-opacity group-hover:opacity-80"
+            priority
+          />
+          <span className="font-mono text-sm font-semibold tracking-tight">
+            BRT <span style={{ color: 'var(--accent)' }}>INC.</span>
+          </span>
         </Link>
         <ul className="hidden md:flex items-center gap-8">
           {LINKS.map(l => (

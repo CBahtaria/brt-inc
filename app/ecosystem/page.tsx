@@ -1,17 +1,16 @@
 import Link from 'next/link'
-import { EcosystemMap } from '@/components/ecosystem/EcosystemMap'
+import { EcosystemMap3D } from '@/components/ecosystem/EcosystemMap3D'
 
 export const metadata = { title: 'Ecosystem Map — BRT Inc.' }
 
 export default function EcosystemPage() {
   return (
     <main className="flex flex-col" style={{ minHeight: '100vh' }}>
-      {/* Header bar */}
       <div
-        className="flex items-center justify-between px-6 h-16 border-b shrink-0"
-        style={{ borderColor: 'var(--border)', background: 'var(--background)' }}
+        className="flex items-center justify-between px-4 md:px-6 h-16 border-b shrink-0"
+        style={{ borderColor: 'var(--border)', background: 'rgba(9,9,11,0.96)', backdropFilter: 'blur(16px)' }}
       >
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4 md:gap-6">
           <Link
             href="/"
             className="font-mono text-xs uppercase tracking-widest transition-colors hover:text-white"
@@ -21,26 +20,23 @@ export default function EcosystemPage() {
           </Link>
           <span style={{ color: 'var(--border)' }}>|</span>
           <span className="font-mono text-xs uppercase tracking-widest" style={{ color: 'var(--text-subtle)' }}>
-            Ecosystem Map
+            Ecosystem
           </span>
         </div>
 
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden sm:flex items-center gap-4 md:gap-6">
           {[
-            { label: '13 systems', color: 'var(--accent-2)' },
+            { label: '13 systems',    color: 'var(--accent-2)' },
             { label: '8 NATS streams', color: 'var(--accent)' },
-            { label: '1,466+ tests', color: '#10b981' },
-            { label: 'SRL-6', color: 'var(--accent-game)' },
+            { label: '1,466+ tests',  color: '#10b981' },
+            { label: 'SRL-6',         color: 'var(--accent-game)' },
           ].map(s => (
-            <span key={s.label} className="font-mono text-[10px]" style={{ color: s.color }}>
-              {s.label}
-            </span>
+            <span key={s.label} className="font-mono text-[10px]" style={{ color: s.color }}>{s.label}</span>
           ))}
         </div>
       </div>
 
-      {/* Map fills remaining viewport */}
-      <EcosystemMap />
+      <EcosystemMap3D />
     </main>
   )
 }

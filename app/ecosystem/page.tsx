@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { EcosystemMap3D } from '@/components/ecosystem/EcosystemMap3D'
+import { EcosystemMapClient } from '@/components/ecosystem/EcosystemMapClient'
 
 export const metadata = { title: 'Ecosystem Map — BRT Inc.' }
 
@@ -36,7 +36,7 @@ export default function EcosystemPage() {
         </div>
       </div>
 
-      <EcosystemMap3D />
+      <EcosystemMapClient />
     </main>
   )
 }

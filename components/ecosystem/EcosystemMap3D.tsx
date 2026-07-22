@@ -400,3 +400,5 @@ export function EcosystemMap3D() {
     </div>
   )
 }
+
+export default EcosystemMap3D

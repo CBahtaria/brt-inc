@@ -13,6 +13,7 @@ import { Testimonials } from '@/components/marketing/Testimonials'
 import { Pricing } from '@/components/marketing/Pricing'
 import { FAQ } from '@/components/marketing/FAQ'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
+import { EcosystemSection } from '@/components/marketing/EcosystemSection'
 import { Contact } from '@/components/marketing/Contact'
 import { Footer } from '@/components/marketing/Footer'
 
@@ -30,6 +31,7 @@ export default function HomePage() {
         <Process />
         <Portfolio />
         <TerminalBoot />
+        <EcosystemSection />
         <Impact />
         <Testimonials />
         <Pricing />

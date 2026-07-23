@@ -3,6 +3,14 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { Project } from '@/lib/projects'
 
+const STATUS_CONFIG: Record<string, { color: string; label: string }> = {
+  live:       { color: '#10b981', label: 'LIVE' },
+  production: { color: '#10b981', label: 'Production' },
+  building:   { color: '#f59e0b', label: 'Building' },
+  partial:    { color: '#f43f5e', label: 'Partial' },
+  phase11:    { color: '#2dd4bf', label: 'Phase 11' },
+}
+
 const ACHIEVEMENTS = [
   { label: 'Platform', value: 'Steam' },
   { label: 'Engine', value: 'UE5 C++' },
@@ -16,6 +24,7 @@ interface Props {
 
 export function ProjectCardGaming({ project, onOpen }: Props) {
   const [hovered, setHovered] = useState(false)
+  const status = STATUS_CONFIG[project.status]
 
   return (
     <motion.div
@@ -42,6 +51,19 @@ export function ProjectCardGaming({ project, onOpen }: Props) {
         style={{ background: 'rgba(245,158,11,0.12)', color: 'var(--accent-game)', borderColor: 'rgba(245,158,11,0.25)' }}
       >
         Game
+      </div>
+
+      {/* Status badge */}
+      <div
+        className="absolute top-4 left-4 z-20 flex items-center gap-1 font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
+        style={{
+          background: `${status.color}20`,
+          color: status.color,
+          border: `1px solid ${status.color}40`,
+        }}
+      >
+        <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: status.color }} />
+        {status.label}
       </div>
 
       {/* Hover: clip-path wipe from bottom reveals video */}

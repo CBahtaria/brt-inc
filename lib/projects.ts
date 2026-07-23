@@ -10,6 +10,7 @@ export interface Project {
   variant: 'standard' | 'gaming'
   featured?: boolean
   wide?: boolean
+  status: 'live' | 'production' | 'building' | 'partial' | 'phase11'
 }
 
 export const PROJECTS: Project[] = [
@@ -22,6 +23,7 @@ export const PROJECTS: Project[] = [
     metrics: ['9 findings patched', '22 files hardened', '0 regressions'],
     variant: 'standard',
     featured: true,
+    status: 'live',
   },
   {
     slug: 'uav-stack',
@@ -31,6 +33,7 @@ export const PROJECTS: Project[] = [
     categories: ['systems', 'ai', 'security'],
     metrics: ['1,128 tests — SRL-6', 'DAL-A formal shield', 'AAFCS 0–5000 m'],
     variant: 'standard',
+    status: 'live',
   },
   {
     slug: 'maize-classifier',
@@ -40,6 +43,7 @@ export const PROJECTS: Project[] = [
     categories: ['ai'],
     metrics: ['94.2% accuracy', '<200ms inference', '3,500 SADC images'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'eswatini-dashboard',
@@ -50,6 +54,7 @@ export const PROJECTS: Project[] = [
     metrics: ['54 tests', '10k MC paths', '7 services'],
     variant: 'standard',
     wide: true,
+    status: 'production',
   },
   {
     slug: 'studio-p',
@@ -59,6 +64,7 @@ export const PROJECTS: Project[] = [
     categories: ['web'],
     metrics: ['8 colour themes', '0ms layout flash', '100% RLS'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'brt-platform',
@@ -68,6 +74,7 @@ export const PROJECTS: Project[] = [
     categories: ['ai', 'web'],
     metrics: ['3 retrieval stages', 'RRF fusion', '54ms p50'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'mahlanya-rpg',
@@ -77,6 +84,7 @@ export const PROJECTS: Project[] = [
     categories: ['game'],
     metrics: ['338 pipeline tests', '13 C++ plugins', 'VR + PWA layer'],
     variant: 'gaming',
+    status: 'phase11',
   },
   {
     slug: 'lets-connect-eswatini',
@@ -87,6 +95,7 @@ export const PROJECTS: Project[] = [
     metrics: ['37 tests passing', 'Clustered Mitochondria', '5-layer security'],
     variant: 'standard',
     wide: true,
+    status: 'building',
   },
   {
     slug: 'likhona-lami',
@@ -96,6 +105,7 @@ export const PROJECTS: Project[] = [
     categories: ['web', 'ai', 'institutional', 'platform'],
     metrics: ['siSwati NLP', 'Wages Order 2022', 'MTN MoMo escrow'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'bedf-c2',
@@ -106,6 +116,7 @@ export const PROJECTS: Project[] = [
     metrics: ['TOTP 2FA', '4 RBAC roles', 'AES-GCM telemetry'],
     variant: 'standard',
     wide: true,
+    status: 'live',
   },
   {
     slug: 'civisgrid',
@@ -115,6 +126,7 @@ export const PROJECTS: Project[] = [
     categories: ['web', 'institutional'],
     metrics: ['6NF schema', '4 admin regions', 'v4.0 release'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'eswatini-readers',
@@ -124,6 +136,7 @@ export const PROJECTS: Project[] = [
     categories: ['web', 'institutional'],
     metrics: ['3 user roles', 'Chapter-by-chapter', 'Author workflow'],
     variant: 'standard',
+    status: 'production',
   },
   {
     slug: 'biometric-attendance',
@@ -133,5 +146,6 @@ export const PROJECTS: Project[] = [
     categories: ['web', 'ai', 'institutional'],
     metrics: ['2 biometric modes', 'On-device face detection', '0 data egress'],
     variant: 'standard',
+    status: 'production',
   },
 ]

@@ -3,9 +3,9 @@ import { useEffect, useRef } from 'react'
 import { ScrollScene } from './ScrollScene'
 
 const STATS = [
-  { label: 'Projects shipped', value: 13, suffix: '' },
+  { label: 'Projects shipped', value: 14, suffix: '' },
   { label: 'Security findings patched', value: 9, suffix: '' },
-  { label: 'UAV tests passing', value: 1128, suffix: '+' },
+  { label: 'Tests across all systems', value: 1466, suffix: '+' },
   { label: 'SADC institutions served', value: 6, suffix: '' },
 ]
 

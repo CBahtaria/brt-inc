@@ -27,6 +27,22 @@ const FAQS = [
     q: 'Do you provide ongoing maintenance?',
     a: 'Yes, via the monthly retainer. Includes feature development, security monitoring, and priority response on incidents.',
   },
+  {
+    q: 'What happens if the project scope changes after we start?',
+    a: 'Scope is fixed in the service agreement before any work begins. If you need additional features, they are scoped and priced separately. This protects both parties — you get a known cost, I get a clear brief.',
+  },
+  {
+    q: 'Can you build mobile apps?',
+    a: 'Yes. React Native via Expo 54 for cross-platform iOS + Android. The same service agreement and delivery model applies.',
+  },
+  {
+    q: 'Do you work with early-stage startups, or only institutions?',
+    a: 'Both, depending on project fit. Institutions are my primary audience for security-critical or compliance-heavy work. Startups are welcome for fixed-scope web, mobile, or AI projects where the brief is clear.',
+  },
+  {
+    q: 'How do you handle sensitive or classified data?',
+    a: 'NDA included in the service agreement as standard. Production data never enters development environments. For defence or government engagements, a data handling addendum is added covering storage, transmission, and destruction protocols.',
+  },
 ]
 
 export function FAQ() {

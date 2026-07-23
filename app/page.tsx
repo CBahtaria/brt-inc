@@ -8,6 +8,7 @@ import { StackStrip } from '@/components/marketing/StackStrip'
 import { Services } from '@/components/marketing/Services'
 import { Process } from '@/components/marketing/Process'
 import { Portfolio } from '@/components/marketing/Portfolio'
+import { CaseStudies } from '@/components/marketing/CaseStudies'
 import { Impact } from '@/components/marketing/Impact'
 import { Testimonials } from '@/components/marketing/Testimonials'
 import { Pricing } from '@/components/marketing/Pricing'
@@ -30,6 +31,7 @@ export default function HomePage() {
         <Services />
         <Process />
         <Portfolio />
+        <CaseStudies />
         <TerminalBoot />
         <EcosystemSection />
         <Impact />

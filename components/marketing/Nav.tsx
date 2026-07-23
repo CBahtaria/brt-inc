@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const LINKS = [
@@ -15,20 +15,24 @@ const LINKS = [
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20)
+    const handler = () => {
+      setScrolled(window.scrollY > 20)
+      if (menuOpen && window.scrollY > 100) setMenuOpen(false)
+    }
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
-  }, [])
+  }, [menuOpen])
 
   return (
     <header
       className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled ? 'rgba(9,9,11,0.82)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(16px) saturate(160%)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+        background: scrolled || menuOpen ? 'rgba(9,9,11,0.82)' : 'transparent',
+        backdropFilter: scrolled || menuOpen ? 'blur(16px) saturate(160%)' : 'none',
+        borderBottom: scrolled || menuOpen ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
       }}
     >
       <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -83,7 +87,81 @@ export function Nav() {
         >
           Start a project
         </a>
+        {/* Hamburger — mobile only */}
+        <button
+          className="md:hidden flex items-center justify-center w-10 h-10 rounded-md transition-colors"
+          style={{ color: 'var(--text-muted)' }}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          onClick={() => setMenuOpen(o => !o)}
+        >
+          {menuOpen ? (
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="4" y1="4" x2="16" y2="16" />
+              <line x1="16" y1="4" x2="4" y2="16" />
+            </svg>
+          ) : (
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <line x1="3" y1="6" x2="17" y2="6" />
+              <line x1="3" y1="10" x2="17" y2="10" />
+              <line x1="3" y1="14" x2="17" y2="14" />
+            </svg>
+          )}
+        </button>
       </nav>
+      {/* Mobile menu panel */}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            key="mobile-menu"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="md:hidden w-full"
+            style={{
+              background: 'rgba(9,9,11,0.96)',
+              backdropFilter: 'blur(20px)',
+              borderBottom: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            <ul className="flex flex-col">
+              {LINKS.map(l => (
+                <li key={l.href}>
+                  {l.isPage ? (
+                    <Link
+                      href={l.href}
+                      className="block py-4 px-6 text-base font-mono uppercase tracking-widest transition-colors hover:text-white"
+                      style={{ color: 'var(--accent-2)' }}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={l.href}
+                      className="block py-4 px-6 text-base transition-colors hover:text-white"
+                      style={{ color: 'var(--text-muted)' }}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {l.label}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+            <div className="px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              <a
+                href="/onboarding"
+                className="flex items-center justify-center w-full px-4 py-3 rounded-md text-sm font-medium text-white transition-colors"
+                style={{ background: 'var(--accent)' }}
+                onClick={() => setMenuOpen(false)}
+              >
+                Start a project
+              </a>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   )
 }

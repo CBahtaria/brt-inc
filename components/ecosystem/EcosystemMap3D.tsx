@@ -41,6 +41,7 @@ const NODE_DATA = [
   { id: 'civisgrid',  label: 'CivisGrid',               cluster: 'institutional', pos: [-5.5, -2, -2]  as [number,number,number], r: 0.28 },
   // Web/ops
   { id: 'brtinc',     label: 'BRT Inc. Portfolio',      cluster: 'web',           pos: [-1.5, 3.5, 2]  as [number,number,number], r: 0.32 },
+  { id: 'wheels',     label: 'Wheels & Deals',          cluster: 'web',           pos: [-0.5, 5.0, -1] as [number,number,number], r: 0.35 },
 ]
 
 // ── Links (source id, target id, type) ───────────────────────────────────────
@@ -65,6 +66,8 @@ const LINK_DATA: { s: string; t: string; type: 'nats' | 'crypto' | 'advisory' | 
   { s: 'bartarian',t:'sentinel',  type: 'advisory' },
   { s: 'brtinc',  t: 'likhona',   type: 'shared'   },
   { s: 'brtinc',  t: 'mahlanya',  type: 'shared'   },
+  { s: 'brain',   t: 'wheels',    type: 'advisory' },
+  { s: 'brtinc',  t: 'wheels',    type: 'shared'   },
 ]
 
 const LINK_COLOR: Record<string, string> = {
@@ -76,7 +79,7 @@ const LINK_COLOR: Record<string, string> = {
 
 // ── Node details for the panel ───────────────────────────────────────────────
 const NODE_DETAIL: Record<string, { stack: string; desc: string; metrics: Record<string, string> }> = {
-  uav:       { stack: 'Python · NATS · MAVLink · SO(3) EKF · MRAC', desc: '7-layer formal UAV stack. DAL-A safety governor has final say on all flight commands. 1,128 tests, SRL-6.', metrics: { 'Tests': '1,128+', 'SRL': '6', 'DAL-A gates': '15+', 'Status': 'LIVE' } },
+  uav:       { stack: 'Python · NATS · MAVLink · SO(3) EKF · MRAC', desc: '7-layer formal UAV stack. DAL-A safety governor has final say on all flight commands. SO(3) Lie group geometry, fog water harvesting (4 mission profiles), 942 tests, SRL-3 HIL cleared.', metrics: { 'Tests': '942+', 'SRL': '3 (HIL)', 'DAL-A gates': '15+', 'Status': 'LIVE' } },
   sentinel:  { stack: 'PHP 8.1 · MySQL · Redis · NATS · WebSocket', desc: 'Unified command HQ. UAV Fleet, LCE, and Ecosystem tabs. TOTP 2FA, Redis cache, 100 req/min rate limit.', metrics: { 'Auth': 'TOTP 2FA', 'Cache': '30 s TTL', 'Status': 'LIVE' } },
   brain:     { stack: 'Python · Anthropic API · Obsidian · NATS · sqlite', desc: 'Cognitive core. 17 autonomous tasks, token-budgeted per domain. 9-persona weekly vuln scan. Reads all streams.', metrics: { 'Tasks': '17 autonomous', 'Models': 'Haiku/Sonnet/Opus', 'Vault': 'Obsidian', 'Status': 'LIVE' } },
   nats:      { stack: 'NATS Server · JetStream · TLS · ACL', desc: 'Central nervous system. 8 persistent streams, 50+ subjects, per-stream ACL. All real-time flows through here.', metrics: { 'Streams': '8', 'Subjects': '50+', 'Auth': 'TLS + ACL', 'Status': 'LIVE' } },
@@ -87,8 +90,9 @@ const NODE_DETAIL: Record<string, { stack: string; desc: string; metrics: Record
   zig:       { stack: 'Zig 0.14 · AES-GCM-256 · X25519 ECDH · NATS', desc: 'Edge bridge. Encrypts every sensor packet before it leaves the physical layer. 13-state EKF.', metrics: { 'Cipher': 'AES-GCM-256', 'KEx': 'X25519 ECDH', 'Status': 'Partial' } },
   ecosystem: { stack: 'Python · GPIO · Modbus RTU · OpenWRT · NATS', desc: 'Physical infra layer. Drones harvest fog water, solar, RF, piezo. Capacitor bank, reservoir monitoring, WLAN mesh.', metrics: { 'Sensors': '8 types', 'Harvest': 'fog+solar+RF+piezo', 'Status': 'In dev' } },
   civisgrid: { stack: 'NestJS · PostGIS · Next.js', desc: 'National-scale civic infrastructure dashboard for SADC government agencies — asset mgmt, resilience tracking, library network.', metrics: { 'Scale': 'National', 'Status': 'Active' } },
-  brtinc:    { stack: 'Next.js 16 · Tailwind · Supabase · Vercel', desc: 'Institutional face of BRT Inc. 13 projects, case studies, live metrics, Trust & Security page. You are here.', metrics: { 'Projects': '13', 'Pages': '21 static', 'URL': 'brt-inc.vercel.app', 'Status': 'LIVE' } },
+  brtinc:    { stack: 'Next.js 16 · Tailwind · Supabase · Vercel', desc: 'Institutional face of BRT Inc. 14 projects, case studies, live metrics, Trust & Security page. You are here.', metrics: { 'Projects': '14', 'Pages': '21 static', 'URL': 'brtinc.dev', 'Status': 'LIVE' } },
   bartarian: { stack: 'PHP 8.2 · Expo RN · RBAC', desc: 'Defence command interface. RBAC + auth boundaries. Expo React Native mobile.', metrics: { 'Auth': 'RBAC', 'Status': 'Partial' } },
+  wheels:    { stack: 'Next.js 16 · Supabase · sharp · Anthropic · Vercel', desc: 'Used car dealership platform for Matsapha, Eswatini. Procedural ASCII highway animation, Thandi AI chat (Haiku 4.5), admin vehicle posting, media pipeline (WebP thumbnails), anonymous analytics + personalized feed.', metrics: { 'API endpoints': '36', 'AI': 'Haiku 4.5', 'Media': 'WebP pipeline', 'Status': 'LIVE' } },
 }
 
 // ── Travelling particle along a tube path ─────────────────────────────────────

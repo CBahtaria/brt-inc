@@ -26,7 +26,7 @@ export default function EcosystemPage() {
 
         <div className="hidden sm:flex items-center gap-4 md:gap-6">
           {[
-            { label: '13 systems',    color: 'var(--accent-2)' },
+            { label: '14 systems',    color: 'var(--accent-2)' },
             { label: '8 NATS streams', color: 'var(--accent)' },
             { label: '1,466+ tests',  color: '#10b981' },
             { label: 'SRL-6',         color: 'var(--accent-game)' },

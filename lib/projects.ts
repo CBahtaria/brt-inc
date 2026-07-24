@@ -148,4 +148,15 @@ export const PROJECTS: Project[] = [
     variant: 'standard',
     status: 'production',
   },
+  {
+    slug: 'layered',
+    title: 'Layered',
+    description: 'Production-grade browser security suite with telephony bridge. Blocks ads/trackers/malicious redirects via declarativeNetRequest, port-knock-authenticated native messaging for click-to-call, 3-tier multi-LLM swarm (Opus/Sonnet/Haiku) with Hebbian weight learning, Whisper audio transcription, hash-chained audit log, and jurisdiction-aware legal compliance. Chrome/Edge/Firefox store-ready.',
+    tags: ['TypeScript', 'React', 'NestJS', 'Whisper AI', 'Kubernetes'],
+    categories: ['web', 'security', 'ai', 'platform'],
+    metrics: ['48 Jest tests passing', '3-tier LLM swarm', 'Whisper transcription'],
+    variant: 'standard',
+    featured: true,
+    status: 'building',
+  },
 ]

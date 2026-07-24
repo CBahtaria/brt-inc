@@ -33,25 +33,27 @@ Must pass clean. Fix all warnings before committing.
 
 ## Agent Dispatch Rules
 
-### Use `model: "opus"` for:
+### Use `model: "opus"` (`claude-opus-4-7`) for:
 - Architecture decisions — layout changes, new CSS systems, new JS modules
 - Multi-file coordination — changes spanning HTML + CSS + JS + vercel.json together
 - Review passes — reading implementer output and deciding if it meets spec
+- Security review — any change touching auth, RLS, CSP, or key handling
 - Debugging — root cause analysis when something breaks unexpectedly
 - Any task where wrong judgment = visible regression on production
 
-### Use `model: "sonnet"` for:
+### Use `model: "sonnet"` (`claude-sonnet-4-6`) for:
 - Mechanical implementation against a complete spec (Orchestrator has already designed it)
 - Single-section HTML/CSS edits with clear before/after
 - Scripted JS additions (new isolated function, new event listener)
 - File writes where the exact content is already decided
 - Fixing issues called out by the reviewer
 
-### Use `model: "haiku"` for:
+### Use `model: "haiku"` (`claude-haiku-4-5`) for:
 - File reads and grep — "does X exist in this file?"
 - Verification — "did the edit land correctly?"
 - Line count, structure checks, syntax validation
 - Quick searches across the repo
+- Running blocking gates and reporting pass/fail
 
 **Exception**: pure grep/bash in the orchestrating session is faster and cheaper than spawning a Haiku agent. Only spawn Haiku when reading + light reasoning are both needed (e.g. "read this file and tell me if the invariant holds"). For bare `grep`/`find`/`wc`, use Bash directly.
 
@@ -202,3 +204,30 @@ make deploy
 ```
 
 `make deploy` runs `vercel --prod` then curls the live URL to confirm key elements are present. If either check prints WARN, inspect the deployment before sharing the URL.
+
+---
+
+## Security Gates (blocking)
+
+These three gates must pass before any PR is merged to main. CI enforces all three; the Orchestrator also runs them locally before dispatching a deploy.
+
+**Gate 1 — gitleaks (must pass first, blocks all downstream jobs)**
+```bash
+gitleaks detect --source . --no-git
+```
+Zero findings required. Any Supabase service-role key, Stripe live key, or Resend API key is an immediate STOP. The `secret-scan` job in both `deploy.yml` and `security.yml` runs this; all other jobs declare `needs: secret-scan`.
+
+**Gate 2 — npm audit (no high or critical)**
+```bash
+npm audit --production --audit-level=high
+```
+Zero high/critical findings in production dependencies. Run after `npm ci --ignore-scripts` to avoid script injection during install. The `npm-audit` job in `security.yml` runs this on schedule (weekly Monday 06:00 UTC) and on every PR.
+
+**Gate 3 — no client secrets in bundle (grep gate)**
+```bash
+# No Supabase service-role JWT in any bundled JS/HTML
+grep -rniE 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_-]{20,}\.' \
+  --include="*.html" --include="*.js" --exclude="supabase-client.js" src/ api/ 2>/dev/null
+# Must return empty. Any match = STOP.
+```
+The `check-no-secrets-in-source` job in `security.yml` covers Stripe and Supabase JWT patterns. Supabase anon key (`VITE_SUPABASE_ANON_KEY`) is acceptable in `.env.example` only — never in committed source.

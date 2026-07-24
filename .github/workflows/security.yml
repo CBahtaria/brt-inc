@@ -1,33 +1,53 @@
-# Runs on every push and PR: secret scanning + auth gate check + secret pattern scan.
 name: Security
-
 on:
   push:
+    branches: [main]
   pull_request:
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly Monday 06:00 UTC
+
+permissions:
+  contents: read
 
 jobs:
-  secrets:
+  secret-scan:
     name: Secret scanning
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11  # v4.1.1
         with:
           fetch-depth: 0
-
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
+      - uses: gitleaks/gitleaks-action@44c470a5d5c43dc3a43c6cfc2f7dcf87697b5b43  # v2.3.6
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8  # v4.0.4
+        with:
+          node-version: '22'
+          cache: 'npm'
+      - run: npm ci --ignore-scripts
+      - run: npm audit --production --audit-level=high
+
+  osv-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: google/osv-scanner-action@v1
+        with:
+          scan-args: |-
+            --lockfile=package-lock.json
+            --format=table
+            .
 
   check-auth-gate:
     name: Verify internal tools include auth gate
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Check auth.js is referenced in internal tools
         run: |
@@ -54,10 +74,8 @@ jobs:
   check-no-secrets-in-source:
     name: Verify no hardcoded secrets pattern
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
 
       - name: Scan for common secret patterns
         run: |
@@ -79,9 +97,7 @@ jobs:
   lint-actions:
     name: Lint GitHub Actions
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
       - name: actionlint
         uses: raven-actions/actionlint@v2

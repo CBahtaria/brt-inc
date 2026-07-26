@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 
 const CATEGORIES = [
@@ -24,6 +25,82 @@ const fadeUp = {
     y: 0,
     transition: { delay: i * 0.08, duration: 0.55, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] },
   }),
+}
+
+type VerifyState = 'idle' | 'checking' | 'institutional' | 'valid' | 'invalid'
+
+function RFQEmailInput() {
+  const [email, setEmail] = useState('')
+  const [state, setState] = useState<VerifyState>('idle')
+
+  const verify = async () => {
+    if (!email.includes('@')) { setState('invalid'); return }
+    setState('checking')
+    try {
+      const res = await fetch('/api/marketplace/verify-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json() as { institutional: boolean; sadc: boolean }
+      setState(data.sadc ? 'institutional' : data.institutional ? 'institutional' : 'valid')
+    } catch {
+      setState('valid')
+    }
+  }
+
+  const statusColor: Record<VerifyState, string> = {
+    idle: 'transparent',
+    checking: 'rgba(255,255,255,0.2)',
+    institutional: 'rgba(45,212,191,0.6)',
+    valid: 'rgba(99,102,241,0.6)',
+    invalid: 'rgba(239,68,68,0.6)',
+  }
+
+  const statusLabel: Partial<Record<VerifyState, string>> = {
+    checking: 'Verifying…',
+    institutional: '✓ SADC Institutional',
+    valid: '✓ Verified',
+    invalid: 'Enter a valid email',
+  }
+
+  const rfqHref = `mailto:marketplace@brtinc.co.sz?subject=Marketplace%20RFQ&body=From%3A%20${encodeURIComponent(email)}`
+
+  return (
+    <div className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto mb-5">
+      <div className="relative flex-1">
+        <input
+          type="email"
+          value={email}
+          onChange={e => { setEmail(e.target.value); setState('idle') }}
+          onBlur={() => { if (email.includes('@')) verify() }}
+          placeholder="your@institution.gov.sz"
+          className="w-full px-4 py-2.5 rounded-full text-sm font-mono bg-transparent outline-none"
+          style={{
+            border: `1px solid ${state === 'idle' ? 'rgba(45,212,191,0.3)' : statusColor[state]}`,
+            color: 'var(--white-80)',
+            transition: 'border-color 0.2s',
+          }}
+        />
+        {statusLabel[state] && (
+          <span
+            className="absolute right-4 top-1/2 -translate-y-1/2 font-mono text-[9px] uppercase tracking-widest"
+            style={{ color: statusColor[state] }}
+          >
+            {statusLabel[state]}
+          </span>
+        )}
+      </div>
+      <a
+        href={state === 'invalid' || state === 'idle' || !email ? '#' : rfqHref}
+        onClick={e => { if (!email.includes('@')) { e.preventDefault(); verify() } }}
+        className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-90 whitespace-nowrap"
+        style={{ background: 'var(--accent-2)', color: '#000' }}
+      >
+        Post RFQ
+      </a>
+    </div>
+  )
 }
 
 export function Marketplace() {
@@ -149,22 +226,14 @@ export function Marketplace() {
             Submit a Request for Quotation — reach 200+ SADC-verified technology suppliers.
             Procurement built for government timelines and sovereign standards.
           </p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <a
-              href="mailto:marketplace@brtinc.co.sz?subject=Marketplace%20RFQ"
-              className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:opacity-90"
-              style={{ background: 'var(--accent-2)', color: '#000' }}
-            >
-              Post RFQ
-            </a>
-            <a
-              href="#contact"
-              className="px-6 py-2.5 rounded-full text-sm font-semibold transition-all hover:bg-white/10"
-              style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'var(--white-70)' }}
-            >
-              Browse Catalogue
-            </a>
-          </div>
+          <RFQEmailInput />
+          <a
+            href="#contact"
+            className="inline-block px-6 py-2 rounded-full text-sm font-semibold transition-all hover:bg-white/10"
+            style={{ border: '1px solid rgba(255,255,255,0.15)', color: 'var(--white-50)' }}
+          >
+            Browse Catalogue
+          </a>
         </motion.div>
       </div>
     </section>

@@ -11,6 +11,7 @@ const LINKS = [
   { href: '#pricing',   label: 'Pricing' },
   { href: '#contact',   label: 'Contact' },
   { href: '/ecosystem', label: 'Ecosystem', isPage: true },
+  { href: '/writing',   label: 'Writing',   isPage: true },
 ]
 
 export function Nav() {

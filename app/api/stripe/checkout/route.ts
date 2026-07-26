@@ -7,12 +7,19 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06
 // STRIPE_PRICE_AUDIT_LITE, STRIPE_PRICE_AUDIT_STANDARD, STRIPE_PRICE_AUDIT_PREMIUM
 // STRIPE_PRICE_RETAINER_ESSENTIAL, STRIPE_PRICE_RETAINER_PROFESSIONAL
 const PRICE_MAP: Record<string, string | undefined> = {
-  'audit-lite':              process.env.STRIPE_PRICE_AUDIT_LITE,
-  'audit-standard':          process.env.STRIPE_PRICE_AUDIT_STANDARD,
-  'audit-premium':           process.env.STRIPE_PRICE_AUDIT_PREMIUM,
-  'retainer-essential':      process.env.STRIPE_PRICE_RETAINER_ESSENTIAL,
-  'retainer-professional':   process.env.STRIPE_PRICE_RETAINER_PROFESSIONAL,
-  'consultation':            process.env.STRIPE_PRICE_CONSULTATION,
+  'audit-lite':                      process.env.STRIPE_PRICE_AUDIT_LITE,
+  'audit-standard':                  process.env.STRIPE_PRICE_AUDIT_STANDARD,
+  'audit-premium':                   process.env.STRIPE_PRICE_AUDIT_PREMIUM,
+  'retainer-essential':              process.env.STRIPE_PRICE_RETAINER_ESSENTIAL,
+  'retainer-professional':           process.env.STRIPE_PRICE_RETAINER_PROFESSIONAL,
+  'consultation':                    process.env.STRIPE_PRICE_CONSULTATION,
+  // Layered subscriptions
+  'layered-individual-monthly':      process.env.STRIPE_PRICE_LAYERED_IND_MONTHLY,
+  'layered-individual-annual':       process.env.STRIPE_PRICE_LAYERED_IND_ANNUAL,
+  'layered-pro-monthly':             process.env.STRIPE_PRICE_LAYERED_PRO_MONTHLY,
+  'layered-pro-annual':              process.env.STRIPE_PRICE_LAYERED_PRO_ANNUAL,
+  'layered-institutional-monthly':   process.env.STRIPE_PRICE_LAYERED_INST_MONTHLY,
+  'layered-institutional-annual':    process.env.STRIPE_PRICE_LAYERED_INST_ANNUAL,
 }
 
 export async function POST(req: NextRequest) {
@@ -24,7 +31,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid price' }, { status: 400 })
     }
 
-    const isSubscription = priceKey.startsWith('retainer-')
+    const isSubscription = priceKey.startsWith('retainer-') || priceKey.startsWith('layered-')
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'https://brt-inc.vercel.app'
 
     const session = await stripe.checkout.sessions.create({

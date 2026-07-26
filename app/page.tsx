@@ -11,6 +11,8 @@ import { Portfolio } from '@/components/marketing/Portfolio'
 import { CaseStudies } from '@/components/marketing/CaseStudies'
 import { Impact } from '@/components/marketing/Impact'
 import { Testimonials } from '@/components/marketing/Testimonials'
+import { Products } from '@/components/marketing/Products'
+import { Newsletter } from '@/components/marketing/Newsletter'
 import { Pricing } from '@/components/marketing/Pricing'
 import { FAQ } from '@/components/marketing/FAQ'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
@@ -36,7 +38,9 @@ export default function HomePage() {
         <EcosystemSection />
         <Impact />
         <Testimonials />
+        <Products />
         <Pricing />
+        <Newsletter />
         <FAQ />
         <Contact />
       </main>

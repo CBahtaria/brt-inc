@@ -24,7 +24,16 @@ export function getContentFiles(category: string): ContentMeta[] {
       const raw = fs.readFileSync(path.join(dir, file), 'utf-8')
       const frontmatter = parseFrontmatter(raw)
       const slug = file.replace(/\.(mdx|md)$/, '')
-      return { slug, category, ...frontmatter } as ContentMeta
+      return {
+        slug,
+        category,
+        title: slug,
+        date: '',
+        summary: '',
+        premium: false,
+        tags: [],
+        ...frontmatter,
+      } as ContentMeta
     })
     .sort((a, b) => (a.date > b.date ? -1 : 1))
 }

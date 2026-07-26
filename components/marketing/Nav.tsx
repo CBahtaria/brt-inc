@@ -1,18 +1,13 @@
 'use client'
 import Link from 'next/link'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const LINKS = [
-  { href: '#about',       label: 'About' },
-  { href: '#services',    label: 'Capabilities' },
-  { href: '#marketplace', label: 'Marketplace' },
-  { href: '#portfolio',   label: 'Work' },
-  { href: '#pricing',     label: 'Pricing' },
-  { href: '#contact',     label: 'Contact' },
-  { href: '/ecosystem',   label: 'Ecosystem', isPage: true },
-  { href: '/writing',     label: 'Writing',   isPage: true },
+  { href: '#sentinel',    label: 'CAPABILITIES' },
+  { href: '/marketplace', label: 'MARKETPLACE', isPage: true },
+  { href: '#uav',         label: 'WORK' },
+  { href: '/ecosystem',   label: 'ECOSYSTEM',   isPage: true },
+  { href: '/writing',     label: 'WRITING',      isPage: true },
 ]
 
 export function Nav() {
@@ -20,150 +15,179 @@ export function Nav() {
   const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const handler = () => {
-      setScrolled(window.scrollY > 20)
-      if (menuOpen && window.scrollY > 100) setMenuOpen(false)
-    }
+    const handler = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handler, { passive: true })
     return () => window.removeEventListener('scroll', handler)
-  }, [menuOpen])
+  }, [])
 
   return (
-    <header
-      className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
-      style={{
-        background: scrolled || menuOpen ? 'rgba(0,0,0,0.90)' : 'transparent',
-        backdropFilter: scrolled || menuOpen ? 'blur(16px) saturate(160%)' : 'none',
-        borderBottom: scrolled || menuOpen ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
-      }}
-    >
-      <nav className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <Image
-            src="/logo.svg"
-            alt="BRT Inc."
-            width={36}
-            height={36}
-            className="transition-opacity group-hover:opacity-80"
-            priority
-          />
-          <span className="font-mono text-sm font-semibold tracking-tight">
-            BRT <span style={{ color: 'var(--accent)' }}>INC.</span>
-          </span>
-        </Link>
-        <ul className="hidden md:flex items-center gap-8">
-          {LINKS.map(l => (
-            <li key={l.href}>
-              {l.isPage ? (
-                <Link
-                  href={l.href}
-                  className="relative text-sm font-mono text-xs uppercase tracking-widest transition-colors hover:text-text"
-                  style={{ color: 'var(--accent-2)' }}
-                >
-                  {l.label}
-                </Link>
-              ) : (
-                <motion.a
-                  href={l.href}
-                  className="relative text-sm hover:text-text transition-colors"
-                  style={{ color: 'var(--text-muted)' }}
-                  whileHover="hover"
-                >
-                  {l.label}
-                  <motion.span
-                    className="absolute -bottom-0.5 left-0 h-px w-full origin-left"
-                    style={{ background: 'var(--accent)' }}
-                    variants={{ hover: { scaleX: 1 }, initial: { scaleX: 0 } }}
-                    initial="initial"
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
-                  />
-                </motion.a>
-              )}
-            </li>
-          ))}
-        </ul>
-        <a
-          href="/onboarding"
-          className="hidden md:inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-white transition-colors"
-          style={{ background: 'var(--accent)' }}
+    <>
+      <header
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 60,
+          zIndex: 50,
+          background: scrolled ? 'rgba(0,0,0,0.90)' : 'rgba(0,0,0,0)',
+          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
+          transition: 'background 0.3s ease, border-color 0.3s ease',
+        }}
+      >
+        <nav
+          style={{
+            maxWidth: 1280,
+            margin: '0 auto',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '0 24px',
+          }}
         >
-          Start a project
-        </a>
-        {/* Hamburger — mobile only */}
-        <button
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded-md transition-colors"
-          style={{ color: 'var(--text-muted)' }}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-          onClick={() => setMenuOpen(o => !o)}
-        >
-          {menuOpen ? (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="4" y1="4" x2="16" y2="16" />
-              <line x1="16" y1="4" x2="4" y2="16" />
-            </svg>
-          ) : (
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-              <line x1="3" y1="6" x2="17" y2="6" />
-              <line x1="3" y1="10" x2="17" y2="10" />
-              <line x1="3" y1="14" x2="17" y2="14" />
-            </svg>
-          )}
-        </button>
-      </nav>
-      {/* Mobile menu panel */}
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div
-            key="mobile-menu"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18, ease: 'easeOut' }}
-            className="md:hidden w-full"
+          {/* Logo */}
+          <Link
+            href="/"
+            className="font-display"
             style={{
-              background: 'rgba(9,9,11,0.96)',
-              backdropFilter: 'blur(20px)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              color: 'var(--white-100)',
+              fontSize: 16,
+              textDecoration: 'none',
+              letterSpacing: '0.08em',
+              fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+              fontWeight: 700,
             }}
           >
-            <ul className="flex flex-col">
-              {LINKS.map(l => (
-                <li key={l.href}>
-                  {l.isPage ? (
-                    <Link
-                      href={l.href}
-                      className="block py-4 px-6 text-base font-mono uppercase tracking-widest transition-colors hover:text-white"
-                      style={{ color: 'var(--accent-2)' }}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {l.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={l.href}
-                      className="block py-4 px-6 text-base transition-colors hover:text-white"
-                      style={{ color: 'var(--text-muted)' }}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {l.label}
-                    </a>
-                  )}
-                </li>
-              ))}
-            </ul>
-            <div className="px-6 py-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              <a
-                href="/onboarding"
-                className="flex items-center justify-center w-full px-4 py-3 rounded-md text-sm font-medium text-white transition-colors"
-                style={{ background: 'var(--accent)' }}
+            BRT INC.
+          </Link>
+
+          {/* Desktop links */}
+          <ul
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 32,
+              listStyle: 'none',
+              margin: 0,
+              padding: 0,
+            }}
+            className="hidden md:flex"
+          >
+            {LINKS.map(l => (
+              <li key={l.href}>
+                {l.isPage ? (
+                  <Link
+                    href={l.href}
+                    style={{
+                      color: 'var(--white-60)',
+                      textDecoration: 'none',
+                      fontSize: 12,
+                      letterSpacing: '0.15em',
+                      fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+                      fontWeight: 600,
+                      transition: 'color 0.15s ease',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white-100)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white-60)' }}
+                  >
+                    {l.label}
+                  </Link>
+                ) : (
+                  <a
+                    href={l.href}
+                    style={{
+                      color: 'var(--white-60)',
+                      textDecoration: 'none',
+                      fontSize: 12,
+                      letterSpacing: '0.15em',
+                      fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+                      fontWeight: 600,
+                      transition: 'color 0.15s ease',
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white-100)' }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.color = 'var(--white-60)' }}
+                  >
+                    {l.label}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden"
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            onClick={() => setMenuOpen(o => !o)}
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--white-100)',
+              fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+              fontSize: 12,
+              letterSpacing: '0.15em',
+              fontWeight: 600,
+            }}
+          >
+            {menuOpen ? 'CLOSE' : 'MENU'}
+          </button>
+        </nav>
+      </header>
+
+      {/* Mobile fullscreen overlay */}
+      {menuOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 49,
+            background: '#000',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 32,
+          }}
+        >
+          {LINKS.map(l => (
+            l.isPage ? (
+              <Link
+                key={l.href}
+                href={l.href}
                 onClick={() => setMenuOpen(false)}
+                style={{
+                  color: 'var(--white-100)',
+                  textDecoration: 'none',
+                  fontSize: 'clamp(2rem, 8vw, 3.5rem)',
+                  fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                }}
               >
-                Start a project
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                key={l.href}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  color: 'var(--white-100)',
+                  textDecoration: 'none',
+                  fontSize: 'clamp(2rem, 8vw, 3.5rem)',
+                  fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
+                  fontWeight: 700,
+                  letterSpacing: '0.05em',
+                }}
+              >
+                {l.label}
               </a>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </header>
+            )
+          ))}
+        </div>
+      )}
+    </>
   )
 }

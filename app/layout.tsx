@@ -1,7 +1,15 @@
 import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
+import { Barlow_Condensed } from 'next/font/google'
 import './globals.css'
+
+const barlowCondensed = Barlow_Condensed({
+  subsets: ['latin'],
+  weight: ['400', '600', '700'],
+  variable: '--font-barlow-condensed',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'BRT Inc. — Safety-Critical Software for SADC Institutions',
@@ -22,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${barlowCondensed.variable}`}>
       <body className="font-sans bg-background text-text antialiased">
         {children}
       </body>

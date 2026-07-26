@@ -6,7 +6,7 @@ import Link from 'next/link'
 
 interface Params { category: string; slug: string }
 
-export async function generateStaticParams(): Promise<Params[]> {
+export async function generateStaticParams() {
   const root = path.join(process.cwd(), 'content')
   if (!fs.existsSync(root)) return []
   const params: Params[] = []
@@ -22,8 +22,8 @@ export async function generateStaticParams(): Promise<Params[]> {
   return params
 }
 
-export default async function ArticlePage({ params }: { params: Params }) {
-  const { category, slug } = params
+export default async function ArticlePage({ params }: { params: Promise<Params> }) {
+  const { category, slug } = await params
   const extensions = ['.mdx', '.md']
   let filePath = ''
   let source = ''

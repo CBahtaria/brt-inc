@@ -48,20 +48,8 @@ export function Hero() {
   return (
     <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      style={{ background: 'var(--surface-0)' }}
+      style={{ background: '#000' }}
     >
-      {/* Nebula backdrop */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: [
-            'radial-gradient(ellipse 100% 60% at 50% -5%, rgba(99,102,241,0.13) 0%, transparent 65%)',
-            'radial-gradient(ellipse 60% 40% at 80% 70%, rgba(45,212,191,0.07) 0%, transparent 55%)',
-            'radial-gradient(ellipse 40% 30% at 10% 80%, rgba(76,29,149,0.08) 0%, transparent 50%)',
-          ].join(', '),
-        }}
-      />
-
       {/* Layer 0: particles */}
       <ParticleField />
 
@@ -70,100 +58,87 @@ export function Hero() {
         <Hero3D />
       </div>
 
-      {/* Layer 2: gradient vignette */}
+      {/* Layer 2: radial vignette — keeps 3D legible */}
       <div
         className="absolute inset-0 z-15 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(5,7,15,0.6) 100%)',
+          background: 'radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, rgba(0,0,0,0.65) 100%)',
         }}
       />
 
-      {/* Layer 3: content */}
-      <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
+      {/* Layer 3: cinematic mission statement */}
+      <div className="relative z-20 flex flex-col items-center justify-center text-center px-6 max-w-5xl mx-auto">
+        <motion.p
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15, duration: 0.6 }}
-          className="inline-flex items-center gap-2 mb-8 px-3 py-1.5 rounded-full"
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="font-mono text-xs uppercase tracking-[0.25em] mb-8"
+          style={{ color: 'var(--accent-2)' }}
+        >
+          BRT Inc. · Manzini, Eswatini
+        </motion.p>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display leading-none mb-4"
           style={{
-            background: 'rgba(99,102,241,0.08)',
-            border: '1px solid rgba(99,102,241,0.2)',
+            fontSize: 'clamp(2.8rem, 9vw, 7.5rem)',
+            color: 'var(--white-100)',
           }}
         >
-          <span
-            className="w-1.5 h-1.5 rounded-full animate-pulse"
-            style={{ background: 'var(--accent-2)', animationDuration: '2s' }}
-          />
-          <span className="font-mono text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
-            BRT Inc. · Manzini, Eswatini · Est. 2021
-          </span>
-        </motion.div>
+          Sovereign Technology
+        </motion.h1>
 
-        <h1 className="text-6xl lg:text-8xl font-bold tracking-tight leading-[0.95] mb-8">
-          {HEADLINE_WORDS.map((word, i) => (
-            <motion.span
-              key={word + i}
-              className="inline-block mr-4"
-              initial={{ y: 80, opacity: 0, filter: 'blur(8px)' }}
-              animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-              transition={{
-                delay: 0.3 + i * 0.09,
-                duration: 0.75,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-            >
-              {word === 'Software' ? (
-                <span style={{
-                  background: 'linear-gradient(135deg, #6366f1 0%, #2dd4bf 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                }}>
-                  {word}
-                </span>
-              ) : word}
-            </motion.span>
-          ))}
-        </h1>
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display leading-none mb-10"
+          style={{
+            fontSize: 'clamp(2.8rem, 9vw, 7.5rem)',
+            background: 'linear-gradient(135deg, var(--white-100) 0%, var(--accent-2) 55%, var(--accent) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          for Southern Africa.
+        </motion.h1>
 
         <motion.p
-          className="text-lg lg:text-xl max-w-2xl mx-auto mb-12 leading-relaxed"
-          style={{ color: 'var(--text-muted)' }}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.85, duration: 0.6 }}
+          transition={{ duration: 0.7, delay: 0.65 }}
+          className="text-lg mb-10 max-w-[520px] leading-relaxed"
+          style={{ color: 'var(--white-60)' }}
         >
-          Defence-grade engineering for governments, defence forces, and civic institutions across southern Africa.
-          Every commit signed. Every deployment hardened.
+          Defence-grade autonomous systems, secure platforms, and infrastructure software for SADC national institutions.
         </motion.p>
 
         <motion.div
-          className="flex flex-wrap justify-center gap-4"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.05, duration: 0.5 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="flex flex-wrap gap-3 justify-center"
         >
           <a
-            href="/onboarding"
-            className="relative px-7 py-3.5 rounded-lg text-white font-semibold text-sm overflow-hidden transition-transform hover:scale-[1.02] active:scale-[0.98]"
-            style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-              boxShadow: '0 0 0 1px rgba(99,102,241,0.5), 0 8px 32px rgba(99,102,241,0.3)',
-            }}
+            href="#portfolio"
+            className="px-7 py-3 rounded-full text-sm font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: 'var(--accent)', boxShadow: '0 0 28px rgba(99,102,241,0.35)' }}
           >
-            Start a project
+            View Our Work
           </a>
           <a
-            href="#portfolio"
-            className="px-7 py-3.5 rounded-lg font-medium text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+            href="#about"
+            className="px-7 py-3 rounded-full text-sm font-semibold transition-all hover:bg-white/10"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'var(--text-muted)',
-              backdropFilter: 'blur(8px)',
+              border: '1px solid rgba(255,255,255,0.2)',
+              color: 'var(--white-80)',
             }}
           >
-            View work
+            Mission Brief
           </a>
         </motion.div>
 
@@ -172,7 +147,7 @@ export function Hero() {
           className="flex flex-wrap justify-center gap-6 mt-16"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.8 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
         >
           {[
             { label: 'DAL-A compliant', icon: '⬡' },
@@ -182,7 +157,7 @@ export function Hero() {
           ].map(item => (
             <div key={item.label} className="flex items-center gap-1.5">
               <span className="text-[10px]" style={{ color: 'var(--accent-2)' }}>{item.icon}</span>
-              <span className="font-mono text-[10px] uppercase tracking-widest" style={{ color: 'var(--text-subtle)' }}>
+              <span className="font-mono text-[10px] uppercase tracking-widest" style={{ color: 'var(--white-30)' }}>
                 {item.label}
               </span>
             </div>
@@ -190,13 +165,26 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
-      <OrbitRing />
+      {/* Cinematic scroll line */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.8, duration: 0.6 }}
+        style={{ pointerEvents: 'none' }}
+      >
+        <motion.div
+          className="w-px h-12"
+          style={{ background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.3), transparent)' }}
+          animate={{ scaleY: [0.5, 1, 0.5], opacity: [0.4, 1, 0.4] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+      </motion.div>
 
       {/* Bottom fade */}
       <div
         className="absolute bottom-0 inset-x-0 h-48 z-30 pointer-events-none"
-        style={{ background: 'linear-gradient(to top, var(--background), transparent)' }}
+        style={{ background: 'linear-gradient(to top, #000, transparent)' }}
       />
     </section>
   )

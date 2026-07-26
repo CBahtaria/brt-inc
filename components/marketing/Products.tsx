@@ -74,22 +74,24 @@ export function Products() {
   const [cycle, setCycle] = useState<BillingCycle>('annual')
 
   return (
-    <section id="products" className="py-32 max-w-7xl mx-auto px-6 relative">
-      {/* Nebula */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[700px] h-[400px] pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse, rgba(45,212,191,0.04) 0%, transparent 70%)', filter: 'blur(80px)' }} />
-
+    <section id="products" className="py-32 px-6" style={{ background: '#000' }}>
+      <div className="max-w-7xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6 }}
       >
-        <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>
-          Products
+        <p className="font-mono text-xs uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--accent-2)' }}>
+          Flagship Systems
         </p>
-        <h2 className="text-4xl lg:text-5xl font-bold mb-2">Layered — Privacy Intelligence</h2>
-        <p className="text-base max-w-2xl mb-8" style={{ color: 'var(--text-muted)' }}>
+        <h2
+          className="font-display mb-4"
+          style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)', color: 'var(--white-100)' }}
+        >
+          Layered — Privacy Intelligence
+        </h2>
+        <p className="text-base max-w-2xl mb-8" style={{ color: 'var(--white-50)', lineHeight: 1.75 }}>
           On-device privacy shields, OSINT scanner, encrypted credential vault, and fake identity generator.
           Available as a Chrome extension and iOS app. Cancel anytime.
         </p>
@@ -120,13 +122,11 @@ export function Products() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-40px' }}
             transition={{ delay: i * 0.1, duration: 0.6 }}
-            className="relative flex flex-col rounded-2xl p-6"
+            className="relative flex flex-col rounded-xl p-6"
             style={{
-              background: plan.highlight ? 'rgba(99,102,241,0.07)' : 'rgba(13,17,23,0.8)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: plan.highlight ? '1px solid rgba(99,102,241,0.3)' : '1px solid rgba(255,255,255,0.055)',
-              boxShadow: plan.highlight ? '0 0 0 1px rgba(99,102,241,0.1), 0 24px 48px rgba(99,102,241,0.08)' : 'none',
+              background: plan.highlight ? 'rgba(99,102,241,0.06)' : 'var(--surface-1)',
+              border: plan.highlight ? '1px solid rgba(99,102,241,0.3)' : '1px solid rgba(255,255,255,0.08)',
+              boxShadow: plan.highlight ? '0 0 40px rgba(99,102,241,0.1)' : 'none',
             }}
           >
             {plan.highlight && (
@@ -138,13 +138,13 @@ export function Products() {
               </div>
             )}
 
-            <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--text)' }}>{plan.name}</h3>
+            <h3 className="font-semibold text-lg mb-3" style={{ color: 'var(--white-90)' }}>{plan.name}</h3>
 
             <div className="mb-1">
               <span className="font-mono font-bold text-3xl" style={{ color: 'var(--accent)' }}>
                 {cycle === 'monthly' ? plan.monthly : plan.annual}
               </span>
-              <span className="font-mono text-xs ml-1" style={{ color: 'var(--text-subtle)' }}>
+              <span className="font-mono text-xs ml-1" style={{ color: 'var(--white-30)' }}>
                 /{cycle === 'monthly' ? 'mo' : 'yr'}
               </span>
             </div>
@@ -155,7 +155,7 @@ export function Products() {
 
             <ul className="space-y-2 flex-1">
               {plan.features.map(f => (
-                <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
+                <li key={f} className="flex items-center gap-2 text-sm" style={{ color: 'var(--white-50)' }}>
                   <span style={{ color: 'var(--accent-2)' }}>✓</span>
                   {f}
                 </li>
@@ -180,11 +180,10 @@ export function Products() {
 
       {/* Course teaser */}
       <motion.div
-        className="mt-20 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6"
+        className="mt-20 rounded-xl p-8 flex flex-col md:flex-row items-center justify-between gap-6"
         style={{
-          background: 'rgba(13,17,23,0.8)',
-          backdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.055)',
+          background: 'var(--surface-1)',
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -198,10 +197,10 @@ export function Products() {
               Course · R 2,500
             </span>
           </div>
-          <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text)' }}>
+          <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--white-90)' }}>
             Security for SADC Engineers
           </h3>
-          <p className="text-sm max-w-lg" style={{ color: 'var(--text-muted)', lineHeight: '1.65' }}>
+          <p className="text-sm max-w-lg" style={{ color: 'var(--white-50)', lineHeight: '1.65' }}>
             Practical security engineering for government IT staff and developers in southern Africa.
             Covers threat modelling, secure-by-default architecture, auth hardening, CSP, audit logging,
             and SADC compliance context. Self-paced. Lifetime access.
@@ -222,6 +221,7 @@ export function Products() {
           </p>
         </div>
       </motion.div>
+      </div>
     </section>
   )
 }

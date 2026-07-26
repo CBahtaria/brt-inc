@@ -69,15 +69,8 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="services" className="py-32 max-w-7xl mx-auto px-6 relative">
-      {/* Section nebula glow */}
-      <div
-        className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] pointer-events-none"
-        style={{
-          background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-        }}
-      />
+    <section id="services" className="py-32 px-6" style={{ background: '#000' }}>
+      <div className="max-w-7xl mx-auto">
 
       <motion.div
         initial={{ opacity: 0, y: 24 }}
@@ -85,13 +78,16 @@ export function Services() {
         viewport={{ once: true, margin: '-80px' }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       >
-        <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>
-          Practice areas
+        <p className="font-mono text-xs uppercase tracking-[0.2em] mb-3" style={{ color: 'var(--accent-2)' }}>
+          Capabilities
         </p>
-        <h2 className="text-4xl lg:text-5xl font-bold mb-3" style={{ color: 'var(--text)' }}>
-          What I build.
+        <h2
+          className="font-display mb-4"
+          style={{ fontSize: 'clamp(2rem, 5vw, 3.75rem)', color: 'var(--white-100)' }}
+        >
+          Mission Capabilities
         </h2>
-        <p className="text-base max-w-xl mb-14" style={{ color: 'var(--text-muted)' }}>
+        <p className="text-base max-w-xl mb-14" style={{ color: 'var(--white-50)', lineHeight: 1.75 }}>
           Every engagement runs under a signed service agreement. Scope is fixed before any work starts.
         </p>
       </motion.div>
@@ -105,54 +101,47 @@ export function Services() {
             viewport={{ once: true, margin: '-40px' }}
             transition={{ delay: i * 0.07, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ y: -4, transition: { duration: 0.2 } }}
-            className="group relative p-6 rounded-2xl flex flex-col cursor-default"
+            className="group relative p-6 rounded-xl flex flex-col cursor-default"
             style={{
-              background: 'rgba(13,17,23,0.8)',
-              backdropFilter: 'blur(20px)',
-              WebkitBackdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255,255,255,0.055)',
+              background: 'var(--surface-1)',
+              border: '1px solid rgba(255,255,255,0.08)',
               transition: 'border-color 0.25s, box-shadow 0.25s',
             }}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLDivElement
-              el.style.borderColor = s.color + '44'
-              el.style.boxShadow = `0 8px 32px ${s.glow}, 0 0 0 1px ${s.color}22`
+              el.style.borderColor = 'rgba(99,102,241,0.4)'
+              el.style.boxShadow = '0 8px 32px rgba(99,102,241,0.12)'
             }}
             onMouseLeave={e => {
               const el = e.currentTarget as HTMLDivElement
-              el.style.borderColor = 'rgba(255,255,255,0.055)'
+              el.style.borderColor = 'rgba(255,255,255,0.08)'
               el.style.boxShadow = 'none'
             }}
           >
-            {/* Icon orb */}
-            <div
-              className="w-11 h-11 rounded-xl flex items-center justify-center mb-5 flex-shrink-0"
-              style={{
-                background: `linear-gradient(135deg, ${s.color}22 0%, ${s.color}0a 100%)`,
-                border: `1px solid ${s.color}33`,
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke={s.color} strokeWidth="1.5" width="20" height="20">
+            {/* Icon */}
+            <div className="mb-5 flex-shrink-0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="rgba(240,240,250,0.35)" strokeWidth="1.5" width="22" height="22">
                 <path strokeLinecap="round" strokeLinejoin="round" d={s.icon} />
               </svg>
             </div>
 
-            <h3 className="font-semibold text-base mb-2.5" style={{ color: 'var(--text)' }}>{s.title}</h3>
-            <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--text-muted)', lineHeight: '1.65' }}>{s.desc}</p>
+            <h3 className="font-semibold text-base mb-2.5" style={{ color: 'var(--white-90)' }}>{s.title}</h3>
+            <p className="text-sm leading-relaxed flex-1" style={{ color: 'var(--white-50)', lineHeight: '1.65' }}>{s.desc}</p>
 
-            <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.045)' }}>
+            <div className="flex items-center justify-between mt-5 pt-4" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
               <span
-                className="font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
-                style={{ background: s.color + '15', color: s.color, border: `1px solid ${s.color}25` }}
+                className="font-mono text-[9px] uppercase tracking-widest"
+                style={{ color: 'var(--white-30)' }}
               >
                 {s.tag}
               </span>
               {s.priceHint && (
-                <span className="font-mono text-[10px]" style={{ color: 'var(--text-subtle)' }}>{s.priceHint}</span>
+                <span className="font-mono text-[10px]" style={{ color: 'var(--white-30)' }}>{s.priceHint}</span>
               )}
             </div>
           </motion.div>
         ))}
+      </div>
       </div>
     </section>
   )

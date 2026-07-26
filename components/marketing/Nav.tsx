@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useEffect } from 'react'
 
 const LINKS = [
-  { href: '#about',     label: 'About' },
-  { href: '#services',  label: 'Services' },
-  { href: '#portfolio', label: 'Work' },
-  { href: '#pricing',   label: 'Pricing' },
-  { href: '#contact',   label: 'Contact' },
-  { href: '/ecosystem', label: 'Ecosystem', isPage: true },
-  { href: '/writing',   label: 'Writing',   isPage: true },
+  { href: '#about',       label: 'About' },
+  { href: '#services',    label: 'Capabilities' },
+  { href: '#marketplace', label: 'Marketplace' },
+  { href: '#portfolio',   label: 'Work' },
+  { href: '#pricing',     label: 'Pricing' },
+  { href: '#contact',     label: 'Contact' },
+  { href: '/ecosystem',   label: 'Ecosystem', isPage: true },
+  { href: '/writing',     label: 'Writing',   isPage: true },
 ]
 
 export function Nav() {
@@ -31,7 +32,7 @@ export function Nav() {
     <header
       className="fixed top-0 inset-x-0 z-50 transition-all duration-300"
       style={{
-        background: scrolled || menuOpen ? 'rgba(9,9,11,0.82)' : 'transparent',
+        background: scrolled || menuOpen ? 'rgba(0,0,0,0.90)' : 'transparent',
         backdropFilter: scrolled || menuOpen ? 'blur(16px) saturate(160%)' : 'none',
         borderBottom: scrolled || menuOpen ? '1px solid rgba(255,255,255,0.06)' : '1px solid transparent',
       }}

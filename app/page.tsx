@@ -17,6 +17,7 @@ import { Pricing } from '@/components/marketing/Pricing'
 import { FAQ } from '@/components/marketing/FAQ'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
 import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { Marketplace } from '@/components/marketing/Marketplace'
 import { Contact } from '@/components/marketing/Contact'
 import { Footer } from '@/components/marketing/Footer'
 
@@ -36,6 +37,7 @@ export default function HomePage() {
         <CaseStudies />
         <TerminalBoot />
         <EcosystemSection />
+        <Marketplace />
         <Impact />
         <Testimonials />
         <Products />

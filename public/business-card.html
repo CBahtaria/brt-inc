@@ -32,6 +32,10 @@
   .card-back .corner-mark { position: absolute; bottom: 3mm; right: 4mm; font-size: 5px; color: #1e293b; }
   /* PRINT */
   @media print {
+    @page {
+      size: 85mm 54mm;
+      margin: 0;
+    }
     body { background: white; padding: 0; gap: 0; }
     h1 { display: none; }
     .card-pair { gap: 8mm; page-break-inside: avoid; }
@@ -44,7 +48,7 @@
 </style>
 </head>
 <body>
-<h1>BRT Inc. — Business Card (Print at 100% scale)</h1>
+<h1>BRT Inc. — Business Card</h1>
 <div class="card-pair">
   <!-- FRONT -->
   <div class="card card-front">

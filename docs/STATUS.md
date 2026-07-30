@@ -18,9 +18,9 @@
 | | |
 |---|---|
 | **Branch** | `main` |
-| **Commits** | 157 |
-| **Last commit** | `90f2baf` — fix(business-card): update domain from brt-inc.vercel.app → brtinc.dev |
-| **Commit date** | 2026-07-30 14:26:05 +0200 |
+| **Commits** | 159 |
+| **Last commit** | `5b8a62d` — chore: delete 5 relic components (Hero3D, Products, About, PracticeAreas, EcosystemMap 2D) |
+| **Commit date** | 2026-07-30 14:26:56 +0200 |
 | **Next.js** | 16.2.10 |
 | **React** | 19.2.4 |
 
@@ -63,6 +63,8 @@
 
 ## Recent Changes
 
+- 5b8a62d chore: delete 5 relic components (Hero3D, Products, About, PracticeAreas, EcosystemMap 2D)
+- 63878a1 docs(auto): update STATUS.md
 - 90f2baf fix(business-card): update domain from brt-inc.vercel.app → brtinc.dev
 - 229e61d docs(auto): update STATUS.md
 - 6c30e42 fix(business-card): correct @page size to 85x54mm for standard card print
@@ -71,8 +73,6 @@
 - 7ed947c docs(auto): update STATUS.md
 - 10392ba feat: SpaceX bar-for-bar homepage redesign
 - 0f302d4 docs(auto): update STATUS.md
-- 7431bad feat(marketplace): wire verify-email API into RFQ CTA with live validation
-- 4595d22 docs(auto): update STATUS.md
 
 ## Portal Pages
 

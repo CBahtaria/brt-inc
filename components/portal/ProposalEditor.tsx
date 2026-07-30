@@ -27,6 +27,7 @@ export function ProposalEditor() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
   const [sendStatus, setSendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [tab, setTab] = useState<'edit' | 'preview'>('edit')
+  const [exporting, setExporting] = useState(false)
 
   const { register, control, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -79,6 +80,44 @@ export function ProposalEditor() {
     })
     setSendStatus(res.ok ? 'sent' : 'error')
     setTimeout(() => setSendStatus('idle'), 3000)
+  }
+
+  async function exportPdf() {
+    setExporting(true)
+    try {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      const token = session?.access_token ?? ''
+      const data = values
+      const res = await fetch('/api/generate-cv', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          title: data.title ?? 'Proposal',
+          client: selectedClient?.name,
+          sections: { scope: data.scope },
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json() as { fallback?: string; error?: string }
+        alert(err.fallback ?? err.error ?? 'PDF generation failed')
+        return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `BRT-Proposal.pdf`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch {
+      alert('Export failed — use browser print instead')
+    } finally {
+      setExporting(false)
+    }
   }
 
   return (
@@ -170,6 +209,9 @@ export function ProposalEditor() {
               </button>
               <button type="button" onClick={handleSubmit(onSend)} disabled={sendStatus === 'sending' || !selectedClient} className="flex-1 py-2 rounded-md text-sm font-medium transition-colors disabled:opacity-40" style={{ background: 'var(--accent)', color: '#fff' }}>
                 {sendStatus === 'sending' ? 'Sending…' : sendStatus === 'sent' ? 'Sent ✓' : sendStatus === 'error' ? 'Error' : `Send to ${selectedClient?.name ?? 'client'}`}
+              </button>
+              <button type="button" onClick={exportPdf} disabled={exporting} className="py-2 px-4 rounded-md text-sm font-medium transition-colors disabled:opacity-40" style={{ background: 'var(--surface-2)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+                {exporting ? 'Generating…' : 'Export PDF'}
               </button>
             </div>
           </form>

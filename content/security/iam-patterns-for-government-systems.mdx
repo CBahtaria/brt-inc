@@ -1,0 +1,63 @@
+---
+title: "IAM Patterns for Government Systems in SADC"
+date: "2026-07-30"
+tags: ["security", "IAM", "SADC", "government", "ISO27001"]
+summary: "Role-based vs attribute-based access control, privileged access workstations, just-in-time access, service account hygiene, and audit trail requirements — the IAM architecture decisions that matter for SADC government deployments."
+premium: false
+---
+
+Identity and Access Management is where most government security failures originate. Not because agencies fail to deploy IAM tooling — most have some form of it — but because the patterns chosen in the early years of a deployment calcify into technical debt that survives decades of organisational change. Civil servants inherit permissions from their predecessors. Service accounts accumulate rights because removing them risks breaking something undocumented. Auditors find gaps; recommendations are filed; nothing changes until a breach makes the cost legible.
+
+This article covers the four IAM patterns that deliver the most security per implementation effort in SADC government environments, and the audit trail requirements that make compliance defensible under ISO 27001 Access Control (A.9).
+
+---
+
+## RBAC vs ABAC: Choose the Right Access Model
+
+**Role-Based Access Control (RBAC)** assigns permissions to roles, and roles to users. It is the dominant model in government IT because it maps naturally to organisational structure: a procurement officer gets the procurement role, and the role grants read access to the vendor register and write access to purchase orders. RBAC is simple to reason about, simple to audit, and well-supported by every directory service and enterprise application in common use.
+
+The failure mode of RBAC at scale is role explosion. When roles are created ad hoc to handle edge cases — "procurement officer who can also approve contracts" — the role catalogue grows until no one can accurately describe what any given user can do. Quarterly access reviews become ceremonial. Excessive privilege accumulates silently.
+
+**Attribute-Based Access Control (ABAC)** evaluates access at the policy level using attributes of the subject (clearance level, department, employment status), the resource (classification, owning agency, data sensitivity), and the environment (time of day, network location, request context). ABAC handles fine-grained, context-dependent rules that RBAC cannot express cleanly — for example: a senior analyst in the Defence Intelligence Directorate can read documents classified SECRET only during business hours from an approved workstation. That is a single ABAC policy, not a proliferation of roles.
+
+The practical guidance: use RBAC for the majority of your access control surface, where roles map cleanly to job functions. Introduce ABAC at the boundaries — privileged access, cross-agency data sharing, sensitive classification handling — where context must influence the access decision. Hybrid implementations, supported by platforms like Microsoft Azure AD Conditional Access and ForgeRock, are the operational norm in mature government deployments.
+
+---
+
+## Privileged Access Workstations
+
+Administrative access to domain controllers, financial systems, and command infrastructure must not occur from general-purpose workstations. The risk is direct: malware resident on an analyst's daily-use machine can capture credentials when the analyst switches to an administrative session. A Privileged Access Workstation (PAW) is a dedicated, hardened device used exclusively for privileged tasks.
+
+A PAW configuration for SADC institutional environments: no email, no web browsing, no office productivity suite. Attack surface limited to the administrative interfaces it exists to reach. Network access restricted to management VLANs. Full-disk encryption with centralised key escrow. Endpoint Detection and Response (EDR) agent reporting to a security operations function. Physical access controls on the storage location.
+
+PAWs are not a luxury. They are the control that severs the most common lateral movement path — credential theft from a compromised endpoint — at the point where the privilege is highest.
+
+---
+
+## Just-in-Time Access
+
+Standing access to privileged systems is the primary amplifier of insider threat. A user with permanent domain-admin rights is a persistent high-value target. If their credentials are compromised, the adversary has the same privileges, indefinitely, until the compromise is detected.
+
+Just-in-Time (JIT) access eliminates standing privilege. Users request elevated access for a specific purpose and a bounded time window — "domain admin rights for one hour to complete this server patching task." The request is approved (manually for high-risk operations, automatically for pre-defined low-risk patterns), the privilege is granted, and it expires when the window closes. All activity during the window is logged under a session identifier tied to the approval record.
+
+Tooling options that work in the regional infrastructure context: Microsoft Entra ID Privileged Identity Management (PIM) for Azure-integrated environments; CyberArk or BeyondTrust for on-premise deployments; open-source alternatives (Teleport, HashiCorp Vault) for constrained budget environments. The tool matters less than the discipline: no permanent standing privilege on any system that holds sensitive data or controls critical infrastructure.
+
+---
+
+## Service Account Hygiene
+
+Every non-human account in a government directory is an attack surface. Service accounts created to run scheduled tasks, connect middleware, or authenticate between application tiers accumulate over time and are rarely reviewed. They often have excessive permissions — granted at deployment because scoping them correctly was slower — and rarely have credential rotation.
+
+The hygiene baseline under ISO 27001 A.9.2.5 (Review of user access rights): inventory every service account, document its owning application and responsible party, classify its privilege level, and enforce rotation on a schedule commensurate with the privilege level. High-privilege service accounts (domain admin, database owner): 90-day rotation maximum. Standard service accounts: 180 days. Accounts with no identified owner: disable immediately, delete after a 30-day observation period.
+
+Managed Service Accounts (gMSAs on Windows) automate credential rotation without requiring application changes for supported services. For applications that cannot use gMSAs, store credentials in a secrets manager (Azure Key Vault, HashiCorp Vault) rather than in configuration files or environment variables on the host.
+
+---
+
+## Audit Trail Requirements
+
+ISO 27001 A.9 requires that access control decisions are logged and that logs are protected from tampering. For SADC government environments, the minimum audit trail must capture: authentication events (success and failure) with timestamp, user identity, source IP, and device identifier; privilege escalation events; access to sensitive resources (classified data, financial records, personnel files); and all administrative actions on identity infrastructure (account creation, role assignment, group membership changes).
+
+Logs must be forwarded to a centralised log management platform outside the administrative reach of the systems being logged. An administrator who can delete logs from the systems they administer provides no audit assurance. Log retention period: minimum 12 months online, 24 months archived — longer where national records legislation mandates it.
+
+BRT Inc. designs IAM architectures and conducts access control audits for institutional deployments across SADC. If your agency's last access review was more than 12 months ago, that is the starting point — contact us.

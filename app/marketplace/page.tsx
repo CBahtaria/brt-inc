@@ -84,6 +84,35 @@ export default function MarketplacePage() {
         </div>
       </div>
 
+      {/* SADC member states flag strip */}
+      <div style={{ overflowX: 'auto', marginBottom: 48, paddingBottom: 4 }}>
+        <div style={{ display: 'flex', gap: 0, minWidth: 'max-content', borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+          {[
+            { flag: '🇿🇦', name: 'South Africa' },
+            { flag: '🇿🇼', name: 'Zimbabwe' },
+            { flag: '🇿🇲', name: 'Zambia' },
+            { flag: '🇧🇼', name: 'Botswana' },
+            { flag: '🇸🇿', name: 'Eswatini' },
+            { flag: '🇲🇿', name: 'Mozambique' },
+            { flag: '🇳🇦', name: 'Namibia' },
+            { flag: '🇹🇿', name: 'Tanzania' },
+            { flag: '🇲🇼', name: 'Malawi' },
+            { flag: '🇱🇸', name: 'Lesotho' },
+            { flag: '🇦🇴', name: 'Angola' },
+            { flag: '🇲🇬', name: 'Madagascar' },
+            { flag: '🇲🇺', name: 'Mauritius' },
+            { flag: '🇸🇨', name: 'Seychelles' },
+            { flag: '🇨🇩', name: 'DRC' },
+            { flag: '🇰🇲', name: 'Comoros' },
+          ].map(({ flag, name }) => (
+            <div key={name} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '12px 18px', borderRight: '1px solid rgba(255,255,255,0.06)', gap: 4 }}>
+              <span style={{ fontSize: 22 }}>{flag}</span>
+              <span style={{ fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(240,240,250,0.35)', whiteSpace: 'nowrap' }}>{name}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Stats bar */}
       <div style={{ display: 'flex', gap: 0, borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: 56 }}>
         {[

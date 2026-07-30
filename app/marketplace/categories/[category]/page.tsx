@@ -2,6 +2,50 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
+export const revalidate = 3600
+
+const WEATHER_CODE_MAP: Record<number, { label: string; icon: string }> = {
+  0:  { label: 'Clear sky',     icon: '☀️' },
+  1:  { label: 'Partly cloudy', icon: '⛅' },
+  2:  { label: 'Partly cloudy', icon: '⛅' },
+  3:  { label: 'Partly cloudy', icon: '⛅' },
+  45: { label: 'Fog',           icon: '🌫️' },
+  48: { label: 'Fog',           icon: '🌫️' },
+  51: { label: 'Rain',          icon: '🌧️' },
+  53: { label: 'Rain',          icon: '🌧️' },
+  55: { label: 'Rain',          icon: '🌧️' },
+  61: { label: 'Rain',          icon: '🌧️' },
+  63: { label: 'Rain',          icon: '🌧️' },
+  65: { label: 'Rain',          icon: '🌧️' },
+  71: { label: 'Snow',          icon: '❄️' },
+  73: { label: 'Snow',          icon: '❄️' },
+  75: { label: 'Snow',          icon: '❄️' },
+  80: { label: 'Rain',          icon: '🌧️' },
+  81: { label: 'Rain',          icon: '🌧️' },
+  82: { label: 'Rain',          icon: '🌧️' },
+  85: { label: 'Snow',          icon: '❄️' },
+  86: { label: 'Snow',          icon: '❄️' },
+  95: { label: 'Thunderstorm',  icon: '⛈️' },
+  96: { label: 'Thunderstorm',  icon: '⛈️' },
+  99: { label: 'Thunderstorm',  icon: '⛈️' },
+}
+
+async function fetchWeather(): Promise<{ temp: number; label: string; icon: string } | null> {
+  try {
+    const res = await fetch(
+      'https://api.open-meteo.com/v1/forecast?latitude=-26.3&longitude=31.1&current=temperature_2m,weathercode&timezone=Africa/Johannesburg',
+      { next: { revalidate: 3600 } }
+    )
+    if (!res.ok) return null
+    const json = await res.json() as { current: { temperature_2m: number; weathercode: number } }
+    const code = json.current.weathercode
+    const weather = WEATHER_CODE_MAP[code] ?? { label: '—', icon: '' }
+    return { temp: json.current.temperature_2m, label: weather.label, icon: weather.icon }
+  } catch {
+    return null
+  }
+}
+
 const CATEGORY_DATA: Record<string, {
   label: string
   description: string
@@ -110,6 +154,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
   const data = CATEGORY_DATA[category]
   if (!data) notFound()
 
+  const weather = category === 'agricultural-intelligence' ? await fetchWeather() : null
+
   return (
     <main style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px 80px' }}>
       {/* Category hero */}
@@ -131,6 +177,20 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
             ALL SUPPLIERS
           </Link>
         </div>
+
+        {weather && (
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 12, marginTop: 24, background: 'rgba(74,222,128,0.06)', border: '1px solid rgba(74,222,128,0.2)', padding: '10px 18px' }}>
+            <span style={{ fontSize: 18 }}>{weather.icon}</span>
+            <span style={{ fontSize: 12, color: 'rgba(240,240,250,0.7)', letterSpacing: '0.04em' }}>
+              <span style={{ color: '#4ade80', fontWeight: 600 }}>SADC Agricultural Zone</span>
+              {' · '}
+              {weather.temp.toFixed(1)}°C
+              {' · '}
+              {weather.label}
+            </span>
+            <span style={{ fontSize: 9, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(240,240,250,0.3)' }}>LIVE · Manzini, Eswatini</span>
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 32, paddingTop: 40 }}>

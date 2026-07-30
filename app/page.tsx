@@ -1,6 +1,11 @@
 import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { ProductSection } from '@/components/marketing/ProductSection'
+import { CaseStudies } from '@/components/marketing/CaseStudies'
+import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { Pricing } from '@/components/marketing/Pricing'
+import { StackStrip } from '@/components/marketing/StackStrip'
+import { Newsletter } from '@/components/marketing/Newsletter'
 import { Contact } from '@/components/marketing/Contact'
 import { Footer } from '@/components/marketing/Footer'
 
@@ -50,6 +55,7 @@ export default function HomePage() {
           primaryCta={{ label: 'ENTER MARKETPLACE', href: '/marketplace' }}
           id="marketplace"
         />
+        <CaseStudies />
         <ProductSection
           eyebrow="UE5 HISTORICAL RPG"
           title="MAHLANYA"
@@ -76,6 +82,10 @@ export default function HomePage() {
           primaryCta={{ label: 'LEARN MORE', href: '#maize' }}
           id="maize"
         />
+        <EcosystemSection />
+        <Pricing />
+        <StackStrip />
+        <Newsletter />
         <Contact />
       </main>
       <Footer />

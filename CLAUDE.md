@@ -125,85 +125,67 @@ residual_risk: >
 
 ## Project: BRT Inc. Website
 
-**Repo root**: `/home/cbartaria1/brt-inc/`
-**Worktree**: `/home/cbartaria1/brt-inc/.claude/worktrees/feature+operational-toolkit/`
-**Deploy**: `vercel --prod` from repo root (CLI, not GitHub)
-**Live URL**: `brtinc.vercel.app`
+**Repo root**: `/home/cbartaria1/my-projects/personal/CBahtaria/brt-inc/`
+**Deploy**: push to GitHub (`CBahtaria/brt-inc`) → Vercel auto-deploys via GitHub integration
+**Live URL**: `brtinc.dev` (Vercel project: `brt-inc`, team: `sir-charles-projects`)
 
 ### Stack
-- Pure HTML/CSS/JS — single-page (`index.html`), no build step
-- Supabase for auth + data (CRM, onboarding, agreements)
-- Vercel for hosting + API routes (`/api/send-email.js`, `/api/stripe-webhook.js`)
-- MediaPipe Hands (CDN, deferred) for hand tracking hero
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Supabase for auth + data (CRM, proposals, invoices, runbooks, agreements)
+- Vercel for hosting + serverless API routes (`app/api/`)
+- Framer Motion v11 + GSAP + Three.js + D3 for animations and visualizations
+- Stripe for payments (checkout + customer portal)
+- Resend for transactional email
 
 ### File Map
 ```
-index.html                     ← landing page (hero, services, portfolio, pricing, contact)
-tools.html                     ← internal operator dashboard (auth-gated)
-vercel.json                    ← headers (CSP, Permissions-Policy), rewrites
-src/
-  js/auth.js                   ← requireAuth() + logout() for all internal pages
-  js/db.js                     ← Supabase CRUD: clients, submissions, agreements
-  js/supabase-client.js        ← Supabase client init
-  crm/crm.html                 ← kanban + table CRM (auth-gated)
-  proposals/                   ← proposal generator + invoice (auth-gated)
-  agreements/service-agreement.html
-  runbooks/runbook-templates.html
-  onboarding/onboarding-form.html   ← public intake form
-  casestudy/sentinel-audit.html
-  login/login.html
-  status/status-dashboard.html
-api/
-  send-email.js                ← Vercel serverless: email via Resend
-  stripe-webhook.js            ← Stripe webhook handler
-supabase/migrations/           ← DB schema
+app/
+  page.tsx                     ← homepage (Nav, Hero, ProductSection ×5, Contact, Footer)
+  layout.tsx                   ← root layout
+  (portal)/                    ← auth-gated: dashboard, crm, proposals, invoices, assets, runbooks, status
+  marketplace/                 ← public SADC B2B marketplace (5 pages)
+  ecosystem/page.tsx           ← 3D ecosystem map (EcosystemMap3D)
+  writing/                     ← MDX blog (category/slug routing)
+  api/                         ← serverless: contact, send-email, generate, healthcheck, stripe, marketplace
+components/
+  marketing/                   ← landing page sections (ProductSection, Hero, CaseStudies, Pricing, etc.)
+  ecosystem/                   ← EcosystemMap3D, EcosystemMapClient
+  portal/                      ← CRMTable, ProposalEditor, InvoiceBuilder, AssetGenerator, etc.
+  writing/WritingClient.tsx
+lib/                           ← higgsfield.ts, motion.ts, supabase.ts, stripe.ts, etc.
+content/                       ← MDX articles (research/, science/, security/)
+supabase/migrations/           ← DB schema (001, 002; 003 pending for service_agreements + runbook_templates)
+public/
+  business-card.html           ← print-ready business card (standalone HTML, no build step)
 ```
 
-### Security Rules (enforced by CI)
-- Every internal page MUST include `src/js/auth.js` — checked by `.github/workflows/security.yml`
-- No hardcoded Stripe live keys, no raw Supabase JWT service role keys in source
-- CSP blocks inline scripts except `'unsafe-inline'` (existing constraint)
-- `Permissions-Policy: camera=(self)` — only this origin can request camera
-
-### Hero Section (live state)
-Do **not** read hardcoded descriptions — grep the file directly:
-```bash
-grep -n 'id="hero\|class="hero\|#particle\|#hero-reel\|camera-card\|initParticles\|initVideoScrub\|initHeroShuffle\|initCamera' index.html | head -40
-```
-This always reflects the current implementation, not stale docs.
+### Security Rules
+- No hardcoded Stripe live keys, no raw Supabase service-role JWT in source
+- Portal routes protected via Supabase session middleware in `(portal)/layout.tsx`
+- API routes requiring auth validate Supabase Bearer token before processing
 
 ---
 
 ## Coding Standards
 
-- No new files unless the feature genuinely requires a separate page
+- No new files unless the feature genuinely requires a separate component or page
 - No comments unless the WHY is non-obvious
-- No TypeScript, no build tools, no npm in the website repo
-- CSS variables only — no hardcoded colour values in new rules
-- All new internal pages must `<script src="/src/js/auth.js">` (CI enforces this)
-- `esc()` for any user-controlled data rendered into HTML
+- Tailwind only — no inline `style={}` for layout; CSS variables via `globals.css` for theme tokens
+- All new portal pages must be inside `app/(portal)/` — Supabase session checked by layout
 - `prefers-reduced-motion` guard on every new animation
+- `npm run build` must pass before any commit — 0 type errors, 0 missing imports
 
 ---
 
 ## Deployment
 
+Push to `main` on GitHub (`CBahtaria/brt-inc`) — Vercel auto-deploys via GitHub integration. No manual `vercel --prod` required.
+
 ```bash
-# Always deploy from the main brt-inc directory (not the worktree)
-cd /home/cbartaria1/brt-inc
-
-# Merge worktree branch first if working from a worktree
-git merge worktree-feature+operational-toolkit --no-edit
-
-# Blocking gates before deploying
+# Blocking gates before pushing to main
 gitleaks detect --source . --no-git
-make lint
-
-# Deploy + verify
-make deploy
+npm run build   # must produce 0 type errors
 ```
-
-`make deploy` runs `vercel --prod` then curls the live URL to confirm key elements are present. If either check prints WARN, inspect the deployment before sharing the URL.
 
 ---
 

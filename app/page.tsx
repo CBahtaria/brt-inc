@@ -2,6 +2,9 @@ import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { ProductSection } from '@/components/marketing/ProductSection'
 import { CaseStudies } from '@/components/marketing/CaseStudies'
+import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
+import { SentinelFlowDiagram } from '@/components/marketing/SentinelFlowDiagram'
+import { MaizeNeuralViz } from '@/components/marketing/MaizeNeuralViz'
 import { EcosystemSection } from '@/components/marketing/EcosystemSection'
 import { Pricing } from '@/components/marketing/Pricing'
 import { StackStrip } from '@/components/marketing/StackStrip'
@@ -15,6 +18,7 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
+        <SentinelFlowDiagram />
         <ProductSection
           eyebrow="COMMAND & CONTROL"
           title="SENTINEL V5.0"
@@ -42,6 +46,7 @@ export default function HomePage() {
           primaryCta={{ label: 'LEARN MORE', href: '#uav' }}
           id="uav"
         />
+        <UAVFlowDiagram />
         <ProductSection
           eyebrow="B2B PROCUREMENT"
           title="SADC SOVEREIGN MARKETPLACE"
@@ -82,6 +87,7 @@ export default function HomePage() {
           primaryCta={{ label: 'LEARN MORE', href: '#maize' }}
           id="maize"
         />
+        <MaizeNeuralViz />
         <EcosystemSection />
         <Pricing />
         <StackStrip />

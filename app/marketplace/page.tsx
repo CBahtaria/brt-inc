@@ -152,8 +152,8 @@ export default function MarketplacePage() {
           { value: '6',    label: 'Categories' },
           { value: '10',   label: 'SADC Countries' },
           { value: '2026', label: 'Launch Year' },
-        ].map((s, i) => (
-          <div key={s.label} style={{ padding: '20px 16px', textAlign: 'center', borderRight: i < 3 ? '1px solid rgba(255,255,255,0.06)' : 'none' }}>
+        ].map(s => (
+          <div key={s.label} style={{ padding: '20px 16px', textAlign: 'center', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
             <p className="font-display" style={{ fontSize: 28, color: 'rgba(240,240,250,1)', margin: 0 }}>{s.value}</p>
             <p style={{ fontSize: 10, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(240,240,250,0.4)', margin: '4px 0 0' }}>{s.label}</p>
           </div>
@@ -236,8 +236,8 @@ export default function MarketplacePage() {
       </section>
 
       {/* RFQ banner — stacks on mobile */}
-      <section style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '40px 40px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24, background: 'linear-gradient(135deg, rgba(45,212,191,0.04) 0%, transparent 60%)' }}>
-        <div style={{ flex: '1 1 280px' }}>
+      <section style={{ border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '32px 24px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24, background: 'linear-gradient(135deg, rgba(45,212,191,0.04) 0%, transparent 60%)' }}>
+        <div style={{ flex: '1 1 200px' }}>
           <h3 className="font-display" style={{ fontSize: 26, color: 'rgba(240,240,250,0.9)', margin: '0 0 8px', letterSpacing: '0.02em' }}>
             POST A BUYING REQUEST
           </h3>

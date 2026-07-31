@@ -45,7 +45,7 @@ export function Impact() {
   return (
     <ScrollScene>
       <section id="impact" className="py-24 border-y" style={{ borderColor: 'var(--border)', background: 'var(--surface-1)' }}>
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {STATS.map(s => (
             <div key={s.label} className="text-center">
               <p className="text-5xl font-bold font-mono mb-2" style={{ color: 'var(--accent)' }}>

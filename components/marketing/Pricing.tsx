@@ -2,19 +2,14 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 
-type PriceKey =
-  | 'audit-lite' | 'audit-standard' | 'audit-premium'
-  | 'retainer-essential' | 'retainer-professional'
-
 interface Tier {
   name: string
   highlight: boolean
   badge?: string
-  options: { label: string; price: string; priceKey: PriceKey; desc: string }[]
+  options: { label: string; price: string; desc: string }[]
   features: string[]
   cta: string
   ctaHref?: string
-  priceKey?: PriceKey
 }
 
 const TIERS: Tier[] = [
@@ -22,9 +17,9 @@ const TIERS: Tier[] = [
     name: 'Security Audit',
     highlight: false,
     options: [
-      { label: 'Lite',     price: 'R 8,000',  priceKey: 'audit-lite',     desc: '2 days — static analysis + auth review + written report' },
-      { label: 'Standard', price: 'R 15,000', priceKey: 'audit-standard', desc: '5 days — full audit + pen test + patch guidance' },
-      { label: 'Premium',  price: 'R 25,000', priceKey: 'audit-premium',  desc: '8 days — pentest + remediation + re-test + cert' },
+      { label: 'Lite',     price: 'R 8,000',  desc: '2 days — static analysis + auth review + written report' },
+      { label: 'Standard', price: 'R 15,000', desc: '5 days — full audit + pen test + patch guidance' },
+      { label: 'Premium',  price: 'R 25,000', desc: '8 days — pentest + remediation + re-test + cert' },
     ],
     features: ['Static analysis', 'Auth & session audit', 'CSP & headers', 'Written findings report', 'Patch guidance'],
     cta: 'Book audit',
@@ -42,43 +37,28 @@ const TIERS: Tier[] = [
     name: 'Retainer',
     highlight: false,
     options: [
-      { label: 'Essential',     price: 'R 12,000/mo', priceKey: 'retainer-essential',     desc: '40 hrs/month — maintenance, reviews, ops' },
-      { label: 'Professional',  price: 'R 22,000/mo', priceKey: 'retainer-professional',  desc: '80 hrs/month + priority response + security monitoring' },
+      { label: 'Essential',    price: 'R 12,000/mo', desc: '40 hrs/month — maintenance, reviews, ops' },
+      { label: 'Professional', price: 'R 22,000/mo', desc: '80 hrs/month + priority response + security monitoring' },
     ],
     features: ['Priority response', 'Security monitoring', 'Monthly reporting', 'Flexible scope', 'Cancel anytime'],
     cta: 'Start retainer',
   },
 ]
 
-function CheckoutButton({ priceKey, children }: { priceKey: PriceKey; children: React.ReactNode }) {
-  const [loading, setLoading] = useState(false)
-
-  const handleCheckout = async () => {
-    setLoading(true)
-    try {
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: priceKey }),
-      })
-      const data = await res.json() as { url?: string; error?: string }
-      if (data.url) window.location.href = data.url
-    } catch {
-      // fail silently — let user try again
-    } finally {
-      setLoading(false)
-    }
-  }
-
+function ContactButton({ label, tierName, price, children }: { label: string; tierName: string; price?: string; children: React.ReactNode }) {
+  const msg = encodeURIComponent(
+    `Hi Charles, I'd like to enquire about the ${tierName}${label ? ` — ${label}` : ''}${price ? ` (${price})` : ''} package.`
+  )
   return (
-    <button
-      onClick={handleCheckout}
-      disabled={loading}
-      className="w-full py-2.5 rounded-lg text-sm font-medium transition-opacity disabled:opacity-60"
-      style={{ background: 'var(--accent)', color: '#fff', cursor: loading ? 'wait' : 'pointer' }}
+    <a
+      href={`https://wa.me/26879657744?text=${msg}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block text-center w-full py-2.5 rounded-lg text-sm font-medium transition-opacity hover:opacity-90"
+      style={{ background: 'var(--accent)', color: '#fff' }}
     >
-      {loading ? 'Redirecting…' : children}
-    </button>
+      {children}
+    </a>
   )
 }
 
@@ -198,16 +178,15 @@ export function Pricing() {
                   <a
                     href={tier.ctaHref}
                     className="block text-center w-full py-2.5 rounded-lg text-sm font-medium"
-                    style={{
-                      background: 'var(--accent)',
-                      color: '#fff',
-                    }}
+                    style={{ background: 'var(--accent)', color: '#fff' }}
                   >
                     {tier.cta}
                   </a>
-                ) : opt?.priceKey ? (
-                  <CheckoutButton priceKey={opt.priceKey}>{tier.cta}</CheckoutButton>
-                ) : null}
+                ) : (
+                  <ContactButton label={opt?.label ?? ''} tierName={tier.name} price={opt?.price}>
+                    {tier.cta}
+                  </ContactButton>
+                )}
               </div>
             </motion.div>
           )
@@ -215,7 +194,7 @@ export function Pricing() {
       </div>
 
       <p className="text-center font-mono text-xs mt-10" style={{ color: 'var(--text-subtle)' }}>
-        All engagements begin with a signed service agreement. Scope is fixed before any work starts. · ZAR pricing · Stripe-secured
+        All engagements begin with a signed service agreement. Scope is fixed before any work starts. · ZAR pricing · EFT or bank transfer · Invoice on request
       </p>
     </section>
   )

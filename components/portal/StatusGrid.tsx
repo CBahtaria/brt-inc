@@ -8,7 +8,7 @@ interface ServiceStatus {
   checkedAt?: string
 }
 
-const SERVICES = ['Vercel', 'Supabase DB', 'Resend Email', 'GitHub', 'Stripe'] as const
+const SERVICES = ['Vercel', 'Supabase DB', 'Resend Email', 'GitHub'] as const
 
 async function checkService(name: string): Promise<ServiceStatus> {
   const t0 = Date.now()
@@ -26,9 +26,6 @@ async function checkService(name: string): Promise<ServiceStatus> {
       }
       case 'GitHub':
         await fetch('https://www.githubstatus.com/api/v2/status.json')
-        break
-      case 'Stripe':
-        await fetch('https://status.stripe.com/api/v2/status.json')
         break
       case 'Resend Email': {
         const res = await fetch('/api/healthcheck')

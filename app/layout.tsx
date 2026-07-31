@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { GeistSans } from 'geist/font/sans'
 import { GeistMono } from 'geist/font/mono'
 import { Barlow_Condensed } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 
 const barlowCondensed = Barlow_Condensed({
@@ -14,7 +16,7 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   title: 'BRT Inc. — Safety-Critical Software for SADC Institutions',
   description: 'Defence-grade engineering for government, defence forces, and civic institutions across southern Africa.',
-  metadataBase: new URL('https://brt-inc.vercel.app'),
+  metadataBase: new URL('https://brtinc.dev'),
   icons: {
     icon: '/logo.svg',
     shortcut: '/logo.svg',
@@ -33,6 +35,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${barlowCondensed.variable}`}>
       <body className="font-sans bg-background text-text antialiased">
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

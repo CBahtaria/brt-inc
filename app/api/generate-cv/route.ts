@@ -93,7 +93,7 @@ function buildProposalYaml(opts: {
   return `cv:
   name: BRT Inc. — ${opts.title}
   email: charleskris9@gmail.com
-  website: https://brtinc.dev
+  website: https://brt-inc.vercel.app
   sections:
     prepared_for:
       - label: Client

@@ -35,14 +35,14 @@ export const PROJECTS: ProjectNode[] = [
   {
     id: 'brt-inc',
     name: 'BRT INC',
-    tagline: 'brtinc.dev · Vercel · Next.js 16',
+    tagline: 'brt-inc.vercel.app · Vercel · Next.js 16',
     domain: 'hub',
     tech: ['Next.js 16', 'Supabase', 'Stripe', 'Resend'],
     status: 'live',
     health: 8,
     metrics: [{ label: 'PAGES', value: '21' }, { label: 'UPTIME', value: '99.9%' }],
     description: 'Public portfolio, SADC marketplace, client portal — the commercial face of BRT Inc.',
-    liveUrl: 'https://brtinc.dev',
+    liveUrl: 'https://brt-inc.vercel.app',
   },
   {
     id: 'sentinel',

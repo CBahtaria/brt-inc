@@ -1,12 +1,19 @@
 import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
+import { TerminalBoot } from '@/components/marketing/TerminalBoot'
+import { WhoChips } from '@/components/marketing/WhoChips'
+import { Services } from '@/components/marketing/Services'
 import { ProductSection } from '@/components/marketing/ProductSection'
 import { CaseStudies } from '@/components/marketing/CaseStudies'
 import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
 import { SentinelFlowDiagram } from '@/components/marketing/SentinelFlowDiagram'
 import { MaizeNeuralViz } from '@/components/marketing/MaizeNeuralViz'
 import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { Impact } from '@/components/marketing/Impact'
+import { Process } from '@/components/marketing/Process'
+import { Testimonials } from '@/components/marketing/Testimonials'
 import { Pricing } from '@/components/marketing/Pricing'
+import { FAQ } from '@/components/marketing/FAQ'
 import { StackStrip } from '@/components/marketing/StackStrip'
 import { Newsletter } from '@/components/marketing/Newsletter'
 import { Contact } from '@/components/marketing/Contact'
@@ -18,6 +25,9 @@ export default function HomePage() {
       <Nav />
       <main>
         <Hero />
+        <TerminalBoot />
+        <WhoChips />
+        <Services />
         <SentinelFlowDiagram />
         <ProductSection
           eyebrow="COMMAND & CONTROL"
@@ -88,8 +98,12 @@ export default function HomePage() {
           id="maize"
         />
         <MaizeNeuralViz />
+        <Impact />
         <EcosystemSection />
+        <Process />
+        <Testimonials />
         <Pricing />
+        <FAQ />
         <StackStrip />
         <Newsletter />
         <Contact />

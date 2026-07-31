@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { Nav } from '@/components/marketing/Nav'
+import { Footer } from '@/components/marketing/Footer'
 
 export const metadata = { title: 'Trust & Security — BRT Inc.' }
 
@@ -39,37 +41,43 @@ const PRACTICES = [
 
 export default function TrustPage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-32">
-      <Link href="/" className="font-mono text-xs uppercase tracking-widest mb-12 block" style={{ color: 'var(--text-subtle)' }}>
-        ← BRT Inc.
-      </Link>
-      <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>Trust & Security</p>
-      <h1 className="text-4xl font-semibold mb-4">How we build.</h1>
-      <p className="text-base mb-16 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-        Institutional clients need to know the engineering principles behind the systems they operate. These are the non-negotiable practices applied to every BRT Inc. engagement.
-      </p>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {PRACTICES.map(p => (
-          <div
-            key={p.title}
-            className="p-6 rounded-xl border"
-            style={{ borderColor: 'var(--border)', background: 'var(--surface-1)' }}
-          >
-            <h2 className="font-semibold mb-2">{p.title}</h2>
-            <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{p.desc}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="mt-16 p-6 rounded-xl border" style={{ borderColor: 'rgba(99,102,241,0.3)', background: 'rgba(99,102,241,0.04)' }}>
-        <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
-          To request a security brief, reference architecture, or formal audit trail for a specific project, email{' '}
-          <a href="mailto:charleskris9@gmail.com" style={{ color: 'var(--accent)' }}>charleskris9@gmail.com</a>.
+    <>
+      <Nav />
+      <main className="max-w-3xl mx-auto px-6 py-32">
+        <Link href="/" className="font-mono text-xs uppercase tracking-widest mb-12 block" style={{ color: 'var(--text-subtle)' }}>
+          ← BRT Inc.
+        </Link>
+        <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>Trust & Security</p>
+        <h1 className="text-4xl font-semibold mb-4">How we build.</h1>
+        <p className="text-base mb-16 leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+          Institutional clients need to know the engineering principles behind the systems they operate. These are the non-negotiable practices applied to every BRT Inc. engagement.
         </p>
-      </div>
 
-      <p className="font-mono text-xs mt-12" style={{ color: 'var(--text-subtle)' }}>Last updated: July 2026</p>
-    </main>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {PRACTICES.map(p => (
+            <div
+              key={p.title}
+              className="p-6 rounded-xl border"
+              style={{ borderColor: 'var(--border)', background: 'var(--surface-1)' }}
+            >
+              <h2 className="font-semibold mb-2">{p.title}</h2>
+              <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{p.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-16 p-6 rounded-xl" style={{ borderLeft: '2px solid var(--accent)', background: 'rgba(99,102,241,0.04)', paddingLeft: '1.5rem' }}>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>
+            To request a security brief, reference architecture, or formal audit trail for a specific project, email{' '}
+            <a href="mailto:charleskris9@gmail.com" style={{ color: 'var(--accent)' }}>charleskris9@gmail.com</a>{' '}
+            or{' '}
+            <a href="https://wa.me/26879657744" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)' }}>WhatsApp +268 7965 7744</a>.
+          </p>
+        </div>
+
+        <p className="font-mono text-xs mt-12" style={{ color: 'var(--text-subtle)' }}>Last updated: July 2026</p>
+      </main>
+      <Footer />
+    </>
   )
 }

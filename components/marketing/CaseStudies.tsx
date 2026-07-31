@@ -15,6 +15,8 @@ interface CaseStudy {
   approach: string[]
   result: string
   stack: string[]
+  liveUrl?: string
+  liveLabel?: string
 }
 
 const CASES: CaseStudy[] = [
@@ -37,6 +39,7 @@ const CASES: CaseStudy[] = [
     result: '3 Critical + 6 High findings resolved. 22 files patched, 317 lines fixed, 0 regressions. Audit report delivered. CI gate active on main branch.',
     stack: ['PHP 8.3', 'MySQL 8', 'Node.js', 'PHPUnit', 'GitHub Actions'],
   },
+
   {
     id: 'wheels-deals',
     tag: 'Full-Stack Build',
@@ -56,6 +59,8 @@ const CASES: CaseStudy[] = [
     ],
     result: 'Live on Vercel. Inventory searchable and filterable. AI chat handles out-of-hours enquiries. Media pipeline processes uploads in under 2 seconds.',
     stack: ['Next.js 16', 'TypeScript', 'Supabase', 'sharp', 'Anthropic', 'Vercel'],
+    liveUrl: 'https://wheels-deals-eswatini.vercel.app',
+    liveLabel: 'wheels-deals-eswatini.vercel.app',
   },
   {
     id: 'studio-p',
@@ -75,6 +80,8 @@ const CASES: CaseStudy[] = [
     ],
     result: 'Staff onboarded in one afternoon. Booking conflicts dropped to zero from day one. Deployed on Vercel with automated backups via Supabase.',
     stack: ['React 19', 'TypeScript', 'Supabase', 'PostgreSQL RLS', 'Vercel'],
+    liveUrl: 'https://studio-p-prod.vercel.app',
+    liveLabel: 'studio-p-prod.vercel.app',
   },
 ]
 
@@ -146,6 +153,18 @@ export function CaseStudies() {
                             <span key={s} className="font-mono text-[10px] px-2 py-0.5 rounded border" style={{ borderColor: 'var(--border)', color: 'var(--text-subtle)' }}>{s}</span>
                           ))}
                         </div>
+                        {c.liveUrl && (
+                          <a
+                            href={c.liveUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 font-mono text-[11px] transition-opacity hover:opacity-80"
+                            style={{ color: c.tagColor }}
+                          >
+                            <span>↗</span>
+                            <span>{c.liveLabel}</span>
+                          </a>
+                        )}
                       </div>
                     </motion.div>
                   )}

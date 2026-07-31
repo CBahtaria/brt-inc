@@ -10,17 +10,22 @@ const EcosystemMap3D = dynamic(
 )
 
 export function EcosystemMapClient() {
+  const [mounted, setMounted] = useState(false)
   const [tier, setTier] = useState<DeviceTier>('high')
   const [reducedMotion, setReducedMotion] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     setReducedMotion(mq.matches)
     const { tier: detectedTier } = getDeviceProfile()
     setTier(detectedTier)
   }, [])
 
-  if (reducedMotion || tier === 'low' || tier === 'mid') {
+  // SSR + initial hydration: always render the static fallback.
+  // EcosystemMap3D is ssr:false (dynamic lazy) — attempting to render it
+  // server-side causes React to bail out the entire component tree.
+  if (!mounted || reducedMotion || tier === 'low' || tier === 'mid') {
     return <EcosystemSection />
   }
 

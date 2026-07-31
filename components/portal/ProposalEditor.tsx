@@ -67,10 +67,16 @@ export function ProposalEditor() {
   async function onSend(data: FormValues) {
     if (!selectedClient) return
     setSendStatus('sending')
+    const supabase = createClient()
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token ?? ''
     const html = buildPreviewHTML(data, selectedClient, total)
     const res = await fetch('/api/send-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       body: JSON.stringify({
         to: selectedClient.email,
         subject: `Proposal: ${data.title} — BRT Inc.`,

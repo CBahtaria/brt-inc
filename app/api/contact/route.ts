@@ -59,9 +59,11 @@ export async function POST(request: NextRequest) {
   const message = field(body.message, 5000)
   const subject = field(body.subject, 200)
 
-  if (!name || !email || !message) {
+  const isNewsletter = subject === 'newsletter'
+
+  if (!email || !message || (!name && !isNewsletter)) {
     return NextResponse.json(
-      { error: 'Name, email, and message are required.' },
+      { error: isNewsletter ? 'Email is required.' : 'Name, email, and message are required.' },
       { status: 400 }
     )
   }
@@ -70,13 +72,16 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 })
   }
 
+  const effectiveName = name ?? 'Newsletter Subscriber'
   const safeEmail   = sanitise(email)
-  const safeName    = sanitise(name)
+  const safeName    = sanitise(effectiveName)
   const safeMessage = sanitise(message).replace(/\n/g, '<br>')
   const safeService = subject ? sanitise(subject) : null
-  const emailSubject = subject
-    ? `[Enquiry] ${subject} — ${name}`
-    : `[Enquiry] New message from ${name}`
+  const emailSubject = isNewsletter
+    ? `[Newsletter] New signup — ${safeEmail}`
+    : subject
+      ? `[Enquiry] ${subject} — ${effectiveName}`
+      : `[Enquiry] New message from ${effectiveName}`
 
   const html = `
 <h2 style="font-family:sans-serif;margin:0 0 8px">New enquiry — BRT Inc.</h2>

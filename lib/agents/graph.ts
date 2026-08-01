@@ -261,7 +261,8 @@ async function reportNode(state: TriageState): Promise<Partial<TriageState>> {
 
     const comment = buildComment(state)
     await postComment(notification.repository.full_name, issue.number, comment)
-    await markNotificationRead(notification.id)
+    // Best-effort — synthetic notification IDs (manual triggers) return 404; don't fail the node
+    try { await markNotificationRead(notification.id) } catch { /* ignored */ }
     return { commentPosted: true, error: null }
   } catch (err) {
     return { commentPosted: false, error: `report: ${String(err)}` }

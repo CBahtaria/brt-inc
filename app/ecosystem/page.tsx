@@ -13,7 +13,7 @@ export default function EcosystemPage() {
         <div className="flex items-center gap-4 md:gap-6">
           <Link
             href="/"
-            className="font-mono text-xs uppercase tracking-widest transition-colors hover:text-white"
+            className="font-mono text-xs uppercase tracking-widest transition-colors hover:text-white anim-fade-up"
             style={{ color: 'var(--text-subtle)' }}
           >
             ← BRT Inc.
@@ -30,8 +30,12 @@ export default function EcosystemPage() {
             { label: '8 NATS streams', color: 'var(--accent)' },
             { label: '1,466+ tests',  color: '#10b981' },
             { label: 'SRL-6',         color: 'var(--accent-game)' },
-          ].map(s => (
-            <span key={s.label} className="font-mono text-[10px]" style={{ color: s.color }}>{s.label}</span>
+          ].map((s, i) => (
+            <span
+              key={s.label}
+              className="font-mono text-[10px] anim-fade-up"
+              style={{ color: s.color, animationDelay: `${i * 0.1}s` }}
+            >{s.label}</span>
           ))}
         </div>
       </div>

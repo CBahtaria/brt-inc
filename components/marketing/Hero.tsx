@@ -1,12 +1,53 @@
 'use client'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { useEffect, useRef } from 'react'
 
 export function Hero() {
+  const imageRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    let ctx: { revert: () => void } | undefined
+    Promise.all([import('gsap'), import('gsap/ScrollTrigger')]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        gsap.registerPlugin(ScrollTrigger)
+        ctx = gsap.context(() => {
+          if (imageRef.current) {
+            gsap.to(imageRef.current, {
+              yPercent: 25,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: imageRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: true,
+              },
+            })
+          }
+          if (contentRef.current) {
+            gsap.to(contentRef.current, {
+              opacity: 0,
+              y: -40,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: contentRef.current,
+                start: 'top 10%',
+                end: 'bottom top',
+                scrub: 0.5,
+              },
+            })
+          }
+        })
+      }
+    )
+    return () => ctx?.revert()
+  }, [])
+
   return (
-    <section style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* Background image */}
-      <div style={{ position: 'absolute', inset: 0 }}>
+    <section id="hero" style={{ height: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <div ref={imageRef} style={{ position: 'absolute', inset: '-15% 0', willChange: 'transform' }}>
         <Image
           fill
           src="https://images.unsplash.com/photo-1473968512647-3e447244af8f?auto=format&fit=crop&w=1920&q=80"
@@ -16,7 +57,6 @@ export function Hero() {
         />
       </div>
 
-      {/* Gradient overlay */}
       <div
         style={{
           position: 'absolute',
@@ -25,8 +65,8 @@ export function Hero() {
         }}
       />
 
-      {/* Content — bottom-center, SpaceX layout */}
       <motion.div
+        ref={contentRef}
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
@@ -46,7 +86,6 @@ export function Hero() {
             letterSpacing: '0.2em',
             textTransform: 'uppercase',
             fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
-            marginBottom: 8,
             margin: '0 0 8px',
           }}
         >
@@ -58,7 +97,6 @@ export function Hero() {
           style={{
             color: 'var(--white-100)',
             fontSize: 'clamp(2.8rem, 9vw, 7.5rem)',
-            fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
             fontWeight: 700,
             letterSpacing: '-0.02em',
             lineHeight: 0.95,
@@ -72,7 +110,6 @@ export function Hero() {
           style={{
             color: 'var(--white-100)',
             fontSize: 'clamp(2.8rem, 9vw, 7.5rem)',
-            fontFamily: "var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif",
             fontWeight: 700,
             letterSpacing: '-0.02em',
             lineHeight: 0.95,
@@ -95,8 +132,8 @@ export function Hero() {
               textTransform: 'uppercase',
               textDecoration: 'none',
               display: 'inline-block',
-              transition: 'background 0.15s ease',
               background: 'rgba(255,255,255,0.05)',
+              transition: 'background 0.15s ease',
             }}
             onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.15)' }}
             onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.05)' }}
@@ -133,7 +170,6 @@ export function Hero() {
         </div>
       </motion.div>
 
-      {/* Scroll indicator — thin vertical line + animated dot */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

@@ -222,3 +222,133 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* ── Scroll Chapter Nav ──────────────────────────────────── */
+.scroll-chapter-nav {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 40;
+  display: none;
+  flex-direction: column;
+  gap: 18px;
+  align-items: flex-end;
+}
+@media (min-width: 1024px) {
+  .scroll-chapter-nav { display: flex; }
+}
+
+.scroll-chapter-track {
+  position: absolute;
+  right: 4px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  pointer-events: none;
+}
+
+.scroll-chapter-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: rgba(45, 212, 191, 0.35);
+  transition: height 0.08s linear;
+}
+
+.scroll-chapter-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.scroll-chapter-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: transparent;
+  white-space: nowrap;
+  font-family: var(--font-barlow-condensed), Arial, sans-serif;
+  transition: color 0.3s ease;
+}
+.scroll-chapter-label-active {
+  color: rgba(45, 212, 191, 0.75);
+}
+
+.scroll-chapter-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.scroll-chapter-dot-active {
+  width: 12px;
+  height: 4px;
+  border-radius: 2px;
+  background: #2dd4bf;
+}
+
+/* ── Product section CTA buttons ─────────────────────────── */
+.product-cta-primary {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  color: var(--white-100);
+  padding: 10px 28px;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  font-family: var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.05);
+  transition: background 0.15s ease;
+}
+.product-cta-primary:hover { background: rgba(255, 255, 255, 0.15); }
+
+.product-cta-secondary {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--white-60);
+  padding: 10px 28px;
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  font-family: var(--font-barlow-condensed), 'Arial Narrow', Arial, sans-serif;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: inline-block;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.product-cta-secondary:hover {
+  color: var(--white-100);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Section entrance animation ──────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up {
+  animation: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Marketplace marquee ─────────────────────────────────── */
+@keyframes mk-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.mk-marquee-inner {
+  display: flex;
+  width: max-content;
+  animation: mk-marquee 45s linear infinite;
+}
+.mk-marquee-inner:hover { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-chapter-nav { display: none !important; }
+  .mk-marquee-inner { animation: none !important; }
+  .anim-fade-up { animation: none !important; opacity: 1 !important; }
+}

@@ -69,22 +69,17 @@ export default function MarketplacePage() {
       </div>
 
       {/* ── SADC flag strip ──────────────────────────────────────── */}
-      <div style={{ overflowX: 'auto', marginBottom: 64, paddingBottom: 4 }}>
-        <div style={{
-          display: 'flex',
-          gap: 0,
-          minWidth: 'max-content',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
-        }}>
-          {SADC.map(({ flag, name }) => (
-            <div key={name} style={{
+      <div style={{ overflow: 'hidden', marginBottom: 64, borderTop: '1px solid rgba(255,255,255,0.06)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="mk-marquee-inner">
+          {[...SADC, ...SADC].map(({ flag, name }, i) => (
+            <div key={`${name}-${i}`} style={{
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
               padding: '12px 18px',
               borderRight: '1px solid rgba(255,255,255,0.06)',
               gap: 4,
+              flexShrink: 0,
             }}>
               <span style={{ fontSize: 20 }}>{flag}</span>
               <span style={{ fontSize: 9, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(240,240,250,0.35)', whiteSpace: 'nowrap' }}>
@@ -197,8 +192,8 @@ export default function MarketplacePage() {
           <section style={{ marginBottom: 64 }}>
             <p className="mk-chapter">Browse by Category</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 14 }}>
-              {CATEGORIES.map(cat => (
-                <Link key={cat.slug} href={`/marketplace/categories/${cat.slug}`} className="mk-cat-card">
+              {CATEGORIES.map((cat, i) => (
+                <Link key={cat.slug} href={`/marketplace/categories/${cat.slug}`} className="mk-cat-card anim-fade-up" style={{ animationDelay: `${i * 0.06}s` }}>
                   <div style={{ background: cat.gradient, padding: '24px 20px 18px', borderBottom: `1px solid ${cat.accent}22` }}>
                     <div style={{ fontSize: 30, marginBottom: 8 }}>{cat.icon}</div>
                     <p style={{ fontSize: 15, fontWeight: 700, color: 'rgba(240,240,250,0.95)', margin: 0, letterSpacing: '-0.01em' }}>
@@ -225,8 +220,8 @@ export default function MarketplacePage() {
               </Link>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(190px, 1fr))', gap: 14 }}>
-              {FEATURED_SUPPLIERS.map(s => (
-                <div key={s.name} className="mk-supplier-card">
+              {FEATURED_SUPPLIERS.map((s, i) => (
+                <div key={s.name} className="mk-supplier-card" style={{ animationDelay: `${i * 0.08}s` }}>
                   <div style={{ height: 3, background: s.accent }} />
                   <div style={{ padding: '16px 16px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>

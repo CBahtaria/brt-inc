@@ -1,3 +1,4 @@
+import { ScrollChapterNav } from '@/components/marketing/ScrollChapterNav'
 import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
@@ -22,6 +23,7 @@ import { Footer } from '@/components/marketing/Footer'
 export default function HomePage() {
   return (
     <>
+      <ScrollChapterNav />
       <Nav />
       <main>
         <Hero />

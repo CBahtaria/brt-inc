@@ -16,7 +16,7 @@ const barlowCondensed = Barlow_Condensed({
 export const metadata: Metadata = {
   title: 'BRT Inc. — Safety-Critical Software for SADC Institutions',
   description: 'Defence-grade engineering for government, defence forces, and civic institutions across southern Africa.',
-  metadataBase: new URL('https://brt-inc.vercel.app'),
+  metadataBase: new URL('https://brtinc.dev'),
   icons: {
     icon: '/logo.svg',
     shortcut: '/logo.svg',

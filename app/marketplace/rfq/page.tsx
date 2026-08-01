@@ -69,15 +69,43 @@ export default function RFQPage() {
   return (
     <main style={{ maxWidth: 760, margin: '0 auto', padding: '0 24px 80px' }}>
       <div style={{ padding: '48px 0 40px' }}>
-        <p style={{ fontSize: 11, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#2dd4bf', margin: '0 0 12px' }}>
-          Government-Standard RFQ Process
-        </p>
+        <p className="mk-chapter">Government-Standard RFQ Process</p>
         <h1 className="font-display" style={{ fontSize: 'clamp(2rem, 4vw, 3rem)', color: 'rgba(240,240,250,1)', margin: '0 0 12px', letterSpacing: '-0.01em' }}>
           POST BUYING REQUEST
         </h1>
-        <p style={{ fontSize: 14, color: 'rgba(240,240,250,0.5)', margin: 0 }}>
-          200+ verified SADC suppliers will receive your requirement. Sovereign procurement process — signed service agreements, fixed scope, audit trails.
+        <p style={{ fontSize: 14, color: 'rgba(240,240,250,0.5)', margin: '0 0 32px', lineHeight: 1.7 }}>
+          200+ verified SADC suppliers will receive your requirement. Sovereign procurement — signed agreements, fixed scope, audit trails.
         </p>
+
+        {/* Step indicator */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 0, maxWidth: 480 }}>
+          {['Category', 'Details', 'Institution', 'Submit'].map((step, i) => (
+            <div key={step} style={{ display: 'flex', alignItems: 'center', flex: i < 3 ? 1 : 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                <div style={{
+                  width: 22,
+                  height: 22,
+                  borderRadius: '50%',
+                  background: i === 0 ? '#2dd4bf' : 'rgba(255,255,255,0.08)',
+                  border: `1px solid ${i === 0 ? '#2dd4bf' : 'rgba(255,255,255,0.12)'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 9,
+                  fontWeight: 700,
+                  color: i === 0 ? '#000' : 'rgba(240,240,250,0.4)',
+                  flexShrink: 0,
+                }}>
+                  {i + 1}
+                </div>
+                <span style={{ fontSize: 10, letterSpacing: '0.08em', textTransform: 'uppercase', color: i === 0 ? 'rgba(240,240,250,0.8)' : 'rgba(240,240,250,0.3)', whiteSpace: 'nowrap' }}>
+                  {step}
+                </span>
+              </div>
+              {i < 3 && <div style={{ flex: 1, height: 1, background: 'rgba(255,255,255,0.08)', margin: '0 8px' }} />}
+            </div>
+          ))}
+        </div>
       </div>
 
       <form
@@ -112,7 +140,7 @@ export default function RFQPage() {
         </div>
 
         {/* Budget + Country row */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="rfq-form-row">
           <div>
             <label style={{ display: 'block', fontSize: 11, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(240,240,250,0.5)', marginBottom: 8 }}>
               Budget Range

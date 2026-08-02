@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { submitJob } from '@/lib/higgsfield'
+import { submitJob } from '@/lib/comfyui'
 import { createServerSupabaseClient } from '@/lib/supabase-server'
 
 // Protect credits: 1 generate request per 30s per user

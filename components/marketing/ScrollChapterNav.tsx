@@ -8,6 +8,8 @@ const CHAPTERS = [
   { id: 'marketplace', label: 'MARKETPLACE' },
   { id: 'mahlanya',    label: 'MAHLANYA RPG' },
   { id: 'maize',       label: 'MAIZE AI' },
+  { id: 'impact',      label: 'IMPACT' },
+  { id: 'contact',     label: 'CONTACT' },
 ]
 
 export function ScrollChapterNav() {

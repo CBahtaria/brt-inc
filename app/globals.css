@@ -352,3 +352,15 @@ body {
   .mk-marquee-inner { animation: none !important; }
   .anim-fade-up { animation: none !important; opacity: 1 !important; }
 }
+
+/* ── Cursor glow (hide on touch devices) ─────────────────── */
+@media (hover: none) {
+  [aria-hidden][style*="radial-gradient(circle at center, rgba(45,212,191"] {
+    display: none !important;
+  }
+}
+
+/* ── Scroll progress bar (respect reduced-motion) ───────── */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-chapter-nav { display: none !important; }
+}

@@ -1,4 +1,6 @@
 import { ScrollChapterNav } from '@/components/marketing/ScrollChapterNav'
+import { ScrollProgressBar } from '@/components/marketing/ScrollProgressBar'
+import { CursorGlow } from '@/components/marketing/CursorGlow'
 import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
@@ -24,6 +26,8 @@ export default function HomePage() {
   return (
     <>
       <ScrollChapterNav />
+      <ScrollProgressBar />
+      <CursorGlow />
       <Nav />
       <main>
         <Hero />
@@ -100,7 +104,7 @@ export default function HomePage() {
           id="maize"
         />
         <MaizeNeuralViz />
-        <Impact />
+        <section id="impact"><Impact /></section>
         <EcosystemSection />
         <Process />
         <Testimonials />
@@ -108,7 +112,7 @@ export default function HomePage() {
         <FAQ />
         <StackStrip />
         <Newsletter />
-        <Contact />
+        <section id="contact"><Contact /></section>
       </main>
       <Footer />
     </>

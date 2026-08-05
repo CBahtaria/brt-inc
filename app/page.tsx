@@ -5,12 +5,16 @@ import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
 import { WhoChips } from '@/components/marketing/WhoChips'
+import { KeyCapabilities } from '@/components/marketing/KeyCapabilities'
 import { Services } from '@/components/marketing/Services'
 import { ProductSection } from '@/components/marketing/ProductSection'
 import { CaseStudies } from '@/components/marketing/CaseStudies'
 import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
 import { SentinelFlowDiagram } from '@/components/marketing/SentinelFlowDiagram'
 import { MaizeNeuralViz } from '@/components/marketing/MaizeNeuralViz'
+import { ModelStack } from '@/components/marketing/ModelStack'
+import { DemoCarousel } from '@/components/marketing/DemoCarousel'
+import { BenefitCards } from '@/components/marketing/BenefitCards'
 import { EcosystemSection } from '@/components/marketing/EcosystemSection'
 import { Impact } from '@/components/marketing/Impact'
 import { Process } from '@/components/marketing/Process'
@@ -33,7 +37,9 @@ export default function HomePage() {
         <Hero />
         <TerminalBoot />
         <WhoChips />
+        <KeyCapabilities />
         <Services />
+        <DemoCarousel />
         <SentinelFlowDiagram />
         <ProductSection
           eyebrow="COMMAND & CONTROL"
@@ -104,8 +110,10 @@ export default function HomePage() {
           id="maize"
         />
         <MaizeNeuralViz />
+        <ModelStack />
         <section id="impact"><Impact /></section>
         <EcosystemSection />
+        <BenefitCards />
         <Process />
         <Testimonials />
         <Pricing />

@@ -1,0 +1,47 @@
+---
+title: "The Voice Print You Never Consented To: Emotional Inference in Call Centres"
+date: "2026-08-05"
+category: "security"
+tags: ["surveillance", "voice", "biometrics", "call-centre"]
+excerpt: "F0, jitter, shimmer, and prosody extracted from call-centre audio can build a detailed emotional timeline — often without disclosure."
+---
+
+Every call-centre interaction produces audio. That audio contains far more than words. The acoustic features of speech — fundamental frequency, jitter, shimmer, prosody envelope, speech rate, and pause distribution — encode emotional state at a level of detail that is extractable in real time, at scale, and without the speaker's awareness that extraction is occurring.
+
+## The Feature Set: What Gets Extracted
+
+**Fundamental frequency (F0)** is the base pitch of voiced speech, produced by the vibration rate of the vocal folds. F0 rises under emotional arousal — stress, anger, and anxiety all elevate mean F0 and increase its variance. The relationship is bidirectional with the autonomic nervous system: sympathetic activation produces measurable F0 elevation within seconds of an emotional trigger.
+
+**Jitter** measures cycle-to-cycle variation in the period of vocal fold vibration. **Shimmer** measures cycle-to-cycle variation in amplitude. Both increase under physiological stress due to reduced neuromuscular control of the laryngeal musculature. These features are invisible to the listener but computationally extractable at the frame level (typically 25ms windows) with high reliability.
+
+**Prosody envelope** captures the rhythm, stress, and intonation contour of connected speech. Emotional state alters prosodic patterns in ways that are distinct across valence (positive/negative) and arousal (high/low) dimensions. A caller who begins a call in a calm, cooperative state and shifts to distress or anger produces a measurable prosodic trajectory.
+
+**Speech rate and pause distribution** complete the feature set. Elevated anxiety tends to reduce pause duration and alter the distribution of filled pauses ("um," "uh"). Depression and extreme fatigue produce the opposite: reduced rate, longer pauses, flatter prosody.
+
+## Who Is Deploying This
+
+Cogito deploys real-time voice analysis in call-centre environments, providing agents with live feedback on caller emotional state during conversations. The system processes audio in real time and presents emotional state estimates to the agent — and to supervisors — during the call.
+
+Kintsugi Health and Ellipsis Health target clinical contexts, using voice to screen for depression and anxiety. Their models are trained on clinical populations and validated against diagnostic criteria. Both companies operate in regulatory environments where consent frameworks exist, however imperfect.
+
+The gap is in non-clinical, non-disclosed deployment. Call-centre software from multiple vendors includes optional voice analytics modules that can be enabled without any caller notification. Standard call recording disclosures ("this call may be recorded for quality and training purposes") do not constitute disclosure of emotional inference. A caller who consents to recording has not necessarily consented to having their arousal level and emotional trajectory extracted, stored, and used as a data point in agent performance assessment or customer risk profiling.
+
+## The 50-Hour Timeline Problem
+
+A customer who calls a bank, a government benefits office, or a utility company regularly over a year may accumulate 50 or more hours of recorded voice interaction. Fifty hours of audio is sufficient to build a detailed emotional baseline for that individual: their characteristic F0 range, their stress response signature, their jitter and shimmer profiles under calm and aroused conditions.
+
+With a baseline established, subsequent calls can be evaluated for deviation. A customer whose emotional profile shifts — sustained elevation of arousal indicators across multiple calls — is distinguishable from their own baseline. That deviation is interpretable as a stress signal. Depending on the context, it can be used to flag the customer for targeted intervention, differential treatment in credit decisions, or investigation as a potential fraud risk.
+
+This is not theoretical capability. The feature extraction is computationally inexpensive. Call-centre audio is already recorded. The incremental cost of storing the extracted feature vectors alongside the audio — or instead of the audio — is negligible. What is typically absent is disclosure to callers that this analysis is occurring.
+
+## SADC Call-Centre Outsourcing Exposure
+
+Southern Africa, particularly South Africa, has a substantial call-centre outsourcing sector serving international clients. South African agents handle calls for UK, US, and Australian customers under contracts that may be governed by the client's jurisdiction. The data protection obligations of the agent-side infrastructure, the consent framework applicable to the caller's emotional data, and the retention policies for extracted voice analytics are typically determined by the contract, not by a uniform regional standard.
+
+For SADC government agencies operating their own citizen contact centres — tax authorities, social services, national ID agencies — the deployment of third-party voice analytics without explicit ministerial authorisation and published privacy notices creates legal exposure under emerging data protection frameworks, including the Protection of Personal Information Act (POPIA) in South Africa.
+
+The mitigation at the institutional level is procurement due diligence: require call-centre platform vendors to enumerate all processing performed on call audio, including any analytics that are not part of the core recording function, and require explicit disclosure language for any emotional or biometric inference.
+
+---
+
+*Related: [Through the Wall: WiFi Signals as Physiological Surveillance Tools](/writing/security/through-wall-physiological-surveillance)*

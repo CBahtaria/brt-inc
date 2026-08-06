@@ -1,0 +1,49 @@
+---
+title: "The Invisible Stack: How Keystroke, Voice, and WiFi Surveillance Fuse Into a Complete Profile"
+date: "2026-08-05"
+category: "security"
+tags: ["surveillance", "privacy", "threat-model", "SADC"]
+excerpt: "Three passive modalities — typing patterns, vocal prosody, and WiFi CSI — combine into a surveillance stack that cannot be voluntarily defeated."
+---
+
+The three surveillance modalities covered in this series — keystroke dynamics, vocal prosody analysis, and WiFi Channel State Information — are individually concerning. Together they form something qualitatively different: a surveillance stack that targets the autonomic nervous system directly, extracting a signal that cannot be voluntarily suppressed by the person being observed.
+
+## The Common Thread: Autonomic Nervous System State
+
+Each of the three modalities measures a different expression of the same underlying variable. The autonomic nervous system (ANS) controls visceral and involuntary functions: heart rate, respiratory rate, sweat gland activity, smooth muscle tone, and fine motor control. ANS state cannot be voluntarily masked for any sustained period. Professional training can create learned suppression of behavioural signals — a trained interrogation subject can inhibit many visible stress responses — but it cannot alter the underlying physiology that generates the signals these systems measure.
+
+Keystroke dynamics measure fine motor control, which degrades predictably under sympathetic ANS activation. Vocal prosody measures the acoustic output of the laryngeal system, also under ANS influence via the vagus nerve and recurrent laryngeal nerve. WiFi CSI measures thoracic movement and cardiac pulse, the most direct available measurement of ANS state short of clinical instrumentation.
+
+The fusion of these signals produces a continuous estimate of ANS state that is more accurate and harder to defeat than any single modality. Temporal alignment across modalities — correlating a keystroke timing anomaly with a simultaneous prosody shift and HRV change — dramatically reduces the false-positive rate of inference, because coincident changes across independent physiological channels are unlikely to be noise.
+
+## Why Single-Layer Countermeasures Fail
+
+Browser-level timestamp coarsening defeats keystroke dynamics inference. It does nothing about vocal prosody being extracted from a call or video meeting conducted in the same office. Acoustic shielding of a room reduces the SNR of external microphone capture but does not affect WiFi CSI extraction through the walls. A Faraday cage blocks WiFi CSI but does not prevent keystroke monitoring on managed devices inside the cage.
+
+This is the structural threat property: the three modalities operate on different physical channels (electrical, acoustic, radio frequency), require different countermeasures, and each countermeasure for one layer either fails to protect or actively interferes with countermeasures for another layer. An organisation attempting to harden against all three simultaneously must deploy independent mitigations for each, none of which is trivial in a live operational environment.
+
+## The Fusion Architecture in Practice
+
+A three-layer passive surveillance stack in a government office environment would look as follows. Endpoint software — present on managed devices — collects keystroke timing and generates per-session ANS state estimates. Call recording infrastructure — present on any VoIP or conferencing system — collects audio and generates prosody-derived ANS estimates for any voice interaction. WiFi infrastructure — already deployed for network connectivity — collects CSI from access points covering occupied spaces and generates continuous physiological measurements for all persons in range.
+
+The three streams do not need to be integrated in real time to be dangerous. Log aggregation and temporal correlation after the fact — matching time-indexed ANS state estimates from three independent sensors during a specific meeting or work session — produces a composite record. That record has resolution that no single modality achieves.
+
+Personnel who were present at a particular meeting, their approximate ANS state throughout, their vocal affect during specific exchanges, their typing behaviour before and after — all of this is reconstructable from three passive streams, none of which requires any action by the subject beyond being present in the building and using their assigned devices.
+
+## Institutional Hardening Checklist
+
+The hardening approach must be multi-layer, because the threat is multi-layer.
+
+**Keystroke layer.** Deploy a centralised browser extension enforcing 50ms timestamp coarsening on all managed devices. Audit endpoint monitoring software against an approved tool list; remove or disable any product that includes keystroke logging or biometric continuous assessment without explicit per-session disclosure to the user.
+
+**Vocal layer.** Require disclosure to participants before any meeting recording where voice analytics are enabled. Conduct sensitive deliberations in environments where the recording infrastructure is under institutional control and audited. For highest-sensitivity meetings, conduct without any recording capability active.
+
+**WiFi CSI layer.** Audit AP firmware for CSI export capabilities. Configure enterprise APs to restrict CSI data to the management plane and monitor for unauthorised CSI data streams on the network. Physical separation of highest-sensitivity spaces from AP coverage. Consider Faraday treatment for meeting rooms where deliberations affect national security or sensitive personnel matters.
+
+**Common infrastructure.** Maintain a data minimisation posture: collect only what is required for the stated operational function. The principle applies to biometric and physiological data with particular force — the collection risk is permanent (physiological patterns cannot be changed after disclosure), and the use cases outside the stated function are numerous.
+
+The ANS is not a secret that can be kept. It is a physical process that generates observable signals across multiple channels simultaneously. The institutional question is not whether those signals can be captured — they can — but whether the infrastructure and authority to do so are under appropriate control.
+
+---
+
+*Related: [Real-Time Deepfakes and Institutional Fraud](/writing/security/realtime-deepfake-institutional-fraud)*

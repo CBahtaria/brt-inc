@@ -1,0 +1,8 @@
+services:
+  rendercv:
+    build: .
+    volumes:
+      - /tmp/brt-proposals:/workspace
+    entrypoint: ["python", "-m", "http.server", "8200"]
+    ports:
+      - "8200:8200"

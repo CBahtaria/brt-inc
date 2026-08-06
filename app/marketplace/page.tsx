@@ -39,7 +39,17 @@ function Stars({ rating, accent }: { rating: number; accent: string }) {
   )
 }
 
-export default function MarketplacePage() {
+// Fetch SADC country flags — free, no API key
+const SADC_CODES = ['sz','za','bw','mz','zw','ls','na','mw','zm','tz','ug','cd','sc','mg','mu']
+
+export default async function MarketplacePage() {
+  const countriesRes = await fetch(
+    `https://restcountries.com/v3.1/alpha?codes=${SADC_CODES.join(',')}&fields=name,flags,cca2`,
+    { next: { revalidate: 86400 } }
+  ).catch(() => null)
+  const sadcCountries: Array<{ name: { common: string }; flags: { svg: string }; cca2: string }> =
+    countriesRes?.ok ? await countriesRes.json() : []
+
   return (
     <main style={{ maxWidth: 1400, margin: '0 auto', padding: '0 24px 80px' }}>
 
@@ -89,6 +99,16 @@ export default function MarketplacePage() {
           ))}
         </div>
       </div>
+
+      {/* ── REST Countries SVG flag strip ───────────────────────── */}
+      {sadcCountries.length > 0 && (
+        <div className="flex flex-wrap gap-2 items-center justify-center py-4">
+          {sadcCountries.map(c => (
+            <img key={c.cca2} src={c.flags.svg} alt={c.name.common} title={c.name.common}
+                 className="h-6 w-9 object-cover rounded shadow-sm opacity-80 hover:opacity-100 transition-opacity" />
+          ))}
+        </div>
+      )}
 
       {/* ── App-shell: sidebar + main ────────────────────────────── */}
       <div className="mk-app-shell">

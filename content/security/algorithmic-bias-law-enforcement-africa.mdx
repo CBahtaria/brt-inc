@@ -1,0 +1,45 @@
+---
+title: "Predictive Policing and the Feedback Loop: African Law Enforcement at a Crossroads"
+date: "2026-08-05"
+category: "security"
+tags: ["AI", "law-enforcement", "bias", "Africa"]
+excerpt: "Predictive policing systems amplify historical bias — and post-apartheid data in Southern Africa is contaminated by design."
+---
+
+Predictive policing systems are not neutral tools applied to neutral data. They are inference engines trained on the historical output of law enforcement institutions — institutions that, in Southern Africa, spent decades systematically targeting specific populations for policing and prosecution. Running those records through a modern prediction model does not neutralise the contamination. It operationalises it.
+
+## How the Feedback Loop Works
+
+PredPol (now Geolitica) and similar systems ingest historical crime incident reports and use them to generate probability maps: predictions about where crime is likely to occur, or which individuals are elevated risk. Police resources are directed toward flagged locations and persons. Those resources generate more arrests in flagged areas. Those arrests generate more training data confirming the prediction. The loop closes.
+
+ShotSpotter — a gunshot detection network deployed across hundreds of US cities — illustrates a related dynamic. The system generates acoustic alerts that direct officers to locations. A 2021 MacArthur Justice Center investigation found that approximately 90% of ShotSpotter alerts in Chicago led to no gun-related evidence. The alerts still generated police presence in specific neighbourhoods, and that presence generated stop-and-frisk interactions, minor arrests, and incident reports that fed back into risk models.
+
+Neither system is fabricating predictions from nothing. They are deriving predictions from real data. The problem is that the data encodes enforcement choices, not crime rates. A jurisdiction that historically concentrated police in low-income or minority neighbourhoods will produce crime records that are dense in those areas — not because more crime occurs there relative to elsewhere, but because more crime was recorded there, because more police were looking there.
+
+## Post-Apartheid Data Is Not Neutral
+
+South Africa's apartheid system required systematic over-policing of Black communities under the pretext of controlling population movement, political activity, and social behaviour criminalised by apartheid law. The criminal justice records generated between 1948 and 1994 — and extended into the transition period as legacy infrastructure persisted — reflect enforcement priorities that were overtly racial. Those records exist in databases that survived democratisation.
+
+Eswatini's situation is structurally similar though historically distinct. Colonial and post-colonial governance shaped which activities were criminalised, which communities were subject to pass law equivalents, and which areas received police infrastructure. Crime data from these periods does not describe a neutral distribution of offending — it describes the priorities of the state that generated it.
+
+A predictive policing system trained on historical Southern African crime data will not produce predictions that are corrected for this contamination. It will produce predictions that systematically elevate risk scores for communities that were historically over-policed. The technical sophistication of the model makes no difference to this outcome; the contamination is in the training signal, not the algorithm.
+
+## The Accountability Gap at Deployment
+
+Several Southern African policing agencies have expressed interest in, or begun piloting, data-driven resource allocation tools. The transparency of these deployments varies significantly. In some cases, contracts with vendors have been concluded without public disclosure of the algorithm's design, training data provenance, or accuracy metrics by demographic group.
+
+This is the accountability structure that predictive policing creates: a decision about where to deploy officers — a decision with significant liberty implications for residents of targeted areas — is delegated to a model. The model's output cannot be easily appealed. The officer on the ground may not know a model was consulted. The individual stopped has no recourse against an algorithm. And the feedback loop means that any initial bias compounds with each cycle.
+
+## What Defensible Deployment Requires
+
+Any law enforcement prediction system deployed in post-apartheid Southern Africa requires historical data auditing before training — identifying time ranges and enforcement categories whose data is structurally contaminated and either excluding or re-weighting them. This is not a trivial task, but it is a prerequisite for an honest accuracy claim.
+
+Deployment must be accompanied by outcome monitoring. What is the racial and socioeconomic distribution of stops, searches, and arrests that result from model-directed deployments? Is that distribution explained by verified crime rates, or by the model's output? Without this tracking, there is no way to detect whether the feedback loop is active.
+
+Independent oversight — not vendor-provided audit, not internal review — is the minimum condition for accountability. Community-facing transparency about what data was used, what the model outputs, and what human review mechanisms exist before enforcement action is taken.
+
+Predictive policing is not inherently wrong as a concept. Directing resources toward genuinely higher-risk areas is a legitimate objective. The question is whether the data being used to define "higher risk" reflects the distribution of actual harm or the distribution of historical enforcement. In Southern Africa, that question has a known answer — and it is not one that supports naive deployment.
+
+---
+
+*Related: [The Accountability Void: AI Decision-Making in African Justice and Employment](/writing/security/ai-decision-accountability-sadc)*

@@ -1,0 +1,51 @@
+---
+title: "Through the Wall: WiFi Signals as Physiological Surveillance Tools"
+date: "2026-08-05"
+category: "security"
+tags: ["surveillance", "wifi", "CSI", "privacy", "physiological"]
+excerpt: "802.11n/ac/ax Channel State Information reveals breathing rate, heart rate, and emotional state — through walls, without consent."
+---
+
+The WiFi access point in your office wall is a radar system. It transmits radio frequency energy at 2.4GHz and 5GHz bands continuously. That energy reflects off every surface and body in the environment. The receiver — another access point, or a device capable of capturing raw channel information — measures how the signal changed in transit. From those changes, at sufficient resolution, you can extract breathing rate, heart rate, and correlates of emotional state for every person in the coverage area. Through walls. Without any device on their person. Without their knowledge.
+
+## The Physics of Body Reflection
+
+The human body is largely water. Water absorbs and reflects radio frequency energy at the wavelengths used by 802.11n/ac/ax (approximately 6–12.5cm wavelength at 2.4GHz, 3–6cm at 5GHz). Breathing moves the chest wall through a displacement of several centimetres per cycle — large relative to the RF wavelength. This movement produces a periodic modulation of the reflected signal that is extractable from Channel State Information (CSI) with standard hardware.
+
+Cardiac motion is subtler: the heart's mechanical activity produces chest-wall displacement of approximately 0.3–0.5cm per cycle. Extracting heart rate from WiFi CSI requires higher SNR conditions and more sophisticated signal processing than breathing extraction, but it is demonstrably achievable in controlled environments and has been replicated across multiple independent research groups.
+
+## CSI Extraction Mechanics
+
+Channel State Information is a physical-layer measurement available in 802.11n/ac/ax hardware. It describes how the channel transformed the transmitted signal across multiple subcarriers (OFDM) and antenna pairs. CSI was introduced primarily for adaptive beamforming and link quality estimation. It is a byproduct of normal network operation.
+
+In standard enterprise deployments, CSI data is accessible through modified driver interfaces (Atheros CSI Tool, Intel 5300 NIC with custom firmware, ESP32 with modified firmware, and similar). The extracted data stream is a time-series of complex-valued channel measurements at approximately 100Hz sample rate for typical 802.11n deployments. Signal processing pipelines — bandpass filtering in the respiratory range (0.1–0.5Hz for breathing, 0.8–2Hz for heart rate) followed by Fourier decomposition — extract physiological rhythms from this stream.
+
+The signal processing is not exotic. It is undergraduate DSP applied to a data source that is available without any special hardware investment in environments where 802.11n or later access points are already deployed.
+
+## MIT EQ-Radio and Emotion Classification
+
+MIT's Computer Science and Artificial Intelligence Laboratory published EQ-Radio in 2016, demonstrating emotion classification from WiFi CSI-derived heartbeat waveforms. The system extracted inter-beat-interval (IBI) sequences from CSI data and computed heart rate variability (HRV) features — frequency-domain HRV metrics including LF/HF ratio, which is an established marker of autonomic nervous system balance.
+
+The reported accuracy was approximately 87% on a four-class emotion model (excited, happy, sad, neutral) with subjects positioned in a room with a WiFi transmitter and receiver outside the line of sight. The signal passed through an interior wall.
+
+HRV is a well-validated ANS correlate. High LF/HF ratio is associated with sympathetic dominance (stress, arousal, anxiety). Low LF/HF ratio with parasympathetic dominance (calm, recovery). A WiFi system capable of extracting HRV features is effectively extracting a continuous ANS state measurement from everyone in range.
+
+## Commercial Deployment
+
+Cognitive Systems, acquired by Plume WiFi, markets WiFi motion sensing as a home security and activity monitoring feature. Their system uses standard 802.11 hardware to detect motion and presence in the home. The underlying technology is the same CSI motion extraction described above, tuned for occupancy detection rather than physiological measurement.
+
+The distinction between "is someone in this room" and "what is that person's heart rate and stress level" is a matter of signal processing sophistication and intent — not of hardware capability. The access point in a commercial deployment is technically capable of both functions. What constrains current commercial products to the less invasive use case is product strategy, not technical limitation.
+
+## SADC Institutional Hardening
+
+For SADC government agencies, defence establishments, and institutions where sensitive deliberations occur in WiFi-covered spaces, the threat model is concrete: an adversary with access to raw CSI data from access points covering a meeting room or secure office can extract physiological measurements from everyone present, through walls, throughout the meeting.
+
+The hardening approach operates at three levels. Physical separation is the highest assurance: sensitive spaces should be located outside the coverage area of any access point not under institutional control, with physical shielding (Faraday) for the most sensitive environments. AP placement should be designed to minimise CSI measurement quality for the specific spaces being protected — SNR degrades with distance and additional wall penetrations.
+
+At the firmware level, enterprise access point platforms from Cisco, Aruba, and similar vendors offer CSI feature suppression options or can be configured to restrict CSI data export to the management plane only. Monitoring for unauthorised CSI extraction via network traffic analysis — looking for continuous high-rate CSI data streams from access points — adds a detection layer.
+
+The attack requires a receiver in range. The countermeasure is controlling what is in range of the transmitter.
+
+---
+
+*Related: [The Invisible Stack: How Keystroke, Voice, and WiFi Surveillance Fuse Into a Complete Profile](/writing/security/three-layer-passive-surveillance-stack)*

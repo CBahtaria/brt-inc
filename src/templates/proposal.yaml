@@ -1,0 +1,32 @@
+cv:
+  name: BRT Inc. — Proposal Title
+  email: charleskris9@gmail.com
+  website: https://brtinc.dev
+  sections:
+    prepared_for:
+      - label: Client
+        details: "Client Name"
+      - label: Author
+        details: "Charles Bartaria, BRT Inc."
+      - label: Date
+        details: "2026-08-05"
+    executive_summary:
+      - "Brief description of the engagement and expected outcomes."
+    scope_of_work:
+      - "Deliverable 1 — description and timeline"
+      - "Deliverable 2 — description and timeline"
+    investment:
+      - label: Total
+        details: "SZL 00,000"
+      - label: Payment terms
+        details: "50% upfront, 50% on delivery"
+    terms:
+      - "All intellectual property transfers to the client upon full payment."
+      - "BRT Inc. reserves the right to reference this engagement in its portfolio."
+
+design:
+  theme: classic
+  font_size: 10pt
+  page_size: a4paper
+  color: "#0f172a"
+  disable_page_numbering: false

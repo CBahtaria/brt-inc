@@ -156,7 +156,7 @@ lib/                           ← higgsfield.ts, motion.ts, supabase.ts, stripe
 content/                       ← MDX articles (research/, science/, security/)
 supabase/migrations/           ← DB schema (001, 002; 003 pending for service_agreements + runbook_templates)
 public/
-  business-card.html           ← print-ready business card (standalone HTML, no build step)
+  business-card.html           ← print-ready business card (Next.js 16.2.10 + React 19 + TypeScript)
 ```
 
 ### Security Rules

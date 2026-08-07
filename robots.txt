@@ -1,10 +1,14 @@
 User-agent: *
 Allow: /
-Disallow: /src/crm/
-Disallow: /src/proposals/
-Disallow: /src/agreements/
-Disallow: /src/runbooks/
-Disallow: /src/sales/
-Disallow: /src/infra/
-Disallow: /tools
+Disallow: /dashboard
+Disallow: /crm
+Disallow: /proposals
+Disallow: /invoices
+Disallow: /assets
+Disallow: /runbooks
+Disallow: /status
+Disallow: /checkout/
+Disallow: /login
+Disallow: /api/
+
 Sitemap: https://brtinc.dev/sitemap.xml

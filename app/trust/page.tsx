@@ -2,7 +2,11 @@ import Link from 'next/link'
 import { Nav } from '@/components/marketing/Nav'
 import { Footer } from '@/components/marketing/Footer'
 
-export const metadata = { title: 'Trust & Security — BRT Inc.' }
+export const metadata = {
+  title: 'Trust & Security — BRT Inc.',
+  description: 'Security practices, audit trails, data handling, and compliance posture for BRT Inc. products and institutional engagements.',
+  alternates: { canonical: 'https://brtinc.dev/trust' },
+}
 
 const PRACTICES = [
   {

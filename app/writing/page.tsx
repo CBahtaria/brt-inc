@@ -1,7 +1,12 @@
 import { getContentFiles } from '@/lib/content'
 import WritingClient from '@/components/writing/WritingClient'
 
-export const metadata = { title: 'Writing — BRT Inc.' }
+export const metadata = {
+  title: 'Writing — Security Research & AI Engineering',
+  description: 'Technical writing on AI security, autonomous systems, institutional surveillance risks, and software engineering for southern African governments and institutions.',
+  keywords: ['AI security Africa', 'cybersecurity SADC', 'surveillance research', 'autonomous systems research', 'institutional AI risk'],
+  alternates: { canonical: 'https://brtinc.dev/writing' },
+}
 
 export default function WritingPage() {
   const science  = getContentFiles('science')

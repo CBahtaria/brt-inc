@@ -1,5 +1,27 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { MarketplaceSearch } from '@/components/marketplace/MarketplaceSearch'
+
+export const metadata: Metadata = {
+  title: 'SADC Sovereign Marketplace — B2B Procurement for Southern Africa',
+  description: 'Verified B2B procurement platform for SADC institutions. Defence & Security, Agricultural Intelligence, Infrastructure & Energy, Civic & Government Tech, Autonomous & Aerial, Healthcare & Biomedical.',
+  keywords: [
+    'SADC B2B marketplace',
+    'African government procurement',
+    'defence procurement Africa',
+    'B2B platform southern Africa',
+    'SADC verified suppliers',
+    'government supplier Africa',
+    'procurement platform Eswatini',
+    'agricultural technology Africa',
+  ],
+  openGraph: {
+    title: 'SADC Sovereign Marketplace — B2B Procurement for Southern Africa',
+    description: 'Verified B2B procurement for SADC institutions across 6 strategic categories.',
+    url: 'https://brtinc.dev/marketplace',
+  },
+  alternates: { canonical: 'https://brtinc.dev/marketplace' },
+}
 
 const CATEGORIES = [
   { slug: 'defence-security',          label: 'Defence & Security',        count: 48, icon: '🛡️', accent: '#f87171', gradient: 'linear-gradient(135deg, rgba(248,113,113,0.18) 0%, rgba(248,113,113,0.04) 100%)' },

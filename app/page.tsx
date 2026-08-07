@@ -5,8 +5,8 @@ import { Nav } from '@/components/marketing/Nav'
 import { Hero } from '@/components/marketing/Hero'
 import { TerminalBoot } from '@/components/marketing/TerminalBoot'
 import { WhoChips } from '@/components/marketing/WhoChips'
-import { KeyCapabilities } from '@/components/marketing/KeyCapabilities'
 import { Services } from '@/components/marketing/Services'
+import { AIEngineeringCapabilities } from '@/components/marketing/AIEngineeringCapabilities'
 import { ProductSection } from '@/components/marketing/ProductSection'
 import { SentinelFlowDiagram } from '@/components/marketing/SentinelFlowDiagram'
 import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
@@ -14,17 +14,15 @@ import { Marketplace } from '@/components/marketing/Marketplace'
 import { MaizeNeuralViz } from '@/components/marketing/MaizeNeuralViz'
 import { Portfolio } from '@/components/marketing/Portfolio'
 import { CaseStudies } from '@/components/marketing/CaseStudies'
-import { DemoCarousel } from '@/components/marketing/DemoCarousel'
 import { ModelStack } from '@/components/marketing/ModelStack'
-import { AIEngineeringCapabilities } from '@/components/marketing/AIEngineeringCapabilities'
-import { Impact } from '@/components/marketing/Impact'
 import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { StackStrip } from '@/components/marketing/StackStrip'
+import { Impact } from '@/components/marketing/Impact'
 import { BenefitCards } from '@/components/marketing/BenefitCards'
 import { Process } from '@/components/marketing/Process'
 import { Testimonials } from '@/components/marketing/Testimonials'
 import { Pricing } from '@/components/marketing/Pricing'
 import { FAQ } from '@/components/marketing/FAQ'
-import { StackStrip } from '@/components/marketing/StackStrip'
 import { Newsletter } from '@/components/marketing/Newsletter'
 import { Contact } from '@/components/marketing/Contact'
 import { Footer } from '@/components/marketing/Footer'
@@ -37,14 +35,16 @@ export default function HomePage() {
       <CursorGlow />
       <Nav />
       <main>
-        {/* Above the fold — identity and audience */}
+        {/* Entry — identity and audience */}
         <Hero />
         <TerminalBoot />
         <WhoChips />
-        <KeyCapabilities />
-        <Services />
 
-        {/* Products — each product flows into its own explainer */}
+        {/* Capabilities — what we do */}
+        <Services />
+        <AIEngineeringCapabilities />
+
+        {/* Products — each product with its explainer */}
         <ProductSection
           eyebrow="COMMAND & CONTROL"
           title="SENTINEL V5.0"
@@ -120,16 +120,17 @@ export default function HomePage() {
         />
         <MaizeNeuralViz />
 
-        {/* Proof — what we've shipped */}
+        {/* Proof — what's been shipped */}
         <Portfolio />
         <CaseStudies />
-        <DemoCarousel />
 
         {/* Architecture & scale */}
         <ModelStack />
-        <AIEngineeringCapabilities />
-        <section id="impact"><Impact /></section>
         <EcosystemSection />
+        <StackStrip />
+
+        {/* Impact metrics */}
+        <section id="impact"><Impact /></section>
 
         {/* Why BRT */}
         <BenefitCards />
@@ -139,7 +140,6 @@ export default function HomePage() {
         {/* Conversion */}
         <Pricing />
         <FAQ />
-        <StackStrip />
         <Newsletter />
         <section id="contact"><Contact /></section>
       </main>

@@ -8,15 +8,18 @@ import { WhoChips } from '@/components/marketing/WhoChips'
 import { KeyCapabilities } from '@/components/marketing/KeyCapabilities'
 import { Services } from '@/components/marketing/Services'
 import { ProductSection } from '@/components/marketing/ProductSection'
-import { CaseStudies } from '@/components/marketing/CaseStudies'
-import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
 import { SentinelFlowDiagram } from '@/components/marketing/SentinelFlowDiagram'
+import { UAVFlowDiagram } from '@/components/marketing/UAVFlowDiagram'
+import { Marketplace } from '@/components/marketing/Marketplace'
 import { MaizeNeuralViz } from '@/components/marketing/MaizeNeuralViz'
-import { ModelStack } from '@/components/marketing/ModelStack'
+import { Portfolio } from '@/components/marketing/Portfolio'
+import { CaseStudies } from '@/components/marketing/CaseStudies'
 import { DemoCarousel } from '@/components/marketing/DemoCarousel'
-import { BenefitCards } from '@/components/marketing/BenefitCards'
-import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { ModelStack } from '@/components/marketing/ModelStack'
+import { AIEngineeringCapabilities } from '@/components/marketing/AIEngineeringCapabilities'
 import { Impact } from '@/components/marketing/Impact'
+import { EcosystemSection } from '@/components/marketing/EcosystemSection'
+import { BenefitCards } from '@/components/marketing/BenefitCards'
 import { Process } from '@/components/marketing/Process'
 import { Testimonials } from '@/components/marketing/Testimonials'
 import { Pricing } from '@/components/marketing/Pricing'
@@ -34,13 +37,14 @@ export default function HomePage() {
       <CursorGlow />
       <Nav />
       <main>
+        {/* Above the fold — identity and audience */}
         <Hero />
         <TerminalBoot />
         <WhoChips />
         <KeyCapabilities />
         <Services />
-        <DemoCarousel />
-        <SentinelFlowDiagram />
+
+        {/* Products — each product flows into its own explainer */}
         <ProductSection
           eyebrow="COMMAND & CONTROL"
           title="SENTINEL V5.0"
@@ -55,6 +59,8 @@ export default function HomePage() {
           secondaryCta={{ label: 'CAPABILITIES', href: '#services' }}
           id="sentinel"
         />
+        <SentinelFlowDiagram />
+
         <ProductSection
           eyebrow="AUTONOMOUS SYSTEMS"
           title="AGENTIC UAV STACK"
@@ -69,6 +75,7 @@ export default function HomePage() {
           id="uav"
         />
         <UAVFlowDiagram />
+
         <ProductSection
           eyebrow="B2B PROCUREMENT"
           title="SADC SOVEREIGN MARKETPLACE"
@@ -82,7 +89,8 @@ export default function HomePage() {
           primaryCta={{ label: 'ENTER MARKETPLACE', href: '/marketplace' }}
           id="marketplace"
         />
-        <CaseStudies />
+        <Marketplace />
+
         <ProductSection
           eyebrow="UE5 HISTORICAL RPG"
           title="MAHLANYA"
@@ -96,6 +104,7 @@ export default function HomePage() {
           primaryCta={{ label: 'LEARN MORE', href: '#mahlanya' }}
           id="mahlanya"
         />
+
         <ProductSection
           eyebrow="AGRICULTURAL AI"
           title="MAIZE LEAF CLASSIFIER"
@@ -110,12 +119,24 @@ export default function HomePage() {
           id="maize"
         />
         <MaizeNeuralViz />
+
+        {/* Proof — what we've shipped */}
+        <Portfolio />
+        <CaseStudies />
+        <DemoCarousel />
+
+        {/* Architecture & scale */}
         <ModelStack />
+        <AIEngineeringCapabilities />
         <section id="impact"><Impact /></section>
         <EcosystemSection />
+
+        {/* Why BRT */}
         <BenefitCards />
         <Process />
         <Testimonials />
+
+        {/* Conversion */}
         <Pricing />
         <FAQ />
         <StackStrip />

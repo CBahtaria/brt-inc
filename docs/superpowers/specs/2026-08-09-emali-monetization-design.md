@@ -24,7 +24,7 @@ Contact/payee for all projects:
 - New Supabase table `payment_references`: `id, service_slug, amount_cents, currency default 'SZL', payer_name, payer_contact, emali_reference, status, created_at, confirmed_at, confirmed_by`.
 - New `app/api/emali/submit/route.ts` — zod-validated, writes the row, sends a Resend notification email to `charleskris9@gmail.com`.
 - New "Pay via eMali" UI alongside the existing Stripe checkout (`app/checkout/*`), for services outside the Stripe `PRICE_MAP` (e.g. custom institutional consulting engagements).
-- New `app/admin/emali/page.tsx`, gated by an `ADMIN_SECRET` env var compared with `timingSafeEqual` — mirrors the pattern already live in wheels-deals-eswatini (this repo has no admin auth today).
+- New `app/(portal)/emali/page.tsx` — follows this repo's existing convention (per `CLAUDE.md`: "All new portal pages must be inside `app/(portal)/`") where the Supabase session middleware in `(portal)/layout.tsx` already gates access. No new auth scheme invented; the confirm/reject API route validates the same Supabase Bearer token other authenticated API routes in this repo require.
 
 ### wheels-deals-eswatini (Next.js 16 / Supabase / Vercel)
 - New `payment_references` table, FK'd to `vehicle_id`.

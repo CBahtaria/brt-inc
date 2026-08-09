@@ -1,6 +1,8 @@
 -- eMali manual payment reconciliation. A submitted reference is a claim, not proof of
 -- payment: rows start 'pending' and only an authenticated portal action moves them to
 -- 'confirmed' or 'rejected'.
+--
+-- Verified by supabase/tests/run_004_tests.sh — run it after editing this file.
 
 CREATE TABLE IF NOT EXISTS payment_references (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -13,7 +15,16 @@ CREATE TABLE IF NOT EXISTS payment_references (
   status text NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'confirmed', 'rejected')),
   created_at timestamptz DEFAULT now(),
   confirmed_at timestamptz,
-  confirmed_by uuid REFERENCES auth.users
+  confirmed_by uuid REFERENCES auth.users,
+
+  -- "No auto-confirm" is a plan-level non-negotiable, so it is enforced declaratively rather
+  -- than left to the API layer. DEFAULT 'pending' only fires when the column is omitted, and
+  -- the service-role key bypasses RLS — but nothing bypasses a CHECK. A row cannot reach
+  -- 'confirmed'/'rejected' without recording who decided and when.
+  CONSTRAINT payment_references_confirmation_consistency CHECK (
+    (status = 'pending' AND confirmed_at IS NULL AND confirmed_by IS NULL)
+    OR (status IN ('confirmed', 'rejected') AND confirmed_at IS NOT NULL AND confirmed_by IS NOT NULL)
+  )
 );
 
 ALTER TABLE payment_references ENABLE ROW LEVEL SECURITY;
@@ -29,13 +40,23 @@ DROP POLICY IF EXISTS "authenticated_update" ON payment_references;
 
 CREATE POLICY "authenticated_read" ON payment_references
   FOR SELECT
-  USING (auth.role() = 'authenticated');
+  TO authenticated
+  USING (true);
 
+-- WITH CHECK stops a portal user updating the row directly (bypassing the confirm/reject API
+-- route) from attributing the decision to someone else. Paired with the CHECK constraint
+-- above, a confirm must carry the caller's own auth.uid().
 CREATE POLICY "authenticated_update" ON payment_references
   FOR UPDATE
-  USING (auth.role() = 'authenticated')
-  WITH CHECK (auth.role() = 'authenticated');
+  TO authenticated
+  USING (true)
+  WITH CHECK (confirmed_by IS NULL OR confirmed_by = auth.uid());
 
 -- Portal list is ordered by created_at within a status filter.
 CREATE INDEX IF NOT EXISTS idx_payment_references_status_created
   ON payment_references(status, created_at DESC);
+
+-- Deliberately not UNIQUE: a rejected reference must be correctable and resubmittable.
+-- Indexed so a duplicate-reference lookup is not a seq scan.
+CREATE INDEX IF NOT EXISTS idx_payment_references_emali_reference
+  ON payment_references(emali_reference);

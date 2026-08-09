@@ -3,8 +3,7 @@ import { useState } from 'react'
 
 const EMALI_NUMBER = '+26879657744'
 
-const inputClass = "w-full px-4 py-3 rounded-md text-sm focus:outline-none transition-colors"
-const inputStyle = { background: 'var(--surface-1)', border: '1px solid var(--border)', color: 'var(--text)' }
+const inputClass = "w-full px-4 py-3 bg-surface-1 border border-border rounded-md text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-accent/50 transition-colors"
 
 export function EmaliPayment() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
@@ -34,35 +33,34 @@ export function EmaliPayment() {
 
   return (
     <section id="emali-payment" className="py-20 max-w-2xl mx-auto px-6">
-      <p className="font-mono text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--text-subtle)' }}>
+      <p className="font-mono text-xs uppercase tracking-widest mb-2 text-text-subtle">
         Pay via eMali
       </p>
-      <h2 className="text-3xl font-semibold mb-4" style={{ color: 'var(--text)' }}>
+      <h2 className="text-3xl font-semibold mb-4 text-text">
         Already paid? Submit your reference.
       </h2>
 
       {status === 'done' ? (
-        <div className="border rounded-xl p-8 text-center" style={{ borderColor: 'rgba(99,102,241,0.3)' }}>
-          <p className="font-mono text-sm" style={{ color: 'var(--accent)' }}>
+        <div className="border border-accent/30 rounded-xl p-8 text-center">
+          <p className="font-mono text-sm text-accent">
             Reference received — we&apos;ll confirm shortly.
           </p>
         </div>
       ) : (
         <>
-          <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
-            Send payment to <span style={{ color: 'var(--text)' }}>{EMALI_NUMBER}</span> via the eMali app, then enter your details below.
+          <p className="text-sm mb-6 text-text-muted">
+            Send payment to <span className="text-text">{EMALI_NUMBER}</span> via the eMali app, then enter your details below.
           </p>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="service" placeholder="Service (e.g. consultation)" required className={inputClass} style={inputStyle} />
-            <input name="amount" type="number" step="0.01" min="0" placeholder="Amount (SZL)" required className={inputClass} style={inputStyle} />
-            <input name="name" placeholder="Your name" required className={inputClass} style={inputStyle} />
-            <input name="contact" placeholder="Your phone or email" required className={inputClass} style={inputStyle} />
-            <input name="reference" placeholder="eMali transaction reference" required className={inputClass} style={inputStyle} />
+            <input name="service" placeholder="Service (e.g. consultation)" required className={inputClass} />
+            <input name="amount" type="number" step="0.01" min="0" placeholder="Amount (SZL)" required className={inputClass} />
+            <input name="name" placeholder="Your name" required className={inputClass} />
+            <input name="contact" placeholder="Your phone or email" required className={inputClass} />
+            <input name="reference" placeholder="eMali transaction reference" required className={inputClass} />
             <button
               type="submit"
               disabled={status === 'submitting'}
-              className="w-full py-3 rounded-md text-white font-medium transition-colors disabled:opacity-50"
-              style={{ background: 'var(--accent)' }}
+              className="w-full py-3 bg-accent text-white font-medium rounded-md hover:bg-accent/90 transition-colors disabled:opacity-50"
             >
               {status === 'submitting' ? 'Submitting…' : 'Submit reference'}
             </button>

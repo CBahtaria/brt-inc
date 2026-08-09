@@ -17,9 +17,21 @@ function isRateLimited(ip: string): boolean {
   return false
 }
 
+function sanitise(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+}
+
+// Ceiling is a sanity bound, not a real pricing limit — E1,000,000 is far above any BRT
+// service price, well under Postgres `integer` range (2,147,483,647), and rejects garbage
+// input with a clean 400 instead of a DB-level 500.
+const MAX_AMOUNT_CENTS = 100_000_000
+
 const SubmitSchema = z.object({
   serviceSlug: z.string().min(1).max(100),
-  amountCents: z.number().int().positive(),
+  amountCents: z.number().int().positive().max(MAX_AMOUNT_CENTS),
   payerName: z.string().min(1).max(200),
   payerContact: z.string().min(1).max(200),
   emaliReference: z.string().min(1).max(100),
@@ -66,11 +78,15 @@ export async function POST(request: NextRequest) {
 
   const resend = new Resend(process.env.RESEND_API_KEY)
   try {
+    const safePayerName = sanitise(payerName)
+    const safePayerContact = sanitise(payerContact)
+    const safeServiceSlug = sanitise(serviceSlug)
+    const safeEmaliReference = sanitise(emaliReference)
     await resend.emails.send({
       from: 'BRT Inc. <noreply@brtinc.dev>',
       to: 'charleskris9@gmail.com',
-      subject: `New eMali payment reference — ${serviceSlug}`,
-      html: `<p>${payerName} (${payerContact}) submitted reference <strong>${emaliReference}</strong> for ${serviceSlug}, E${(amountCents / 100).toFixed(2)}. Confirm at /emali in the portal.</p>`,
+      subject: `New eMali payment reference — ${safeServiceSlug}`,
+      html: `<p>${safePayerName} (${safePayerContact}) submitted reference <strong>${safeEmaliReference}</strong> for ${safeServiceSlug}, E${(amountCents / 100).toFixed(2)}. Confirm at /emali in the portal.</p>`,
     })
   } catch {
     // Notification failure must not block the recorded submission — the portal list is authoritative.

@@ -25,6 +25,7 @@ import { Pricing } from '@/components/marketing/Pricing'
 import { FAQ } from '@/components/marketing/FAQ'
 import { Newsletter } from '@/components/marketing/Newsletter'
 import { Contact } from '@/components/marketing/Contact'
+import { EmaliPayment } from '@/components/marketing/EmaliPayment'
 import { Footer } from '@/components/marketing/Footer'
 
 export default function HomePage() {
@@ -142,6 +143,7 @@ export default function HomePage() {
         <FAQ />
         <Newsletter />
         <section id="contact"><Contact /></section>
+        <EmaliPayment />
       </main>
       <Footer />
     </>

@@ -5,6 +5,7 @@ Disallow: /crm
 Disallow: /proposals
 Disallow: /invoices
 Disallow: /assets
+Disallow: /emali
 Disallow: /runbooks
 Disallow: /status
 Disallow: /checkout/

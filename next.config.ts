@@ -46,7 +46,7 @@ const config: NextConfig = {
         ],
       },
       {
-        source: '/(dashboard|crm|proposals|invoices|runbooks|status)(.*)',
+        source: '/(dashboard|crm|proposals|invoices|runbooks|status|emali)(.*)',
         headers: [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }],
       },
     ]

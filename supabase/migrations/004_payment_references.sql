@@ -46,6 +46,9 @@ CREATE POLICY "authenticated_read" ON payment_references
 -- WITH CHECK stops a portal user updating the row directly (bypassing the confirm/reject API
 -- route) from attributing the decision to someone else. Paired with the CHECK constraint
 -- above, a confirm must carry the caller's own auth.uid().
+--
+-- USING (true) below is superseded by 005_harden_payment_references_update_rls.sql, which
+-- narrows it to USING (status = 'pending'). See that file for why.
 CREATE POLICY "authenticated_update" ON payment_references
   FOR UPDATE
   TO authenticated

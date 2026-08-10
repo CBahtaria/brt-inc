@@ -22,6 +22,8 @@ const STATUS_CLASS: Record<PaymentReference['status'], string> = {
   rejected: 'text-red-400',
 }
 
+const SESSION_EXPIRED = 'Session expired — sign in again before deciding.'
+
 function formatAmount(cents: number, currency: string) {
   const value = (cents / 100).toFixed(2)
   return currency === 'SZL' ? `E${value}` : `${currency} ${value}`
@@ -32,7 +34,9 @@ export function EmaliReferences() {
   const [refs, setRefs] = useState<PaymentReference[]>([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState(false)
-  const [busyId, setBusyId] = useState<string | null>(null)
+  // Per-row, not a single id: two rows can be in flight at once, and one finishing
+  // must not re-enable the other's buttons mid-request.
+  const [busyIds, setBusyIds] = useState<ReadonlySet<string>>(() => new Set())
   const [message, setMessage] = useState<RowMessage | null>(null)
 
   const load = useCallback(() => {
@@ -55,55 +59,63 @@ export function EmaliReferences() {
   useEffect(() => { load() }, [load])
 
   async function act(id: string, action: 'confirm' | 'reject') {
-    setBusyId(id)
+    if (busyIds.has(id)) return
+    setBusyIds(prev => new Set(prev).add(id))
     setMessage(null)
 
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      setMessage({ id, text: 'Session expired — sign in again before deciding.', tone: 'error' })
-      setBusyId(null)
-      return
-    }
-
-    let res: Response
     try {
-      res = await fetch(`/api/emali/${id}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ action }),
-      })
-    } catch {
-      setMessage({ id, text: 'Network error — nothing was changed. Try again.', tone: 'error' })
-      setBusyId(null)
-      return
-    }
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        setMessage({ id, text: SESSION_EXPIRED, tone: 'error' })
+        return
+      }
 
-    // 404 means the row was already confirmed or rejected — a real outcome of two
-    // people (or two tabs) deciding at once, not a failure. Show it and re-sync.
-    if (res.status === 404) {
-      setMessage({ id, text: 'Already decided by someone else — refreshing list.', tone: 'info' })
+      let res: Response
+      try {
+        res = await fetch(`/api/emali/${id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action }),
+        })
+      } catch {
+        setMessage({ id, text: 'Network error — nothing was changed. Try again.', tone: 'error' })
+        return
+      }
+
+      // 404 means the row was already confirmed or rejected — a real outcome of two
+      // people (or two tabs) deciding at once, not a failure. Show it and re-sync.
+      if (res.status === 404) {
+        setMessage({ id, text: 'Already decided by someone else — refreshing list.', tone: 'info' })
+        await load()
+        return
+      }
+
+      if (!res.ok) {
+        setMessage({
+          id,
+          text: res.status === 401
+            ? SESSION_EXPIRED
+            : 'Could not update this reference — nothing was changed.',
+          tone: 'error',
+        })
+        return
+      }
+
       await load()
-      setBusyId(null)
-      return
-    }
-
-    if (!res.ok) {
-      setMessage({
-        id,
-        text: res.status === 401
-          ? 'Session expired — sign in again before deciding.'
-          : 'Could not update this reference — nothing was changed.',
-        tone: 'error',
+    } catch {
+      // getSession() or the reload threw. The decision may or may not have landed,
+      // so the wording must not claim either — but the row must never stay stuck.
+      setMessage({ id, text: 'Something went wrong — reload the page to see the current status.', tone: 'error' })
+    } finally {
+      setBusyIds(prev => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
       })
-      setBusyId(null)
-      return
     }
-
-    await load()
-    setBusyId(null)
   }
 
   if (loading) {
@@ -162,17 +174,19 @@ export function EmaliReferences() {
             <div className="flex gap-2 mt-2">
               <button
                 onClick={() => act(r.id, 'confirm')}
-                disabled={busyId === r.id}
+                disabled={busyIds.has(r.id)}
+                aria-busy={busyIds.has(r.id)}
                 className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-accent/90 transition-colors disabled:opacity-50"
               >
-                {busyId === r.id ? 'Working…' : 'Confirm'}
+                {busyIds.has(r.id) ? 'Working…' : 'Confirm'}
               </button>
               <button
                 onClick={() => act(r.id, 'reject')}
-                disabled={busyId === r.id}
+                disabled={busyIds.has(r.id)}
+                aria-busy={busyIds.has(r.id)}
                 className="rounded-md border border-border px-3 py-1.5 text-xs font-medium text-text-muted hover:border-red-400/50 hover:text-red-400 transition-colors disabled:opacity-50"
               >
-                {busyId === r.id ? 'Working…' : 'Reject'}
+                {busyIds.has(r.id) ? 'Working…' : 'Reject'}
               </button>
             </div>
           )}

@@ -5,8 +5,11 @@ const EMALI_NUMBER = '+26879657744'
 
 const inputClass = "w-full px-4 py-3 bg-surface-1 border border-border rounded-md text-sm text-text placeholder:text-text-subtle focus:outline-none focus:border-accent/50 transition-colors"
 
+const GENERIC_ERROR = 'Something went wrong — try again.'
+
 export function EmaliPayment() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'done' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState(GENERIC_ERROR)
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -25,8 +28,18 @@ export function EmaliPayment() {
           emaliReference: String(form.get('reference')),
         }),
       })
-      setStatus(res.ok ? 'done' : 'error')
+      if (res.ok) {
+        setStatus('done')
+        return
+      }
+      // Surface the server's actual message (e.g. the 429 rate-limit body) — the rate
+      // limiter is keyed on x-forwarded-for, and under carrier-grade NAT unrelated payers
+      // sharing an egress IP can get a real reason instead of a dead-end generic error.
+      const body = await res.json().catch(() => null)
+      setErrorMessage(typeof body?.error === 'string' && body.error ? body.error : GENERIC_ERROR)
+      setStatus('error')
     } catch {
+      setErrorMessage(GENERIC_ERROR)
       setStatus('error')
     }
   }
@@ -66,7 +79,7 @@ export function EmaliPayment() {
             </button>
             {status === 'error' && (
               <p role="alert" className="text-red-400 text-sm text-center">
-                Something went wrong — try again.
+                {errorMessage}
               </p>
             )}
           </form>

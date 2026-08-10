@@ -3,9 +3,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 const ActionSchema = z.object({ action: z.enum(['confirm', 'reject']) })
+const IdSchema = z.string().uuid()
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+  const idParsed = IdSchema.safeParse(id)
+  if (!idParsed.success) {
+    return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
+  }
+
   const authHeader = request.headers.get('authorization') ?? ''
   const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
   if (!token) {
@@ -33,14 +39,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const status = parsed.data.action === 'confirm' ? 'confirmed' : 'rejected'
-  const { error } = await supabase
+  const { data, error } = await supabase
     .from('payment_references')
     .update({ status, confirmed_at: new Date().toISOString(), confirmed_by: user.id })
-    .eq('id', id)
+    .eq('id', idParsed.data)
     .eq('status', 'pending')
+    .select('id')
 
   if (error) {
+    console.error('payment_references update failed:', error)
     return NextResponse.json({ error: 'Could not update reference' }, { status: 500 })
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: 'Reference not found or already decided' }, { status: 404 })
   }
 
   return NextResponse.json({ ok: true })

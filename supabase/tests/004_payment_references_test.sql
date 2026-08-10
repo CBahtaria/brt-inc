@@ -199,7 +199,20 @@ BEGIN
   -- Legitimate self-attributed confirm must pass both the RLS WITH CHECK and the CHECK constraint.
   UPDATE payment_references SET status='confirmed', confirmed_at=now(), confirmed_by=owner_id;
   RAISE NOTICE 'PASS: authenticated may confirm as themselves';
+
+  -- Reset for the next block. Once 005_harden_payment_references_update_rls.sql narrows
+  -- authenticated_update's USING to status = 'pending', authenticated can no longer flip a
+  -- confirmed row back to pending — that is the intended "a decided row cannot be laundered
+  -- back to pending" guarantee 005 adds (see its assertion E). So this reset has to run as a
+  -- role that bypasses RLS, and the row count must be checked: silently affecting 0 rows here
+  -- would leave the row 'confirmed' and make the next block fail with a misleading "forged
+  -- confirmed_by" error instead of an honest setup failure.
+  RESET ROLE;
   UPDATE payment_references SET status='pending', confirmed_at=NULL, confirmed_by=NULL;
+  GET DIAGNOSTICS n = ROW_COUNT;
+  IF n <> 1 THEN
+    RAISE EXCEPTION 'test setup failed: reset did not affect expected row — check role/RLS state between assertions (% rows affected)', n;
+  END IF;
 END $$;
 
 DO $$

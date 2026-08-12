@@ -30,7 +30,7 @@ jobs:
           node-version: '22'
           cache: 'npm'
       - run: npm ci --ignore-scripts
-      - run: npm audit --production --audit-level=high
+      - run: npm audit --production --audit-level=moderate
 
   osv-scan:
     runs-on: ubuntu-latest
